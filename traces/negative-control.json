@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "kind": "negative-control",
+  "note": "G2 — baseline이 살아 있음을 증명한다. 모든 revert는 노드에서 관측된 온체인 revert이며 txHash / blockNumber / receiptStatus 로 확인할 수 있다.",
+  "hashed": {
+    "fork": {
+      "chainId": 1,
+      "blockNumber": "25700000",
+      "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf",
+      "delegationFrameworkCommit": "197463b4aba3409adef1df544dabafc3636ee82d"
+    },
+    "baseline": {
+      "delegationManager": "0xeA6F34E56c9bEa6d9114A30b52e040af2b594373",
+      "delegator": "0x09e68b4a2335a2aaa1944bc3938d285b883f11e1",
+      "delegate": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "counterparty": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "caveats": [
+        {
+          "index": 0,
+          "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+          "name": "AllowedTargetsEnforcer",
+          "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "termsBytes": 20
+        },
+        {
+          "index": 1,
+          "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+          "name": "AllowedMethodsEnforcer",
+          "terms": "0xa9059cbb",
+          "termsBytes": 4
+        },
+        {
+          "index": 2,
+          "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+          "name": "ValueLteEnforcer",
+          "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "termsBytes": 32
+        },
+        {
+          "index": 3,
+          "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+          "name": "TimestampEnforcer",
+          "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+          "termsBytes": 32
+        },
+        {
+          "index": 4,
+          "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+          "name": "ERC20PeriodTransferEnforcer",
+          "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+          "termsBytes": 116
+        },
+        {
+          "index": 5,
+          "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+          "name": "ERC20BalanceChangeEnforcer",
+          "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+          "termsBytes": 73
+        }
+      ],
+      "parameters": {
+        "dailyLimitUsdc": "2000000000",
+        "periodDurationSeconds": "86400",
+        "perRedemptionMaxDecreaseUsdc": "500000000",
+        "valueLteMax": "0"
+      }
+    },
+    "delegation": {
+      "delegate": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "delegator": "0x09e68b4a2335a2aaa1944bc3938d285b883f11e1",
+      "authority": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "salt": "0",
+      "signature": "0xeb955e585cd4f5d50e65a8f6281a2c4346eec61a1aa610a2941af1d1257baac6454543f10c2a71244c847a976f9883e6b39ed71d81402eea6fdc8df0a33dc0411b"
+    },
+    "steps": [
+      {
+        "id": "PC0",
+        "kind": "positive",
+        "intent": "회차 400 USDC — 회차 한도(500)·일일 한도(2,000) 모두 만족. 6종 전부 통과해야 한다.",
+        "provesEnforcer": null,
+        "target": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "value": "0",
+        "callData": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000017d78400",
+        "blockTimestamp": "1786090091",
+        "txHash": "0xfb6eaa9bc85584a7e24939040d1712f9dd81aa5906a07d6bbf21f2fe1b56563d",
+        "blockNumber": "25700042",
+        "receiptStatus": "success",
+        "gasUsed": "398506",
+        "expectedRevert": null,
+        "observedRevert": null,
+        "revertSource": null,
+        "matchesExpectation": true,
+        "balancesBefore": {
+          "usdc": "10000000000",
+          "eth": "10000000000000000000"
+        },
+        "balancesAfter": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "logCount": 3,
+        "sawPeriodEnforcerEvent": true
+      },
+      {
+        "id": "NC1",
+        "kind": "negative",
+        "intent": "일일 한도 초과 — 2,500 USDC (잔여 available 1,600)",
+        "provesEnforcer": "ERC20PeriodTransferEnforcer",
+        "target": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "value": "0",
+        "callData": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906000000000000000000000000000000000000000000000000000000009502f900",
+        "blockTimestamp": "1786111691",
+        "txHash": "0xc590472e2959d05f770e5cac0161dc0c69acd06634db6671354f6671ac4b792d",
+        "blockNumber": "25700043",
+        "receiptStatus": "reverted",
+        "gasUsed": "144336",
+        "expectedRevert": "ERC20PeriodTransferEnforcer:transfer-amount-exceeded",
+        "observedRevert": "ERC20PeriodTransferEnforcer:transfer-amount-exceeded",
+        "revertSource": "debug_traceTransaction.revertReason",
+        "matchesExpectation": true,
+        "balancesBefore": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "balancesAfter": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "logCount": 0,
+        "sawPeriodEnforcerEvent": false
+      },
+      {
+        "id": "NC2",
+        "kind": "negative",
+        "intent": "허용목록 밖 대상 호출",
+        "provesEnforcer": "AllowedTargetsEnforcer",
+        "target": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+        "value": "0",
+        "callData": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000005f5e100",
+        "blockTimestamp": "1786133291",
+        "txHash": "0x49ecb9d438e5104d3310058e12414fc306b3d95d2f33bf9fd19fffba463e682d",
+        "blockNumber": "25700044",
+        "receiptStatus": "reverted",
+        "gasUsed": "113793",
+        "expectedRevert": "AllowedTargetsEnforcer:target-address-not-allowed",
+        "observedRevert": "AllowedTargetsEnforcer:target-address-not-allowed",
+        "revertSource": "debug_traceTransaction.revertReason",
+        "matchesExpectation": true,
+        "balancesBefore": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "balancesAfter": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "logCount": 0,
+        "sawPeriodEnforcerEvent": false
+      },
+      {
+        "id": "NC3",
+        "kind": "negative",
+        "intent": "회차 한도만 초과 — 800 USDC. 일일 한도는 지키므로 beforeHook을 전부 통과하고 실행 후 afterHook의 상태 차분 검사에서 막힌다.",
+        "provesEnforcer": "ERC20BalanceChangeEnforcer",
+        "target": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "value": "0",
+        "callData": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906000000000000000000000000000000000000000000000000000000002faf0800",
+        "blockTimestamp": "1786154891",
+        "txHash": "0x1eebaa4925a07f181853ff54cf71580fc0835f8d0b0e8df8e03c8a83e7df5e14",
+        "blockNumber": "25700045",
+        "receiptStatus": "reverted",
+        "gasUsed": "226731",
+        "expectedRevert": "ERC20BalanceChangeEnforcer:exceeded-balance-decrease",
+        "observedRevert": "ERC20BalanceChangeEnforcer:exceeded-balance-decrease",
+        "revertSource": "debug_traceTransaction.revertReason",
+        "matchesExpectation": true,
+        "balancesBefore": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "balancesAfter": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "logCount": 0,
+        "sawPeriodEnforcerEvent": false
+      },
+      {
+        "id": "NC4",
+        "kind": "negative",
+        "intent": "허용목록 밖 메서드 — approve(address,uint256)",
+        "provesEnforcer": "AllowedMethodsEnforcer",
+        "target": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "value": "0",
+        "callData": "0x095ea7b300000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000005f5e100",
+        "blockTimestamp": "1786176491",
+        "txHash": "0x5c748c0f36968c3101813ecfeecfc98347fbdc87712291e1c950c94d64ded05e",
+        "blockNumber": "25700046",
+        "receiptStatus": "reverted",
+        "gasUsed": "119209",
+        "expectedRevert": "AllowedMethodsEnforcer:method-not-allowed",
+        "observedRevert": "AllowedMethodsEnforcer:method-not-allowed",
+        "revertSource": "debug_traceTransaction.revertReason",
+        "matchesExpectation": true,
+        "balancesBefore": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "balancesAfter": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "logCount": 0,
+        "sawPeriodEnforcerEvent": false
+      },
+      {
+        "id": "NC5",
+        "kind": "negative",
+        "intent": "네이티브 값 상한 초과 — value 1 wei (상한 0)",
+        "provesEnforcer": "ValueLteEnforcer",
+        "target": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "value": "1",
+        "callData": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000005f5e100",
+        "blockTimestamp": "1786198091",
+        "txHash": "0x08aa4b749737d885c309c08ad26d38edbf47bf577df0de4afbc6acafdbed2374",
+        "blockNumber": "25700047",
+        "receiptStatus": "reverted",
+        "gasUsed": "123296",
+        "expectedRevert": "ValueLteEnforcer:value-too-high",
+        "observedRevert": "ValueLteEnforcer:value-too-high",
+        "revertSource": "debug_traceTransaction.revertReason",
+        "matchesExpectation": true,
+        "balancesBefore": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "balancesAfter": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "logCount": 0,
+        "sawPeriodEnforcerEvent": false
+      },
+      {
+        "id": "NC6",
+        "kind": "negative",
+        "intent": "위임 유효기간 경과 — before 임계(1788660491) 이후. 마지막에 둔다(시각을 되돌릴 수 없다).",
+        "provesEnforcer": "TimestampEnforcer",
+        "target": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "value": "0",
+        "callData": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000005f5e100",
+        "blockTimestamp": "1788682091",
+        "txHash": "0x5c4ccf52d6fcf12e1f78879aeaa3b5997c2a07a29f9fe0c8a54f2d7218cc2645",
+        "blockNumber": "25700048",
+        "receiptStatus": "reverted",
+        "gasUsed": "127168",
+        "expectedRevert": "TimestampEnforcer:expired-delegation",
+        "observedRevert": "TimestampEnforcer:expired-delegation",
+        "revertSource": "debug_traceTransaction.revertReason",
+        "matchesExpectation": true,
+        "balancesBefore": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "balancesAfter": {
+          "usdc": "9600000000",
+          "eth": "10000000000000000000"
+        },
+        "logCount": 0,
+        "sawPeriodEnforcerEvent": false
+      }
+    ]
+  },
+  "meta": {
+    "generatedAtWallClock": "2026-08-08T12:48:55.103Z",
+    "note": "meta는 재현성 해시 대상에서 제외한다."
+  }
+}

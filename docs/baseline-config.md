@@ -23,9 +23,16 @@
 > "전 계층을 통과했음에도 손실이 발생하는 거래"가 있다는 것을 MetaMask가
 > 보험 상품으로 인정한 것이기 때문이다.
 
-### Delegation Framework — caveat enforcer 38종
+### Delegation Framework — 구체 caveat enforcer 37종
 
 출처: <https://github.com/MetaMask/delegation-framework/tree/main/src/enforcers>
+
+**정정 (2026-08-08, Phase 1 실측)** — `src/enforcers/`의 `.sol` 파일은 38개지만 그 중
+`CaveatEnforcer`는 `abstract contract`인 **베이스 클래스**이고 배포 대상이 아니다.
+배포 가능한 구체 enforcer는 **37종**이다. 업스트림 `script/DeployCaveatEnforcers.s.sol`이
+배포하는 개수도 정확히 37종이며, 파일 목록과 배포 목록의 차집합은 `CaveatEnforcer` 하나뿐임을
+확인했다(Phase 1에서 실제 배포로 검증). 논문에는 **37종**을 쓴다. 파일 개수 38을 쓰면
+심사자가 배포 스크립트를 세어 즉시 반박한다.
 
 ```
 AllowedCalldataEnforcer                   ERC721BalanceChangeEnforcer
@@ -34,7 +41,7 @@ AllowedTargetsEnforcer                    ERC721TransferEnforcer
 ApprovalRevocationEnforcer                ExactCalldataBatchEnforcer
 ArgsEqualityCheckEnforcer                 ExactCalldataEnforcer
 BlockNumberEnforcer                       ExactExecutionBatchEnforcer
-CaveatEnforcer                            ExactExecutionEnforcer
+CaveatEnforcer  ← abstract, 배포 대상 아님   ExactExecutionEnforcer
 DeployedEnforcer                          IdEnforcer
 ERC1155BalanceChangeEnforcer              LimitedCallsEnforcer
 ERC1155MultiOperationIncreaseBalanceEnf.  LogicalOrWrapperEnforcer
@@ -110,16 +117,79 @@ Level B 구현 범위의 전제가 흔들린다.
 논문에는 "공개된 Delegation Framework의 caveat enforcer 집합을 baseline으로 삼는다"고
 명시하고, 비공개 계층(Blockaid 내부 규칙)은 알려진 한계로 선제 서술한다.
 
-## 4. 고정 파라미터 (Phase 1에서 채움)
+## 4. 고정 파라미터
+
+확정일 2026-08-07. **여기 적힌 값은 이후 변경하지 않는다.** 결과가 안 나온다고 블록이나
+한도를 옮기는 것이 심사에서 가장 먼저 의심받는 행위이므로, 실측 전에 먼저 박는다.
 
 | 항목 | 값 |
 | --- | --- |
-| delegation-framework 커밋 해시 | *TBD* |
-| 포크 체인 / 블록 번호 | *TBD* |
-| 배포한 enforcer와 주소 | *TBD* |
-| 한도 파라미터 (일일 상한 등) | *TBD* |
-| 오라클 (Chainlink 피드 주소) | *TBD* |
+| delegation-framework 커밋 해시 | `197463b4aba3409adef1df544dabafc3636ee82d` |
+| 포크 체인 | Ethereum mainnet (chainId 1) |
+| 포크 블록 번호 | `25700000` |
+| 포크 블록 해시 | `0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf` |
+| 포크 블록 타임스탬프 | `1786068491` (2026-08-07T02:08:11Z) |
+| 오라클 (Chainlink ETH/USD) | `0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419`, decimals 8 |
+| 해당 블록 오라클 값 | `189811115161` = **$1898.11 / ETH** (updatedAt `1786066847`, 블록 대비 1644s 전) |
+| 결제 토큰 (USDC) | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`, decimals 6 |
+| 배포한 enforcer와 주소 | 구체 enforcer **37종 전부 배포.** 전체 목록은 `chain/deployments/manifest.json` (활성 6종은 아래) |
+| 한도 파라미터 (일일 상한 등) | 일일 2,000 USDC / 회차 500 USDC / native value 상한 0 — 근거는 `docs/phase1-parameters.md` |
 | 모드 설정 | Beast Mode 상당 (승인 중단 없음) |
+
+### 활성 caveat 6종 — 배포 주소와 파라미터 (Phase 1 실측)
+
+CREATE2 salt `"intent-as-spec-phase1"`, 배포자 anvil key #0
+(`0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266`). 재실행 시 동일 주소가 재현됨을
+`chain/src/deploy.ts`가 코드로 검증한다.
+
+| index | enforcer | 주소 | 파라미터 |
+| --- | --- | --- | --- |
+| 0 | `AllowedTargetsEnforcer` | `0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038` | targets = [USDC] |
+| 1 | `AllowedMethodsEnforcer` | `0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1` | selectors = [`0xa9059cbb`] |
+| 2 | `ValueLteEnforcer` | `0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498` | maxValue = 0 |
+| 3 | `TimestampEnforcer` | `0x8AF1d7a43158697106953f7F2EfADa603984269A` | after 1786068491 / before 1788660491 |
+| 4 | `ERC20PeriodTransferEnforcer` | `0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0` | 2,000 USDC / 86400s / start 1786068491 |
+| 5 | `ERC20BalanceChangeEnforcer` | `0x2Ab40067D719bc5938AA1875CB409A9DBF50022c` | decrease, 500 USDC, recipient = delegator |
+
+**index는 caveat 배열 순서이며 의미가 있다.** `beforeHook`이 오름차순으로 평가되므로
+이 순서가 위반 시 관측되는 revert 문자열을 결정한다. `docs/caveat-encoding.md` 참조.
+
+기타 핵심 주소 — `DelegationManager` `0xeA6F34E56c9bEa6d9114A30b52e040af2b594373`,
+`HybridDeleGatorImpl` `0xd321B8751D0dE55F9D8e25117216FFF1f1923805`,
+delegator 스마트계정 `0x09e68b4a2335a2aaa1944bc3938d285b883f11e1`.
+
+### G1 결정론 (실측)
+
+| 항목 | 값 |
+| --- | --- |
+| 최종 블록 | `25700048` |
+| 정본 상태 다이제스트 | `0xe29efd531e1a734a1fd94a6bfd53338d0a296f0185d0e072cb9c9c1f3a26ef48` |
+| 독립 2회 실행 결과 | 스냅샷 바이트 단위 일치 |
+
+**블록 헤더의 `stateRoot`는 쓰지 않는다** — anvil이 포크 모드에서 머클 상태 루트를
+계산하지 않아 전부 `0x00…00`이기 때문이다(실측 확인). 근거와 대체 다이제스트의 구성은
+`chain/README.md`에 있다.
+
+### 커밋 핀 근거
+
+`main` HEAD를 쓴다. 커밋 해시는 불변이므로 태그와 동등하게 인용 가능하다.
+
+**실측 (2026-08-08, `git ls-tree` + 실제 배포)**
+
+| 리비전 | `src/enforcers/*.sol` | abstract 베이스 | 구체 enforcer |
+| --- | --- | --- | --- |
+| 태그 `v1.3.0` | 33 | `CaveatEnforcer` 1 | **32종** |
+| 핀 커밋 `197463b4` (`v1.3.0-153-g197463b`) | 38 | `CaveatEnforcer` 1 | **37종** |
+
+최신 태그 `v1.3.0`은 구체 enforcer가 32종뿐이라 §1에 기록된 37종과 불일치한다.
+핀 커밋은 정확히 37종으로 §1과 일치하며, 이 37종 전부가 Phase 1에서 실제로 배포되었다
+(`chain/deployments/` 매니페스트).
+
+### 블록 선정 근거
+
+선정 시점 최신 블록은 25702227이었고, 25700000은 그보다 2227블록(약 7.4시간) 뒤라
+확정(finalized) 구간에 안전하게 들어간다. 재구성(reorg) 가능성이 없다.
+해당 블록에서 아카이브 조회·Chainlink 피드·USDC 상태를 모두 실제로 확인했다.
 
 ## 5. 네거티브 컨트롤 (기획안 미포함, 추가 확정)
 

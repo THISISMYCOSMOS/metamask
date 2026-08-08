@@ -19,7 +19,10 @@ __pycache__/
 out/
 cache/
 broadcast/
-lib/
+# lib/ is NOT ignored: delegation-framework is pinned via git submodule and
+# must be recorded in git (see chain/lib/delegation-framework). Only the
+# framework's own build output stays ignored (handled by its nested .gitignore
+# plus the out/cache/broadcast patterns above).
 
 # local run artifacts (traces under traces/ ARE committed)
 tmp/
