@@ -70,6 +70,24 @@ USDC는 실제로 구하지 않고 포크 잔고 슬롯을 치트코드로 덮�
 
 **Phase 1은 전부 로컬 시뮬레이션이므로 온체인 실제 비용은 0원이다.**
 
+## 벤더링된 서브모듈을 청소하지 말 것
+
+**업스트림 `delegation-framework`는 `broadcast/`를 git으로 추적한다** (배포 이력 634개 파일).
+루트 `.gitignore`의 `broadcast/` 패턴은 서브모듈에 적용되지 않는다 — gitignore는 이미
+추적 중인 파일에 영향을 주지 않고, 서브모듈은 별도 저장소다.
+
+`chain/lib/delegation-framework`에서 `rm -rf broadcast`를 하면 업스트림의 커밋된 이력을
+지우게 된다. 실제로 한 번 지웠다가 복구했다.
+
+```bash
+# 실수로 지웠거나 run-latest.json이 수정됐을 때
+git -C chain/lib/delegation-framework checkout -- broadcast
+```
+
+파이프라인을 돌리면 `broadcast/.../1/run-latest.json`(추적 파일)이 매번 덮어써지고
+타임스탬프가 붙은 새 파일이 미추적으로 쌓인다. **정상이다.** 서브모듈 핀 자체는
+바뀌지 않으므로 재현성에 영향이 없다. 신경 쓰이면 위 명령으로 되돌린다.
+
 ## 배포 대상은 구체 enforcer 37종
 
 `src/enforcers/`의 `.sol` 파일은 38개지만 `CaveatEnforcer`는 `abstract contract`
