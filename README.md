@@ -49,3 +49,16 @@ uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_inva
 
 실제 통합에서는 `--expect`의 기본값인 `accept`를 유지한다. 차단된 거래와 유효하지 않은
 입력은 성공 코드로 처리되지 않는다.
+
+## MVP 후보 상태 판정
+
+MVP 범위는 `docs/mvp-scope.md`에 고정했다. 현재 후보 상태 슬라이스는 검증된 G3의 마지막
+실행과 직전 24시간 이력을 strict JSON으로 변환해 같은 두 불변식으로 차단한다.
+
+```powershell
+uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_candidate.py `
+  specs\mvp-candidate-invariants.json traces\mvp-candidate-reject.json --expect reject
+```
+
+이 정책은 재현용 demo fixture이며 사용자 승인 증거가 아니다. 제한된 자연어 합성과 명시적
+승인 분리는 마지막 MVP 조각으로 남아 있다.

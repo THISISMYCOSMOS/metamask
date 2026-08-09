@@ -14,6 +14,10 @@
 - `specs/phase1-demo-invariants.json`은 평가기 검증용 fixture이며 실제 사용자 정책이 아니다.
 - 여전히 남은 핵심 작업은 generic pre-execution trace 계약, 나머지 불변식 3종, 자연어 합성,
   사용자 승인 경로, 실제 실행 전 연결과 성능 측정이다.
+- 2026-08-09 MVP 경계는 `docs/mvp-scope.md`에 별도로 고정했다. strict
+  `portfolio-candidate` 계약과 G3 결정론 어댑터까지가 후보 판정 슬라이스이며, 다음 MVP
+  작업은 제한된 자연어 합성 제안과 명시적 승인 분리다. 나머지 불변식·UI·온체인 집행은
+  MVP 밖이다.
 
 아래 본문은 Phase 1 당시의 결정 근거와 함정을 보존한 역사 기록이다. “다음은 G3” 및
 “G3 승인 대기” 문구는 현재 작업 지시로 사용하지 않는다.

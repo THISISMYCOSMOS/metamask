@@ -69,7 +69,7 @@ Invariant = Annotated[Union[PortfolioValueFloor, CumulativeLossCap], Field(discr
 class InvariantPolicy(StrictModel):
     schemaVersion: Literal[1]
     policyId: PolicyIdentifier
-    traceKind: Literal["cumulative-loss"]
+    traceKind: Literal["cumulative-loss", "portfolio-candidate"]
     fork: ForkBinding
     invariants: Annotated[List[Invariant], Field(min_length=1, max_length=16)]
 

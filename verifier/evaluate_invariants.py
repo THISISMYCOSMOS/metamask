@@ -40,6 +40,16 @@ class PortfolioPoint:
     after_value1e18: int
 
 
+def canonical_trace_hashed_sha256(trace: Trace) -> str:
+    encoded = json.dumps(
+        trace.hashed.model_dump(mode="json"),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return "0x" + hashlib.sha256(encoded).hexdigest()
+
+
 def _asset_value_1e18(amount: int, token_decimals: int, answer: int) -> int:
     numerator = amount * answer * (10**USD_VALUE_SCALE)
     denominator = (10**token_decimals) * (10**ORACLE_DECIMALS)
@@ -115,7 +125,12 @@ def normalize_phase1_trace(trace: Trace) -> list[PortfolioPoint]:
     ]
 
 
-def evaluate_points(policy: InvariantPolicy, points: Sequence[PortfolioPoint]) -> list[dict[str, Any]]:
+def evaluate_points(
+    policy: InvariantPolicy,
+    points: Sequence[PortfolioPoint],
+    *,
+    final_candidate_only: bool = False,
+) -> list[dict[str, Any]]:
     """Pure evaluator. Bounds are inclusive and all arithmetic is integer-only."""
     if not points:
         raise EvaluationInputError("at least one portfolio point is required")
@@ -132,8 +147,12 @@ def evaluate_points(policy: InvariantPolicy, points: Sequence[PortfolioPoint]) -
     evaluations: list[dict[str, Any]] = []
     for invariant in policy.invariants:
         if isinstance(invariant, PortfolioValueFloor):
-            candidates = [(points[0].step_index, "before", points[0].before_value1e18)]
-            candidates.extend((point.step_index, "after", point.after_value1e18) for point in points)
+            if final_candidate_only:
+                final = points[-1]
+                candidates = [(final.step_index, "after", final.after_value1e18)]
+            else:
+                candidates = [(points[0].step_index, "before", points[0].before_value1e18)]
+                candidates.extend((point.step_index, "after", point.after_value1e18) for point in points)
             step_index, position, minimum = min(candidates, key=lambda candidate: candidate[2])
             limit = int(invariant.floorValue1e18)
             evaluations.append(
@@ -152,7 +171,8 @@ def evaluate_points(policy: InvariantPolicy, points: Sequence[PortfolioPoint]) -
             window_seconds = int(invariant.windowSeconds)
             maximum_loss = -1
             maximum_window = (points[0], points[0])
-            for end_index, end in enumerate(points):
+            end_candidates = [(len(points) - 1, points[-1])] if final_candidate_only else list(enumerate(points))
+            for end_index, end in end_candidates:
                 for start in points[: end_index + 1]:
                     if end.timestamp - start.timestamp > window_seconds:
                         continue
@@ -198,18 +218,12 @@ def evaluate(policy: InvariantPolicy, trace: Trace) -> dict[str, Any]:
 
     points = normalize_phase1_trace(trace)
     evaluations = evaluate_points(policy, points)
-    hashed_trace = json.dumps(
-        trace.hashed.model_dump(mode="json"),
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
     return {
         "schemaVersion": 1,
         "kind": "invariant-evaluation",
         "policyId": policy.policyId,
         "policySha256": canonical_policy_sha256(policy),
-        "traceHashedContentSha256": "0x" + hashlib.sha256(hashed_trace).hexdigest(),
+        "traceHashedContentSha256": canonical_trace_hashed_sha256(trace),
         "accepted": all(item["passed"] for item in evaluations),
         "evaluations": evaluations,
     }

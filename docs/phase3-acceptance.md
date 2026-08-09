@@ -65,7 +65,9 @@ uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_inva
 
 ## Not yet claimed
 
-- A generic candidate-transaction trace schema emitted by `chain/` before broadcast.
+- A candidate trace emitted directly by `chain/` before broadcast. The MVP now has a strict
+  portfolio-candidate contract and deterministic G3 adapter, but that adapter is evidence reuse,
+  not live wallet integration.
 - Arbitrary-asset rounding semantics. This Phase 1 adapter accepts only valuations that divide
   exactly at the 1e-18 USD scale; conservative start/end rounding must be designed with the
   generic trace contract rather than silently introduced here.
@@ -76,3 +78,5 @@ uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_inva
 - The remaining `executionPriceBand`, `netDeltaBound`, and `venueIntegrity` evaluators.
 - Natural-language synthesis, policy review/approval UI, on-chain enforcement, or production
   latency/throughput measurements.
+
+The bounded project MVP definition is in `docs/mvp-scope.md`.
