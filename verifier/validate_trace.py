@@ -23,6 +23,10 @@ from pydantic import ValidationError
 from models import Trace
 
 BASE_TIMESTAMP = 1_786_068_491
+EXPECTED_CHAIN_ID = 1
+EXPECTED_FORK_BLOCK_NUMBER = 25_700_000
+EXPECTED_FORK_BLOCK_HASH = "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+EXPECTED_FRAMEWORK_COMMIT = "197463b4aba3409adef1df544dabafc3636ee82d"
 STEP_TIMESTAMP_OFFSET = 21_600
 STEP_COUNT = 20
 STEP_AMOUNT = 500_000_000
@@ -100,6 +104,16 @@ def cross_validate(trace: Trace) -> list[str]:
     steps = h.steps
     states = h.states
 
+    for field, actual, expected in (
+        ("chainId", h.fork.chainId, EXPECTED_CHAIN_ID),
+        ("blockNumber", int(h.fork.blockNumber), EXPECTED_FORK_BLOCK_NUMBER),
+        ("blockHash", h.fork.blockHash.lower(), EXPECTED_FORK_BLOCK_HASH),
+        ("blockTimestamp", int(h.fork.blockTimestamp), FORK_BLOCK_TIMESTAMP),
+        ("delegationFrameworkCommit", h.fork.delegationFrameworkCommit.lower(), EXPECTED_FRAMEWORK_COMMIT),
+    ):
+        if actual != expected:
+            fail(errors, f"fork.{field}={actual} (expected {expected})")
+
     if h.delegation.delegationHash.lower() != EXPECTED_DELEGATION_HASH:
         fail(errors, f"delegationHash={h.delegation.delegationHash}가 정본과 다르다")
     for field, actual, expected in (
@@ -147,6 +161,20 @@ def cross_validate(trace: Trace) -> list[str]:
             fail(errors, f"steps[{i}]: usdcBefore-usdcAfter != {STEP_AMOUNT}")
         if step.ethBefore != step.ethAfter:
             fail(errors, f"steps[{i}]: ethBefore != ethAfter")
+        if i < len(states):
+            state = states[i]
+            if state.before.usdc != step.usdcBefore or state.before.ethWei != step.ethBefore:
+                fail(errors, f"states[{i}].before does not match steps[{i}] before")
+            if state.after.usdc != step.usdcAfter or state.after.ethWei != step.ethAfter:
+                fail(errors, f"states[{i}].after does not match steps[{i}] after")
+        if i > 0:
+            previous = steps[i - 1]
+            if previous.usdcAfter != step.usdcBefore or previous.ethAfter != step.ethBefore:
+                fail(errors, f"steps[{i}] is not continuous with steps[{i - 1}]")
+            if int(previous.timestamp) >= int(step.timestamp):
+                fail(errors, f"steps[{i}].timestamp is not strictly increasing")
+            if int(previous.blockNumber) >= int(step.blockNumber):
+                fail(errors, f"steps[{i}].blockNumber is not strictly increasing")
 
         transfer = step.transferEvent
         expected_transfer_topics = [
@@ -233,6 +261,17 @@ def cross_validate(trace: Trace) -> list[str]:
         fail(errors, f"종료 USDC {ending_usdc} != 0")
     if h.result.endingPortfolio.ethWei != h.result.startingPortfolio.ethWei:
         fail(errors, "종료 ETH != 시작 ETH")
+    if steps:
+        if (
+            h.result.startingPortfolio.usdc != steps[0].usdcBefore
+            or h.result.startingPortfolio.ethWei != steps[0].ethBefore
+        ):
+            fail(errors, "startingPortfolio does not match first step before")
+        if (
+            h.result.endingPortfolio.usdc != steps[-1].usdcAfter
+            or h.result.endingPortfolio.ethWei != steps[-1].ethAfter
+        ):
+            fail(errors, "endingPortfolio does not match last step after")
 
     # ── 오라클 ───────────────────────────────────────────────────────────
     for label, feed, expected_answer, expected_updated_at in (

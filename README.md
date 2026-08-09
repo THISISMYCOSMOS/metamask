@@ -33,3 +33,19 @@ cp .env.example .env   # RPC_URL 을 채운다
 ```
 
 `.env`는 커밋하지 않는다.
+
+## 현재 검증 가능한 세로 슬라이스
+
+Phase 1의 누적 손실 트레이스를 Phase 3 결정론적 평가기의 골든 네거티브 입력으로 사용한다.
+데모 정책은 실제 사용자 정책이 아니며, 고정된 Phase 1 파라미터로 평가 경로를 재현하기 위한
+fixture다. 기준과 남은 범위는 `docs/phase3-acceptance.md`에 있다.
+
+```powershell
+uv run --cache-dir tmp\uv-cache --project verifier python verifier\validate_trace.py traces\cumulative-loss.json --quiet
+uv run --cache-dir tmp\uv-cache --project verifier python -m unittest discover -s verifier -p 'test_*.py' -v
+uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_invariants.py `
+  specs\phase1-demo-invariants.json traces\cumulative-loss.json --expect reject
+```
+
+실제 통합에서는 `--expect`의 기본값인 `accept`를 유지한다. 차단된 거래와 유효하지 않은
+입력은 성공 코드로 처리되지 않는다.

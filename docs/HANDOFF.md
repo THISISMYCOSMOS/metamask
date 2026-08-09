@@ -1,4 +1,22 @@
-# 세션 인계 — Phase 1 완료 (G1·G2 통과), 다음은 G3
+# 세션 인계 — Phase 1 완료, Phase 3 평가기 세로 슬라이스 진행
+
+## 2026-08-09 현재 상태 — 아래의 과거 G3 대기 설명보다 우선
+
+- Phase 1 G1·G2·G3가 완료되어 `feat`에 커밋·푸시됐다. Phase 1 정본 커밋은
+  `39ce117aef25d4b19f803ac14dee76a4b65ca07c`이다.
+- G3 결정론 해시는
+  `0x7070733f52215bd255c69fe863efa33e780f72aa7c162c6ff3f9f9574549dcf7`이다.
+- 다음 방향은 추가 공격 트레이스보다 먼저 결정론적 평가기 세로 슬라이스를 완성하는 것이다.
+  기존 G3가 이미 골든 네거티브 입력을 제공하기 때문이다.
+- `portfolioValueFloor`와 `cumulativeLossCap`의 strict/versioned 정책 모델, 정수 전용
+  평가기, fail-closed CLI, 경계·변조·정상 통제 스트레스 테스트가 추가됐다.
+- 상세 합격 기준과 아직 주장하지 않는 범위는 `docs/phase3-acceptance.md`를 따른다.
+- `specs/phase1-demo-invariants.json`은 평가기 검증용 fixture이며 실제 사용자 정책이 아니다.
+- 여전히 남은 핵심 작업은 generic pre-execution trace 계약, 나머지 불변식 3종, 자연어 합성,
+  사용자 승인 경로, 실제 실행 전 연결과 성능 측정이다.
+
+아래 본문은 Phase 1 당시의 결정 근거와 함정을 보존한 역사 기록이다. “다음은 G3” 및
+“G3 승인 대기” 문구는 현재 작업 지시로 사용하지 않는다.
 
 갱신 2026-08-08. **다음 세션은 이 문서부터 읽는다.**
 
