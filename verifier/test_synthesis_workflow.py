@@ -48,6 +48,9 @@ class SynthesisWorkflowStressTest(unittest.TestCase):
         cls.approval_data = json.loads(
             (ROOT / "specs" / "mvp-test-policy-approval.json").read_text(encoding="utf-8")
         )
+        cls.user_approval_data = json.loads(
+            (ROOT / "specs" / "mvp-user-policy-approval.json").read_text(encoding="utf-8")
+        )
         cls.candidate_data = json.loads(
             (ROOT / "traces" / "mvp-candidate-reject.json").read_text(encoding="utf-8")
         )
@@ -63,6 +66,9 @@ class SynthesisWorkflowStressTest(unittest.TestCase):
 
     def approval(self, data: dict | None = None) -> PolicyApproval:
         return PolicyApproval.model_validate(copy.deepcopy(data or self.approval_data))
+
+    def user_approval(self, data: dict | None = None) -> PolicyApproval:
+        return PolicyApproval.model_validate(copy.deepcopy(data or self.user_approval_data))
 
     def test_request_fixture_is_exact_deterministic_output(self) -> None:
         generated = create_intent_request(
@@ -163,6 +169,11 @@ class SynthesisWorkflowStressTest(unittest.TestCase):
             proposal,
             confirmation=f"APPROVE {proposal_hash}",
             approved_by="user",
+        )
+        self.assertEqual(self.user_approval(), approval)
+        self.assertEqual(
+            (ROOT / "specs" / "mvp-user-policy-approval.json").read_text(encoding="utf-8"),
+            artifact_json(approval),
         )
         report = evaluate_approved_candidate(
             approval,

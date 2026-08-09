@@ -71,10 +71,9 @@ uv run --cache-dir tmp\uv-cache --project verifier python synth\compile_response
   specs\mvp-intent-request.json specs\mvp-llm-response.fixture.json tmp\policy-proposal.json
 
 uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_approved_candidate.py `
-  specs\mvp-test-policy-approval.json traces\mvp-candidate-reject.json `
-  --allow-test-fixture --expect reject
+  specs\mvp-user-policy-approval.json traces\mvp-candidate-reject.json --expect reject
 ```
 
 `mvp-llm-response.fixture.json`은 오프라인 계약 테스트이며 실제 모델 호출 증거가 아니다.
-실제 승인은 `synth/approve_policy.py`에서 출력된 제안 해시와 정확히 같은 확인 문구를 사용자가
-직접 제공해야 생성된다.
+`mvp-user-policy-approval.json`은 사용자가 제안 해시와 정확히 같은 확인 문구를 제공한 뒤
+생성된 승인 기록이다. `approvedBy`는 인증 신원이 아닌 로컬 감사 라벨이다.

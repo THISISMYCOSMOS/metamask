@@ -46,8 +46,9 @@ contract above is explicitly deferred.
 
 `specs/mvp-candidate-invariants.json` remains a demo fixture derived from fixed Phase 1 parameters.
 It is not evidence of a real user's approval. The synthesis slice below completes the code MVP by
-keeping proposal generation and explicit approval as separate steps; a real approval remains a
-user operation and is never committed as a fixture.
+keeping proposal generation and explicit approval as separate steps. A user-scoped approval is
+generated only after the user supplies the exact proposal-hash confirmation and is stored
+separately from the test fixture.
 
 ## Synthesis and approval slice
 
@@ -66,10 +67,14 @@ The provider-neutral compiler boundary is now implemented as four immutable arti
   back the strict response JSON; malformed or expanded output is rejected.
 
 The offline response demonstrates and tests the contract but is not evidence of a live provider
-call. Likewise, the committed test approval is not a user's approval. For this proposal the exact
-hash awaiting a real user action is:
+call. Likewise, the committed test approval is not a user's approval. On 2026-08-10 the user
+supplied the exact confirmation for proposal:
 
 `0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21`
+
+The resulting `specs/mvp-user-policy-approval.json` has approval hash:
+
+`0x6bc7ec4fccbd7478aa597b83b41cb91161f3483bc2a6fe66f3f8311c44e77828`
 
 Semantic faithfulness of free-form language is not asserted automatically: the proposal exposes
 the original intent, thresholds, rationales, and assumptions for explicit review. Runtime remains

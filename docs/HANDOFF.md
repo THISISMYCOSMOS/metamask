@@ -18,9 +18,12 @@
   `portfolio-candidate` 계약과 G3 결정론 어댑터까지가 후보 판정 슬라이스다. 나머지
   불변식·UI·온체인 집행은 MVP 밖이다.
 - 2026-08-10 자연어 요청 → strict LLM 응답 → 미승인 정책 제안 → 해시 확인 승인 흐름을
-  provider-neutral artifact로 구현했다. 커밋된 LLM 응답과 승인은 오프라인 테스트 fixture며,
-  실제 사용자 승인으로 주장하지 않는다. 승인된 런타임 경로는 기본적으로 test fixture를
-  거부한다.
+  provider-neutral artifact로 구현했다. 커밋된 LLM 응답과
+  `mvp-test-policy-approval.json`은 오프라인 테스트 fixture며 실제 모델 호출이나 사용자
+  승인으로 주장하지 않는다. 승인된 런타임 경로는 기본적으로 test fixture를 거부한다.
+- 2026-08-10 사용자가 제안 `0xed84bfa0...9b21`을 정확한 해시 문구로 승인했다.
+  `specs/mvp-user-policy-approval.json`은 `approvalScope=user` 기록이며 승인 artifact 해시는
+  `0x6bc7ec4f...7828`이다. 이는 명시적 승인 기록이지 암호학적 신원 인증은 아니다.
 
 아래 본문은 Phase 1 당시의 결정 근거와 함정을 보존한 역사 기록이다. “다음은 G3” 및
 “G3 승인 대기” 문구는 현재 작업 지시로 사용하지 않는다.
