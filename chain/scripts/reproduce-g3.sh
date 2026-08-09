@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# Phase 1 재현 스크립트 — 한 명령으로 배포 + G2 트레이스를 재생성하고 최종 상태 해시를 찍는다.
+# G3 재현 스크립트 — 한 명령으로 새 포크 위에 배포 + 누적 손실 트레이스를 재생성하고
+# Pydantic 검증기로 트레이스를 검증한다.
 #
-#   bash chain/scripts/reproduce.sh
+#   bash chain/scripts/reproduce-g3.sh
 #
-# G1의 증거는 이 스크립트를 두 번 돌렸을 때 마지막 줄의 stateRoot가 같다는 것이다.
-# anvil이 실제 머클 상태 루트를 계산하므로, 손수 만든 다이제스트보다 강한 증거다.
+# G2의 PC0 상태와 절대 섞이지 않는다 — 이 스크립트는 자기 anvil을 새로 띄우고
+# negative-control.ts를 실행하지 않는다. 포트도 G2(8545/8546)와 분리된 8547을 기본값으로 쓴다.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-PORT="${ANVIL_PORT:-8545}"
+PORT="${G3_PORT:-8547}"
 RPC="http://127.0.0.1:${PORT}"
 FORK_BLOCK=25700000
 
@@ -28,7 +29,7 @@ if [ -z "${FORK_RPC_URL:-}" ]; then
   exit 1
 fi
 
-ANVIL_LOG="$(mktemp -t anvil.XXXXXX.log)"
+ANVIL_LOG="$(mktemp -t anvil-g3.XXXXXX.log)"
 
 cleanup() {
   if [ -n "${ANVIL_PID:-}" ]; then
@@ -44,7 +45,7 @@ if cast block-number --rpc-url "$RPC" >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "[reproduce] anvil 시작 (포크 블록 ${FORK_BLOCK})"
+echo "[reproduce-g3] anvil 시작 (포크 블록 ${FORK_BLOCK}, 포트 ${PORT})"
 anvil --fork-url "$FORK_RPC_URL" \
       --fork-block-number "$FORK_BLOCK" \
       --port "$PORT" --host 127.0.0.1 \
@@ -57,12 +58,22 @@ for _ in $(seq 1 60); do
   sleep 1
 done
 if ! cast block-number --rpc-url "$RPC" >/dev/null 2>&1; then
-  echo "[reproduce] anvil이 뜨지 않았다. 로그: $ANVIL_LOG" >&2
+  echo "[reproduce-g3] anvil이 뜨지 않았다. 로그: $ANVIL_LOG" >&2
   exit 1
 fi
 
 cd "$REPO_ROOT/chain"
 ANVIL_RPC="$RPC" npx tsx src/deploy.ts
-ANVIL_RPC="$RPC" npx tsx src/negative-control.ts
 
-ANVIL_RPC="$RPC" SNAPSHOT_OUT="${SNAPSHOT_OUT:-}" npx tsx src/state-digest.ts
+G3_LOG="$(mktemp -t g3-run.XXXXXX.log)"
+ANVIL_RPC="$RPC" G3_TRACE_OUT="${G3_TRACE_OUT:-}" npx tsx src/cumulative-loss.ts | tee "$G3_LOG"
+
+echo "[reproduce-g3] 트레이스 검증기 실행"
+if ! command -v uv >/dev/null 2>&1; then
+  echo "uv가 없다 — verifier/를 실행할 수 없다. https://docs.astral.sh/uv/ 참고." >&2
+  exit 1
+fi
+uv run --project "$REPO_ROOT/verifier" python "$REPO_ROOT/verifier/validate_trace.py" "$REPO_ROOT/traces/cumulative-loss.json"
+
+echo "[reproduce-g3] 결정론 요약 필드"
+grep '^G3_' "$G3_LOG"

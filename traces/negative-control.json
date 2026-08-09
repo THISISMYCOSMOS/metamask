@@ -70,7 +70,8 @@
       "delegator": "0x09e68b4a2335a2aaa1944bc3938d285b883f11e1",
       "authority": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       "salt": "0",
-      "signature": "0xeb955e585cd4f5d50e65a8f6281a2c4346eec61a1aa610a2941af1d1257baac6454543f10c2a71244c847a976f9883e6b39ed71d81402eea6fdc8df0a33dc0411b"
+      "signature": "0xeb955e585cd4f5d50e65a8f6281a2c4346eec61a1aa610a2941af1d1257baac6454543f10c2a71244c847a976f9883e6b39ed71d81402eea6fdc8df0a33dc0411b",
+      "delegationHash": "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
     },
     "steps": [
       {
@@ -272,7 +273,7 @@
     ]
   },
   "meta": {
-    "generatedAtWallClock": "2026-08-08T12:48:55.103Z",
+    "generatedAtWallClock": "2026-08-09T12:56:31.393Z",
     "note": "meta는 재현성 해시 대상에서 제외한다."
   }
 }

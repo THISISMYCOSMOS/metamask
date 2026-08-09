@@ -107,3 +107,28 @@ export const EXPECTED_ADDRESSES = {
   ERC20PeriodTransferEnforcer: "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
   ERC20BalanceChangeEnforcer: "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
 } as const;
+
+// ── G3 오라클 (포크 블록 스냅샷, PM 핀) ─────────────────────────────
+// USDC/USD 어그리게이터. 포크 블록에서 실측한 값을 기대값으로 박는다.
+export const CHAINLINK_USDC_USD_FEED = "0xc9E1a09622afdB659913fefE800fEaE5DBbFe9d7" as const;
+export const CHAINLINK_USDC_USD_DECIMALS = 8;
+
+export const EXPECTED_ORACLE = {
+  ethUsd: { answer: 189_811_115_161n, updatedAt: 1_786_066_847n, decimals: 8 },
+  usdcUsd: { answer: 99_976_752n, updatedAt: 1_786_003_223n, decimals: 8 },
+} as const;
+
+// 오라클 신선도 상한 — G3 구현 시 코드/검증기에 고정했다.
+// 피드 age 관측 전에 선택했다는 역사적 근거는 없으므로 사전선정으로 주장하지 않는다.
+export const ORACLE_MAX_STALENESS_SECONDS = 86_400n;
+
+// ── G3 회차 파라미터 ────────────────────────────────────────────────
+export const G3_STEP_COUNT = 20;
+export const G3_STEP_AMOUNT_USDC = 500_000_000n; // 회차당 정확히 500 USDC
+export const EXPECTED_DELEGATION_HASH =
+  "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb" as const;
+// 실측 period 분포. offset 21600s + strict TimestampEnforcer의 귀결이다.
+export const G3_EXPECTED_PERIOD_DISTRIBUTION = [3, 4, 4, 4, 4, 1] as const;
+
+// 포트폴리오 가치 단위: 1e-18 USD (정수 전용, 부동소수 금지)
+export const USD_VALUE_SCALE_DECIMALS = 18n;

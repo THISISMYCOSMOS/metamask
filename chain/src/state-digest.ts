@@ -14,28 +14,15 @@
 //   핵심 상태이므로, 재실행 시 이 값까지 같아야 결정론이 성립한다.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { hashStruct, keccak256, toHex, type Address, type Hex } from "viem";
+import { keccak256, toHex, type Address, type Hex } from "viem";
 
 import { FORK_BLOCK_NUMBER, USDC_ADDRESS } from "./config.js";
 import { assertLocalAnvilFork } from "./guard.js";
 import { addressOf, publicClient } from "./accounts.js";
 import { REPO_ROOT, readManifest, readUsdcBalance } from "./deploy.js";
+import { hashDelegationStruct } from "./delegation.js";
 
 const TRACE_PATH = join(REPO_ROOT, "traces", "negative-control.json");
-
-const DELEGATION_TYPES = {
-  Caveat: [
-    { name: "enforcer", type: "address" },
-    { name: "terms", type: "bytes" },
-  ],
-  Delegation: [
-    { name: "delegate", type: "address" },
-    { name: "delegator", type: "address" },
-    { name: "authority", type: "bytes32" },
-    { name: "caveats", type: "Caveat[]" },
-    { name: "salt", type: "uint256" },
-  ],
-} as const;
 
 /** 키를 재귀적으로 정렬해 JSON 직렬화를 정본화한다. */
 function canonical(value: unknown): unknown {
@@ -118,17 +105,27 @@ async function main(): Promise<void> {
     enforcer: c.enforcer,
     terms: c.terms,
   }));
-  const delegationHash = hashStruct({
-    data: {
-      delegate: trace.hashed.delegation.delegate,
-      delegator: trace.hashed.delegation.delegator,
-      authority: trace.hashed.delegation.authority,
-      caveats: caveatsForHash,
-      salt: BigInt(trace.hashed.delegation.salt),
-    },
-    primaryType: "Delegation",
-    types: DELEGATION_TYPES,
+  const delegationHash = hashDelegationStruct({
+    delegate: trace.hashed.delegation.delegate,
+    delegator: trace.hashed.delegation.delegator,
+    authority: trace.hashed.delegation.authority,
+    caveats: caveatsForHash,
+    salt: BigInt(trace.hashed.delegation.salt),
   });
+
+  // negative-control.ts가 트레이스에 기록한 해시와 재계산 결과가 어긋나면 fail closed —
+  // 두 곳에서 각자 해시를 재구현하다 어긋나는 것을 조용히 넘기지 않는다.
+  const recordedDelegationHash: string | undefined = trace.hashed.delegation.delegationHash;
+  if (!recordedDelegationHash) {
+    throw new Error(
+      "trace.hashed.delegation.delegationHash가 없다 — negative-control.ts를 먼저 다시 돌려라",
+    );
+  }
+  if (recordedDelegationHash.toLowerCase() !== delegationHash.toLowerCase()) {
+    throw new Error(
+      `delegation 해시 불일치: 트레이스 기록값 ${recordedDelegationHash}, 재계산값 ${delegationHash}`,
+    );
+  }
 
   const allowance = (await publicClient.readContract({
     address: manifest.enforcers["ERC20PeriodTransferEnforcer"],

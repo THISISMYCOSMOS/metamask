@@ -69,6 +69,16 @@ function runForgeScript(script: string, env: Record<string, string>): string {
   );
 }
 
+/** 핀 소스에서 out/cache를 강제로 다시 만들어 기존 생성물 변조가 배포에 쓰이지 않게 한다. */
+function rebuildFrameworkArtifacts(): void {
+  execFileSync(join(FOUNDRY_BIN, "forge"), ["build", "--force", "--quiet"], {
+    cwd: FRAMEWORK_DIR,
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+    env: { ...process.env, PATH: `${FOUNDRY_BIN}:${process.env.PATH ?? ""}` },
+  });
+}
+
 /**
  * "  Name: 0xabc..." 형태의 console2.log 출력만 뽑는다.
  * 업스트림 배포 스크립트의 import 목록이 배포 대상의 정본이므로, out/을 훑지 않는다
@@ -87,8 +97,79 @@ function eqAddr(a: string, b: string): boolean {
   return a.toLowerCase() === b.toLowerCase();
 }
 
+/** git 상태 검사에서 제외할 생성물 경로. 소스/스크립트 변경은 모두 차단한다. */
+const ALLOWED_GENERATED_PATHS = ["broadcast", "out", "cache"] as const;
+
+/**
+ * 배포 트랜잭션보다 먼저 실행한다. 프레임워크 서브모듈이
+ * 1) PINNED_COMMIT과 정확히 같은 HEAD인지,
+ * 2) `broadcast/`, `out/`, `cache/` 밖에 워크트리 변경이 없는지
+ * 를 검사하고, 하나라도 어긋나면 fail closed로 throw한다.
+ * git 호출은 execFileSync로만 한다(셸 인젝션 방지, 실행 셸 우회).
+ */
+export function assertFrameworkPinnedAndClean(): void {
+  let head: string;
+  try {
+    head = execFileSync("git", ["-C", FRAMEWORK_DIR, "rev-parse", "HEAD"], {
+      encoding: "utf8",
+    }).trim();
+  } catch (err) {
+    throw new Error(
+      `[deploy] chain/lib/delegation-framework의 git HEAD를 읽지 못했다 (서브모듈이 체크아웃돼 있는가?): ${String(err)}`,
+    );
+  }
+  if (head.toLowerCase() !== PINNED_COMMIT.toLowerCase()) {
+    throw new Error(
+      `[deploy] delegation-framework HEAD가 핀 커밋과 다르다.\n` +
+        `  기대: ${PINNED_COMMIT}\n  실측: ${head}\n` +
+        `  조치: cd chain/lib/delegation-framework && git checkout ${PINNED_COMMIT}`,
+    );
+  }
+
+  let statusOut: string;
+  try {
+    statusOut = execFileSync(
+      "git",
+      [
+        "-C",
+        FRAMEWORK_DIR,
+        "status",
+        "--porcelain",
+        "--untracked-files=all",
+        "--",
+        ".",
+        ...ALLOWED_GENERATED_PATHS.map((path) => `:(exclude)${path}`),
+      ],
+      { encoding: "utf8" },
+    );
+  } catch (err) {
+    throw new Error(`[deploy] delegation-framework의 git status를 읽지 못했다: ${String(err)}`);
+  }
+
+  const dirtyLines = statusOut.split(/\r?\n/).filter((line) => line.trim().length > 0);
+
+  if (dirtyLines.length > 0) {
+    throw new Error(
+      `[deploy] delegation-framework 워크트리가 ${ALLOWED_GENERATED_PATHS.map((p) => `${p}/`).join(", ")} ` +
+        `밖에서 변경돼 있다 — 배포를 거부한다 (fail closed).\n` +
+        `  조치: cd chain/lib/delegation-framework && git status 로 확인 후 되돌려라.\n` +
+        dirtyLines.map((l) => `  ${l}`).join("\n"),
+    );
+  }
+}
+
 async function main(): Promise<void> {
   // 1. fail-closed 가드. 어떤 트랜잭션보다 먼저.
+  //    (a) 프레임워크 서브모듈이 핀 커밋 그대로이고, broadcast/out/cache 밖에
+  //        워크트리 변경이 없는지 — 이걸 통과하지 못하면 anvil 연결조차 시도하지 않는다.
+  assertFrameworkPinnedAndClean();
+  console.log("[deploy] framework pin/clean guard 통과");
+
+  // 핀 소스를 강제 재빌드해 out/cache의 기존 생성물이 그대로 배포되는 경로를 닫는다.
+  rebuildFrameworkArtifacts();
+  console.log("[deploy] framework 강제 재빌드 통과");
+
+  // (b) 로컬 anvil 포크 안전 가드.
   await assertLocalAnvilFork(publicClient);
   console.log("[deploy] fork guard 통과");
 

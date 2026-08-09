@@ -185,11 +185,49 @@ delegator 스마트계정 `0x09e68b4a2335a2aaa1944bc3938d285b883f11e1`.
 핀 커밋은 정확히 37종으로 §1과 일치하며, 이 37종 전부가 Phase 1에서 실제로 배포되었다
 (`chain/deployments/` 매니페스트).
 
+### 배포 전 핀 커밋/워크트리 검사 (fail closed)
+
+`chain/src/deploy.ts`의 `assertFrameworkPinnedAndClean()`이 어떤 배포 트랜잭션보다
+먼저 실행되어, `chain/lib/delegation-framework`의 git HEAD가 위 핀 커밋과 정확히
+같은지, 그리고 `broadcast/` · `out/` · `cache/` 밖에 워크트리 변경이 없는지를
+`git`(`execFileSync`)으로 검사한다. `broadcast/`는 업스트림이 추적하는 디렉터리라
+파이프라인 실행마다 갱신되므로 항상 허용한다. 하나라도 어긋나면 anvil 연결 전에
+throw한다. 가드 통과 후에는 `forge build --force`로 핀 소스에서 `out/`과 `cache/`를
+다시 생성한 다음 배포해 기존 생성물 변조가 배포 바이트코드로 이어지지 않게 한다.
+
 ### 블록 선정 근거
 
 선정 시점 최신 블록은 25702227이었고, 25700000은 그보다 2227블록(약 7.4시간) 뒤라
 확정(finalized) 구간에 안전하게 들어간다. 재구성(reorg) 가능성이 없다.
 해당 블록에서 아카이브 조회·Chainlink 피드·USDC 상태를 모두 실제로 확인했다.
+
+### G3 오라클 핀 (Phase 1 실측)
+
+G3(누적 손실 트레이스)는 포트폴리오 가치를 오라클 환산으로 증명해야 하므로, ETH/USD 외에
+USDC/USD 피드도 포크 블록에서 실측해 핀으로 박는다.
+
+| 항목 | 값 |
+| --- | --- |
+| USDC/USD 어그리게이터 | `0xc9E1a09622afdB659913fefE800fEaE5DBbFe9d7`, decimals 8 |
+| 포크 블록 answer | `99976752` = **$0.99976752/USDC** |
+| 포크 블록 updatedAt | `1786003223` (포크 블록 ts 대비 65,268초 전) |
+| ETH/USD 어그리게이터 (기존 §4 핀 재확인) | `0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419`, decimals 8 |
+| ETH/USD answer / updatedAt | `189811115161` / `1786066847` (포크 블록 ts 대비 1,644초 전) |
+
+두 피드 모두 다음 fail-closed 검증 5종 + 신선도 상한을 통과해야 G3가 트레이스를 쓴다
+(`chain/src/cumulative-loss.ts`).
+
+1. `decimals() === 8`
+2. `answer > 0`
+3. `updatedAt <= 포크 블록 타임스탬프`
+4. `answeredInRound >= roundId`
+5. `answer`/`updatedAt`이 위 표의 핀 값과 정확히 일치
+6. 신선도: `포크 블록 타임스탬프 - updatedAt <= 86400`초(하루) — 이 상한은 G3 구현 시
+   선택해 현재 코드와 검증기에 고정한 값이다. 피드 age를 관측하기 전에 선택했다는 기록은
+   없으므로 사전선정으로 주장하지 않는다. `docs/phase1-parameters.md`의 정정 노트 참조.
+
+모든 오라클 조회는 `blockNumber: 25700000`(포크 블록)으로 명시 조회한다 — 로컬에서 채굴된
+블록이 아니라 포크 스냅샷 시점의 값임을 코드로 못박기 위함이다.
 
 ## 5. 네거티브 컨트롤 (기획안 미포함, 추가 확정)
 

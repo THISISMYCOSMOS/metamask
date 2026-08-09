@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "kind": "g3-determinism-report",
+  "passed": true,
+  "digests": {
+    "run1": "0x7070733f52215bd255c69fe863efa33e780f72aa7c162c6ff3f9f9574549dcf7",
+    "run2": "0x7070733f52215bd255c69fe863efa33e780f72aa7c162c6ff3f9f9574549dcf7"
+  },
+  "snapshotsIdentical": true,
+  "fields": {
+    "run1": {
+      "G3_STEP_COUNT": "20",
+      "G3_DELEGATION_HASH": "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb",
+      "G3_END_USDC": "0",
+      "G3_PERIOD_DISTRIBUTION": "3,4,4,4,4,1",
+      "G3_PORTFOLIO_START": "28978786716100000000000",
+      "G3_PORTFOLIO_END": "18981111516100000000000",
+      "G3_LOSS": "9997675200000000000000",
+      "G3_LOSS_BPS": "3449",
+      "G3_TRACE_DIGEST": "0x7070733f52215bd255c69fe863efa33e780f72aa7c162c6ff3f9f9574549dcf7"
+    },
+    "run2": {
+      "G3_STEP_COUNT": "20",
+      "G3_DELEGATION_HASH": "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb",
+      "G3_END_USDC": "0",
+      "G3_PERIOD_DISTRIBUTION": "3,4,4,4,4,1",
+      "G3_PORTFOLIO_START": "28978786716100000000000",
+      "G3_PORTFOLIO_END": "18981111516100000000000",
+      "G3_LOSS": "9997675200000000000000",
+      "G3_LOSS_BPS": "3449",
+      "G3_TRACE_DIGEST": "0x7070733f52215bd255c69fe863efa33e780f72aa7c162c6ff3f9f9574549dcf7"
+    }
+  },
+  "fieldMismatches": [],
+  "traceFileNames": {
+    "run1": "run1.cumulative-loss.json",
+    "run2": "run2.cumulative-loss.json"
+  }
+}

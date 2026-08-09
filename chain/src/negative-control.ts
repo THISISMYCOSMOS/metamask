@@ -41,6 +41,7 @@ import {
   encodeSingleExecution,
   encodeTimestamp,
   encodeValueLte,
+  hashDelegationStruct,
   signDelegation,
   toOnchainDelegation,
   type CaveatInput,
@@ -455,6 +456,14 @@ async function main(): Promise<void> {
       authority: signed.authority,
       salt: signed.salt.toString(),
       signature: signed.signature,
+      // 정본 delegation.ts 헬퍼로 계산한 struct 해시. state-digest.ts가 이 값을 재계산해 대조한다.
+      delegationHash: hashDelegationStruct({
+        delegate: signed.delegate,
+        delegator: signed.delegator,
+        authority: signed.authority,
+        caveats: signed.caveats.map((c) => ({ enforcer: c.enforcer, terms: c.terms })),
+        salt: signed.salt,
+      }),
     },
     steps: results,
   };

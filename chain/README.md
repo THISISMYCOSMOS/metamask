@@ -14,6 +14,18 @@ bash chain/scripts/reproduce.sh
 
 두 번 돌려서 마지막 줄 `STATE_DIGEST`가 같으면 G1이 성립한다.
 
+두 번을 자동으로 비교하려면:
+
+```bash
+bash chain/scripts/verify-determinism.sh
+```
+
+`reproduce.sh`를 서로 다른 포트(기본 8545/8546, `DETERMINISM_PORT_1`/`_2`로 재지정)로
+두 번 돌려 `SNAPSHOT_OUT` 스냅샷과 표준출력의 `FINAL_BLOCK` / `DELEGATION_HASH` /
+`PERIOD_CONSUMED` / `STATE_DIGEST`를 비교하고, `traces/determinism.json`에 두 실행의
+원본 출력과 스냅샷 SHA-256을 기록한다. 스냅샷이 바이트 단위로 다르거나 네 필드 중
+하나라도 어긋나면 실패(exit != 0)한다. 벽시계 시각·임시경로·비밀값은 기록하지 않는다.
+
 | 항목 | 값 |
 | --- | --- |
 | 최종 블록 | `25700048` |
@@ -49,6 +61,26 @@ PC0 한 건분)이며, 네거티브 컨트롤들이 상태를 남기지 않고 �
   `deploy.ts`가 배포 결과를 PM 실측 주소와 대조해 어긋나면 throw한다.
 - 트레이스 JSON은 해시 대상(`hashed`)과 비해시 영역(`meta`)을 분리한다.
   벽시계 시각·절대경로는 `meta`에만 들어간다.
+
+## 배포 전 프레임워크 핀/워크트리 검사 (fail closed)
+
+`src/deploy.ts`의 `assertFrameworkPinnedAndClean()`이 어떤 배포 트랜잭션보다 먼저,
+로컬 anvil 연결보다도 먼저 실행된다. `git`(`execFileSync`)으로
+`chain/lib/delegation-framework`의 HEAD가 `PINNED_COMMIT`과 정확히 같은지,
+그리고 `broadcast/` · `out/` · `cache/` 밖에 워크트리 변경이 없는지 검사하고,
+하나라도 어긋나면 조치 방법을 담은 에러와 함께 throw한다. `broadcast/`는 업스트림이
+git으로 추적해 파이프라인 실행마다 갱신되므로 항상 허용한다.
+가드 통과 직후 `forge build --force`로 핀 소스에서 `out/`과 `cache/`를 다시 만든 뒤
+배포하므로, 기존 생성물의 바이트코드를 그대로 신뢰하지 않는다.
+
+## delegation 해시 — 정본 헬퍼 하나로 통일
+
+`src/delegation.ts`의 `hashDelegationStruct()`가 EIP-712 `hashStruct(Delegation)`을
+계산하는 유일한 정본 구현이다. `negative-control.ts`가 서명한 delegation의 해시를
+이 함수로 계산해 `traces/negative-control.json`의 `hashed.delegation.delegationHash`에
+기록하고, `state-digest.ts`가 같은 함수로 재계산해 기록값과 대조한다. 어긋나면 G1이
+fail closed로 실패한다 — 두 스크립트가 각자 해시를 다시 구현하다 조용히 어긋나는
+경우를 막기 위함이다.
 
 ## 안전장치 (fail closed)
 
@@ -143,6 +175,92 @@ caveat 배열에서 앞 index에서 막힌 회차일수록 가스가 적고, NC3
 > `…:invalid-terms-length` 계열이 나오면 baseline이 작동한 증거가 **아니다.**
 > `terms` 인코딩이 틀렸다는 뜻이다. `negative-control.ts`는 이 문자열이 관측되면 throw한다.
 
+## G3 — 누적 손실 트레이스
+
+`traces/cumulative-loss.json`. G2와 완전히 같은 caveat 6종(순서·파라미터·바이트 인코딩
+동일)으로 **단 하나의 root delegation**을 서명해서 재사용하고, 그 delegation으로 500 USDC
+전송을 **20회 연속** 성공시켜 delegator의 USDC를 10,000 → 0으로 고갈시킨다.
+
+### 무엇을 증명하는가
+
+- 20회차 **전부 성공**(revert 0건) — G3의 정의가 "baseline을 전부 통과하면서 손실이 난다"
+  이므로 revert가 1건이라도 나오면 실패로 처리한다(fail closed).
+- 서명된 caveat 6종이 매 회차 **실제로 평가돼 통과**했다 — enforcer를 안 붙이고 통과한
+  것처럼 기록하는 것이 심사 1순위 공격 지점이므로, 서명·인코딩에 쓴 것과 같은 caveat 배열
+  객체에서 파생한 기록만 남긴다.
+- 포크 블록 오라클(ETH/USD, USDC/USD)로 환산한 포트폴리오 가치가 감소했음을 **정수 연산**
+  으로 보인다(부동소수 미사용).
+
+### 회차별 온체인 증거
+
+각 회차가 다음을 노드에서 관측해 기록한다.
+
+1. `receipt.status === "success"`
+2. delegator USDC가 **정확히** 500 USDC 감소 (`usdcBefore - usdcAfter === 500_000_000n`)
+3. delegator ETH는 **불변** (`ethAfter === ethBefore`) — delegate가 가스를 내므로 delegator의
+   네이티브 잔고는 회차와 무관하게 그대로다. 이것이 "ETH 10개는 그대로, USDC만 고갈된다"는
+   포트폴리오 주장의 온체인 전제다.
+4. USDC `Transfer(delegator, counterparty, 500e6)` 이벤트 로그
+5. `ERC20PeriodTransferEnforcer`가 낸 이벤트 로그 1건 이상 — enforcer가 실제로 실행됐다는 증거
+6. 회차 직후 온체인 `periodicAllowances(delegationManager, delegationHash)` 조회 —
+   `transferredInCurrentPeriod <= 2,000,000,000`(일일 한도) 검사
+
+### period 분포 — 3, 4, 4, 4, 4, 1 (정직하게 기록)
+
+회차 n(1..20)의 블록 타임스탬프는 `1786068491 + 21600n`이다. `TimestampEnforcer`가 strict
+`>` 비교라 n=0은 `early-delegation`이 나므로 n=1부터 시작한다. period index(0-based) =
+`floor(21600n / 86400)`이며, 그 결과 6개의 일일 한도 창에 **3, 4, 4, 4, 4, 1**회씩
+분포한다(오프셋이 기준 시각에서 시작하지 않아 첫 창과 마지막 창이 온전히 4회씩 차지
+않는다). 각 창의 합계(1500 / 2000 / 2000 / 2000 / 2000 / 500 USDC)는 전부 일일 한도
+2,000 USDC 이하다. 이 분포를 4,4,4,4,4로 맞추려고 `BASE_TIMESTAMP` / `STEP_TIMESTAMP_OFFSET`
+/ `erc20Period.startDate` / 회차 수를 옮기지 않았다 — 자세한 근거는
+`docs/phase1-parameters.md` "G3 회차 파라미터" 참조.
+
+### 오라클 검증과 정수 산술
+
+오라클은 회차 실행 **전에** `blockNumber: 25700000`(포크 블록)으로 명시 조회하고 다음을
+fail-closed 검증한다: `decimals()===8`, `answer>0`, `updatedAt<=포크ts`,
+`answeredInRound>=roundId`, 신선도(`포크ts - updatedAt <= 86400초`), 그리고 `answer`/
+`updatedAt`이 `docs/baseline-config.md` "G3 오라클 핀" 표의 값과 정확히 일치. 신선도 상한
+86400초는 G3 구현 시 코드와 검증기에 고정했지만, 피드 age 관측 전에 선택했다는 기록은
+없으므로 사전선정으로 주장하지 않는다.
+
+포트폴리오 가치는 1e-18 USD 단위 정수로 계산한다.
+
+```
+value1e18 = amount * answer * 10^18 / (10^tokenDecimals * 10^8)
+```
+
+나눗셈 전에 나머지가 0인지 검사하고, 0이 아니면 throw한다(무성 절삭으로 손실 수치를
+왜곡시키지 않기 위함). `loss = startTotal - endTotal`, `lossBps = loss * 10000 / startTotal`
+(BigInt 내림 나눗셈 — 항상 내림된다). 판정 기준은 `loss > 0 && endUsdc === 0`이 전부다 —
+사후에 만든 임계값(`lossThreshold` 등)은 쓰지 않는다.
+
+USDC/USD가 1.0이 아니므로(포크 블록 실측 `0.99976752`) 오라클 환산 시작 가치는
+`docs/phase1-parameters.md`의 "$10,000.00 / 합계 $28,981.11" 표와 다르다. 그 표는 명목
+페그 근사다 — 오라클 환산 정정 노트도 같은 문서에 있다.
+
+### 재현
+
+```bash
+bash chain/scripts/reproduce-g3.sh        # G3 단독 — 새 anvil(기본 포트 8547)에 배포+G3+검증
+bash chain/scripts/reproduce-phase1.sh    # G2 + G3, 각자 독립된 fresh fork/포트
+bash chain/scripts/verify-g3-determinism.sh   # reproduce-g3.sh를 포트 분리해 2회 실행 후 비교
+```
+
+`reproduce-g3.sh`는 자기 anvil을 새로 띄우고 `negative-control.ts`를 실행하지 않는다 —
+G2(포트 8545/8546)의 PC0 상태(400 USDC 이체, period 소진량 등)가 G3(포트 8547)로 새어
+들어가지 않는다. 두 트레이스는 완전히 독립된 fresh fork에서 만들어진다.
+
+`reproduce-g3.sh`는 `verifier/validate_trace.py`(Pydantic 스키마 + Python 교차 검증)로
+`traces/cumulative-loss.json`을 검증하는 단계까지 포함한다. `uv`가 없으면 명확한 에러와
+함께 실패한다(조용히 건너뛰지 않는다).
+실패 진단은 `traces/cumulative-loss.failed.json`에 따로 기록해 마지막 성공 정본을
+덮어쓰지 않는다.
+
+npm script alias는 없다 — `chain/package.json`은 이 작업의 편집 금지 파일이라 위 명령을
+Git Bash에서 직접 실행한다.
+
 ## 구성
 
 | 파일 | 역할 |
@@ -153,5 +271,14 @@ caveat 배열에서 앞 index에서 막힌 회차일수록 가스가 적고, NC3
 | `src/delegation.ts` | `terms` 인코더 6종, EIP-712 서명, 실행 인코딩 |
 | `src/deploy.ts` | 배포 파이프라인 → `chain/deployments/manifest.json` |
 | `src/negative-control.ts` | G2 → `traces/negative-control.json` |
-| `src/state-digest.ts` | G1 정본 상태 다이제스트 |
-| `scripts/reproduce.sh` | 위 전부를 한 명령으로 |
+| `src/state-digest.ts` | G1 정본 상태 다이제스트 (delegation 해시 재계산·대조 포함) |
+| `src/determinism-report.ts` | G1 2회 실행 비교 → `traces/determinism.json` |
+| `src/cumulative-loss.ts` | G3 → `traces/cumulative-loss.json` |
+| `src/g3-determinism-report.ts` | G3 2회 실행 비교 → `traces/g3-determinism.json` |
+| `scripts/reproduce.sh` | 배포+G2+상태 다이제스트를 한 명령으로 |
+| `scripts/verify-determinism.sh` | `reproduce.sh`를 포트 분리해 2회 실행 후 비교 |
+| `scripts/reproduce-g3.sh` | 새 fork에 배포+G3+`verifier/` 검증을 한 명령으로 |
+| `scripts/verify-g3-determinism.sh` | `reproduce-g3.sh`를 포트 분리해 2회 실행 후 비교 |
+| `scripts/reproduce-phase1.sh` | G2+G3를 각자 독립된 fresh fork/포트에서 순차 재현 |
+| `../verifier/models.py` | G3 트레이스 Pydantic 정본 모델 (TS 출력과 1:1 규약) |
+| `../verifier/validate_trace.py` | G3 트레이스 스키마 검증 + Python 독립 교차 검증 CLI |

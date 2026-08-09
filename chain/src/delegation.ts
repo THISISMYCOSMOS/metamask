@@ -3,6 +3,7 @@
 import {
   concatHex,
   encodePacked,
+  hashStruct,
   keccak256,
   pad,
   toBytes,
@@ -135,6 +136,32 @@ const DELEGATION_EIP712_TYPES = {
     { name: "salt", type: "uint256" },
   ],
 } as const;
+
+/**
+ * 단일 정본 delegation-struct 해시 헬퍼. DelegationManager가 온체인에서 계산하는
+ * EIP-712 hashStruct(Delegation)와 동일한 필드/타입을 사용한다.
+ * G2(negative-control)와 G1(state-digest)가 각자 따로 재구현하면 어긋날 수 있으므로
+ * 이 함수 하나로 통일한다.
+ */
+export function hashDelegationStruct(delegation: {
+  delegate: Address;
+  delegator: Address;
+  authority: Hex;
+  caveats: { enforcer: Address; terms: Hex }[];
+  salt: bigint;
+}): Hex {
+  return hashStruct({
+    data: {
+      delegate: delegation.delegate,
+      delegator: delegation.delegator,
+      authority: delegation.authority,
+      caveats: delegation.caveats.map((c) => ({ enforcer: c.enforcer, terms: c.terms })),
+      salt: delegation.salt,
+    },
+    primaryType: "Delegation",
+    types: DELEGATION_EIP712_TYPES,
+  });
+}
 
 export function buildRootDelegation(
   delegate: Address,
