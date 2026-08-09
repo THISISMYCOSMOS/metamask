@@ -61,4 +61,20 @@ uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_cand
 ```
 
 이 정책은 재현용 demo fixture이며 사용자 승인 증거가 아니다. 제한된 자연어 합성과 명시적
-승인 분리는 마지막 MVP 조각으로 남아 있다.
+승인 분리는 provider-neutral artifact 흐름으로 구현되어 있다.
+
+```powershell
+uv run --cache-dir tmp\uv-cache --project verifier python synth\create_request.py `
+  specs\mvp-intent.ko.txt specs\mvp-candidate-invariants.json tmp\intent-request.json
+
+uv run --cache-dir tmp\uv-cache --project verifier python synth\compile_response.py `
+  specs\mvp-intent-request.json specs\mvp-llm-response.fixture.json tmp\policy-proposal.json
+
+uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_approved_candidate.py `
+  specs\mvp-test-policy-approval.json traces\mvp-candidate-reject.json `
+  --allow-test-fixture --expect reject
+```
+
+`mvp-llm-response.fixture.json`은 오프라인 계약 테스트이며 실제 모델 호출 증거가 아니다.
+실제 승인은 `synth/approve_policy.py`에서 출력된 제안 해시와 정확히 같은 확인 문구를 사용자가
+직접 제공해야 생성된다.

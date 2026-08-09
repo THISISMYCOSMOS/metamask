@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate an MVP candidate portfolio series against an approved policy."""
+"""Lower-level evaluator for demo policies; runtime MVP uses evaluate_approved_candidate.py."""
 from __future__ import annotations
 
 import argparse

@@ -76,7 +76,8 @@ uv run --cache-dir tmp\uv-cache --project verifier python verifier\evaluate_inva
 - Pre-trace history anchoring or persistent rolling state. This slice evaluates only the history
   present in the supplied trace; transaction-time integration must supply the preceding window.
 - The remaining `executionPriceBand`, `netDeltaBound`, and `venueIntegrity` evaluators.
-- Natural-language synthesis, policy review/approval UI, on-chain enforcement, or production
-  latency/throughput measurements.
+- Live LLM-provider transport, policy review/approval UI, on-chain enforcement, or production
+  latency/throughput measurements. The MVP includes provider-neutral synthesis artifacts and
+  hash-confirmed CLI approval, but the committed response and approval remain test fixtures.
 
 The bounded project MVP definition is in `docs/mvp-scope.md`.

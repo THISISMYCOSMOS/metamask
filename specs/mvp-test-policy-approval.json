@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "kind": "policy-approval",
+  "approvalScope": "test-fixture",
+  "approvedBy": "mvp-test-fixture",
+  "proposalSha256": "0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+  "policySha256": "0x715c39c06217b3728939c5e1fe14d9ffe422605b4ca40df38c724440418e8dea",
+  "confirmation": "APPROVE 0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+  "proposal": {
+    "schemaVersion": 1,
+    "kind": "policy-proposal",
+    "requestSha256": "0xd66c2b1305d55d5981d55287cdb410b952b93e15bb3a481aa2031164042c6ba7",
+    "request": {
+      "schemaVersion": 1,
+      "kind": "intent-compiler-request",
+      "requestId": "mvp-intent-001",
+      "intentText": "포트폴리오 가치를 26,979.2516761 USD 이상으로 유지하고, 어느 연속 24시간 동안의 누적 손실도 1,999.53504 USD 이하로 제한해.",
+      "targetTraceKind": "portfolio-candidate",
+      "fork": {
+        "chainId": 1,
+        "blockNumber": "25700000",
+        "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+      },
+      "allowedInvariants": [
+        "portfolioValueFloor",
+        "cumulativeLossCap"
+      ],
+      "outputUnit": "usd-1e18",
+      "compilerRules": [
+        "Return JSON only and do not add fields outside the response schema.",
+        "Compile only portfolioValueFloor and cumulativeLossCap for portfolio-candidate traces.",
+        "Represent every USD threshold as an unsigned decimal string scaled by 1e18.",
+        "Do not infer user approval; this response is only a policy proposal.",
+        "If the intent is ambiguous, record the ambiguity in assumptions instead of inventing hidden policy."
+      ]
+    },
+    "compiler": {
+      "provider": "offline-fixture",
+      "model": "mvp-contract-test"
+    },
+    "policy": {
+      "schemaVersion": 1,
+      "policyId": "mvp-synthesized-loss-guard",
+      "traceKind": "portfolio-candidate",
+      "fork": {
+        "chainId": 1,
+        "blockNumber": "25700000",
+        "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+      },
+      "invariants": [
+        {
+          "id": "portfolio-floor-from-intent",
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "26979251676100000000000"
+        },
+        {
+          "id": "rolling-loss-cap-from-intent",
+          "kind": "cumulativeLossCap",
+          "windowSeconds": "86400",
+          "maxLossValue1e18": "1999535040000000000000"
+        }
+      ]
+    },
+    "rationales": [
+      {
+        "invariantId": "portfolio-floor-from-intent",
+        "summary": "The stated minimum portfolio value is represented as USD scaled by 1e18."
+      },
+      {
+        "invariantId": "rolling-loss-cap-from-intent",
+        "summary": "The stated 24-hour loss ceiling is represented as a rolling 86400-second cap."
+      }
+    ],
+    "assumptions": [
+      "The comma characters are thousands separators and USD amounts use decimal notation."
+    ]
+  }
+}

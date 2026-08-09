@@ -1,6 +1,6 @@
 # MVP scope
 
-Updated 2026-08-09. The MVP proves one narrow end-to-end claim:
+Updated 2026-08-10. The MVP proves one narrow end-to-end claim:
 
 > An explicitly approved portfolio policy can deterministically reject a harmful candidate state
 > that the existing Delegation Framework baseline allows.
@@ -24,6 +24,8 @@ Updated 2026-08-09. The MVP proves one narrow end-to-end claim:
   oracle valuation.
 - A persistent production history database, live wallet integration, UI, on-chain enforcement,
   hosted services, throughput tuning, or additional exploit classes.
+- Cryptographic approver identity, signatures, multi-user authorization, or remote approval
+  storage. `approvedBy` is a local audit label, not an authenticated identity.
 - Treating LLM output as approved policy or allowing an LLM to participate in runtime decisions.
 
 ## Candidate-slice acceptance
@@ -43,5 +45,33 @@ artifact, not a reusable transaction decision contract. Generalizing beyond the 
 contract above is explicitly deferred.
 
 `specs/mvp-candidate-invariants.json` remains a demo fixture derived from fixed Phase 1 parameters.
-It is not evidence of a real user's approval. The MVP is complete only after the final synthesis
-slice keeps proposed policy generation and explicit approval as separate steps.
+It is not evidence of a real user's approval. The synthesis slice below completes the code MVP by
+keeping proposal generation and explicit approval as separate steps; a real approval remains a
+user operation and is never committed as a fixture.
+
+## Synthesis and approval slice
+
+The provider-neutral compiler boundary is now implemented as four immutable artifact types:
+
+`intent-compiler-request -> llm-policy-response -> policy-proposal -> policy-approval`
+
+- The LLM response is bound to the request hash, exact fork, allowed invariant kinds, canonical
+  invariant order, and matching rationale ids.
+- The response becomes an unapproved proposal. It cannot be used by the approved runtime path.
+- Approval requires the exact phrase `APPROVE <proposalSha256>` and embeds the proposal so policy
+  or intent mutation invalidates the approval.
+- Runtime evaluation accepts `approvalScope=user` by default. The committed offline fixture uses
+  `approvalScope=test-fixture` and requires an explicit test-only flag.
+- No provider credentials or network calls are built into the compiler boundary. A provider sends
+  back the strict response JSON; malformed or expanded output is rejected.
+
+The offline response demonstrates and tests the contract but is not evidence of a live provider
+call. Likewise, the committed test approval is not a user's approval. For this proposal the exact
+hash awaiting a real user action is:
+
+`0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21`
+
+Semantic faithfulness of free-form language is not asserted automatically: the proposal exposes
+the original intent, thresholds, rationales, and assumptions for explicit review. Runtime remains
+fully deterministic and never invokes an LLM. `approvalScope=user` records exact-hash CLI
+confirmation but does not cryptographically authenticate the person supplying it.
