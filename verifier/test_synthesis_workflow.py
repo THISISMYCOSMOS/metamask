@@ -19,9 +19,15 @@ from synthesis_models import (
     canonical_model_sha256,
 )
 from synthesis_workflow import (
+    MVP_COMPILER_RULES,
+    PERCENTAGE_COMPILER_RULES,
+    STRUCTURED_EDITOR_ASSUMPTION,
+    STRUCTURED_EDITOR_REQUEST_ID,
     SynthesisInputError,
     approve_policy_proposal,
     artifact_json,
+    build_structured_policy,
+    compile_local_structured_proposal,
     compile_policy_proposal,
     create_intent_request,
 )
@@ -80,6 +86,108 @@ class SynthesisWorkflowStressTest(unittest.TestCase):
         self.assertEqual(
             (ROOT / "specs" / "mvp-intent-request.json").read_text(encoding="utf-8"),
             artifact_json(generated),
+        )
+
+    def test_one_kind_percentage_request_uses_non_conflicting_rules(self) -> None:
+        template_data = copy.deepcopy(self.template_data)
+        template_data["invariants"] = [
+            {
+                "id": "portfolio-drawdown-from-intent",
+                "kind": "portfolioDrawdownCapBps",
+                "referenceValue1e18": "100000000000000000000",
+                "maxDrawdownBps": "2000",
+            }
+        ]
+        request = create_intent_request(
+            request_id="percentage-intent-001",
+            intent_text="기준 포트폴리오 가치에서 20% 넘게 하락하지 않게 해줘.",
+            policy_template=InvariantPolicy.model_validate(template_data),
+        )
+
+        self.assertEqual(["portfolioDrawdownCapBps"], request.allowedInvariants)
+        self.assertEqual(PERCENTAGE_COMPILER_RULES, request.compilerRules)
+        self.assertNotIn(MVP_COMPILER_RULES[1], request.compilerRules)
+        self.assertIn('Represent percentage thresholds as basis points: 20 percent is the integer string "2000".', request.compilerRules)
+        self.assertIn("portfolioDrawdownCapBps requires an explicit referenceValue1e18.", request.compilerRules)
+        self.assertIn("Never infer a missing referenceValue1e18 or any unrequested condition.", request.compilerRules)
+
+    def test_mixed_percentage_request_preserves_canonical_subset_order(self) -> None:
+        template_data = copy.deepcopy(self.template_data)
+        template_data["invariants"] = [
+            template_data["invariants"][0],
+            {
+                "id": "portfolio-drawdown-from-intent",
+                "kind": "portfolioDrawdownCapBps",
+                "referenceValue1e18": "100000000000000000000",
+                "maxDrawdownBps": "2000",
+            },
+            {
+                "id": "rolling-loss-percent-from-intent",
+                "kind": "cumulativeLossCapBps",
+                "windowSeconds": "86400",
+                "maxLossBps": "500",
+            },
+        ]
+        request = create_intent_request(
+            request_id="percentage-intent-002",
+            intent_text="최저 가치와 20% 낙폭, 24시간 5% 누적 손실 한도를 적용해줘.",
+            policy_template=InvariantPolicy.model_validate(template_data),
+        )
+
+        self.assertEqual(
+            ["portfolioValueFloor", "portfolioDrawdownCapBps", "cumulativeLossCapBps"],
+            request.allowedInvariants,
+        )
+        self.assertEqual(PERCENTAGE_COMPILER_RULES, request.compilerRules)
+
+    def test_allowed_invariants_reject_duplicates_and_noncanonical_order(self) -> None:
+        duplicate = copy.deepcopy(self.request_data)
+        duplicate["allowedInvariants"] = ["portfolioValueFloor", "portfolioValueFloor"]
+        with self.assertRaisesRegex(ValidationError, "must not contain duplicates"):
+            self.request(duplicate)
+
+        noncanonical = copy.deepcopy(self.request_data)
+        noncanonical["allowedInvariants"] = ["cumulativeLossCap", "portfolioValueFloor"]
+        with self.assertRaisesRegex(ValidationError, "canonical-order subset"):
+            self.request(noncanonical)
+
+    def test_percentage_response_policy_kind_mismatch_fails_closed(self) -> None:
+        template_data = copy.deepcopy(self.template_data)
+        template_data["invariants"] = [
+            {
+                "id": "portfolio-drawdown-from-intent",
+                "kind": "portfolioDrawdownCapBps",
+                "referenceValue1e18": "100000000000000000000",
+                "maxDrawdownBps": "2000",
+            }
+        ]
+        request = create_intent_request(
+            request_id="percentage-intent-003",
+            intent_text="기준 가치에서 20% 넘게 하락하지 않게 해줘.",
+            policy_template=InvariantPolicy.model_validate(template_data),
+        )
+        response_data = copy.deepcopy(self.response_data)
+        response_data["requestSha256"] = canonical_model_sha256(request)
+
+        with self.assertRaisesRegex(SynthesisInputError, "exactly match allowedInvariants"):
+            compile_policy_proposal(request, self.response(response_data))
+
+    def test_committed_absolute_artifact_hashes_remain_exact(self) -> None:
+        self.assertEqual(
+            "0xd66c2b1305d55d5981d55287cdb410b952b93e15bb3a481aa2031164042c6ba7",
+            canonical_model_sha256(self.request()),
+        )
+        self.assertEqual(
+            "0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+            canonical_model_sha256(self.proposal()),
+        )
+        self.assertEqual(
+            "0x2d15e62b950301a4594356609cfdfa3ce7fe87eb26bea60e32de8b2b20fc6deb",
+            canonical_model_sha256(self.approval()),
+        )
+        self.assertEqual(
+            "0x6bc7ec4fccbd7478aa597b83b41cb91161f3483bc2a6fe66f3f8311c44e77828",
+            canonical_model_sha256(self.user_approval()),
         )
 
     def test_response_compiles_to_exact_unapproved_proposal_fixture(self) -> None:
@@ -180,6 +288,94 @@ class SynthesisWorkflowStressTest(unittest.TestCase):
             CandidateTrace.model_validate(copy.deepcopy(self.candidate_data)),
         )
         self.assertFalse(report["accepted"])
+
+    def test_structured_editor_compiles_local_proposal_without_offline_response(self) -> None:
+        policy = build_structured_policy(
+            policy_id="mvp-demo-loss-guard",
+            fork=self.request().fork,
+            invariants=[
+                {
+                    "id": "portfolio-drawdown-structured",
+                    "kind": "portfolioDrawdownCapBps",
+                    "referenceValue1e18": "100000000000000000000",
+                    "maxDrawdownBps": "2000",
+                }
+            ],
+        )
+        request = create_intent_request(
+            request_id=STRUCTURED_EDITOR_REQUEST_ID,
+            intent_text="구조화된 편집기로 20% 낙폭 한도를 설정",
+            policy_template=policy,
+        )
+        proposal = compile_local_structured_proposal(request, policy.invariants)
+
+        self.assertEqual("local", proposal.compiler.provider)
+        self.assertEqual(["portfolioDrawdownCapBps"], [i.kind for i in proposal.policy.invariants])
+        self.assertIn(STRUCTURED_EDITOR_ASSUMPTION, proposal.assumptions)
+        self.assertEqual(STRUCTURED_EDITOR_REQUEST_ID, proposal.request.requestId)
+
+    def test_structured_editor_hash_differs_from_committed_default_proposal(self) -> None:
+        policy = build_structured_policy(
+            policy_id="mvp-demo-loss-guard",
+            fork=self.request().fork,
+            invariants=self.template_data["invariants"],
+        )
+        request = create_intent_request(
+            request_id=STRUCTURED_EDITOR_REQUEST_ID,
+            intent_text="구조화된 편집기로 동일한 조건을 다시 제출",
+            policy_template=policy,
+        )
+        proposal = compile_local_structured_proposal(request, policy.invariants)
+
+        self.assertNotEqual(
+            "0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+            canonical_model_sha256(proposal),
+        )
+
+    def test_structured_editor_rejects_duplicate_kind_and_noncanonical_order(self) -> None:
+        policy = build_structured_policy(
+            policy_id="mvp-demo-loss-guard",
+            fork=self.request().fork,
+            invariants=[
+                {"id": "floor-a", "kind": "portfolioValueFloor", "floorValue1e18": "1"},
+                {"id": "floor-b", "kind": "portfolioValueFloor", "floorValue1e18": "2"},
+            ],
+        )
+        with self.assertRaises(SynthesisInputError):
+            create_intent_request(
+                request_id=STRUCTURED_EDITOR_REQUEST_ID,
+                intent_text="중복 조건",
+                policy_template=policy,
+            )
+
+    def test_structured_editor_drawdown_requires_reference_value(self) -> None:
+        with self.assertRaises(SynthesisInputError):
+            build_structured_policy(
+                policy_id="mvp-demo-loss-guard",
+                fork=self.request().fork,
+                invariants=[
+                    {
+                        "id": "portfolio-drawdown-structured",
+                        "kind": "portfolioDrawdownCapBps",
+                        "maxDrawdownBps": "2000",
+                    }
+                ],
+            )
+
+    def test_structured_editor_rejects_out_of_range_bps(self) -> None:
+        with self.assertRaises(SynthesisInputError):
+            build_structured_policy(
+                policy_id="mvp-demo-loss-guard",
+                fork=self.request().fork,
+                invariants=[
+                    {
+                        "id": "rolling-loss-percent-structured",
+                        "kind": "cumulativeLossCapBps",
+                        "windowSeconds": "86400",
+                        "maxLossBps": "10001",
+                    }
+                ],
+            )
 
 
 if __name__ == "__main__":

@@ -3,115 +3,177 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G3 &#xC2E4;&#xD589; &#xBAA8;&#xB2C8;&#xD130;</title>
+  <title>정책 사전 실행 콘솔</title>
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
 <body>
   <main class="console-layout">
-    <section class="evidence-pane" aria-label="&#xC2E4;&#xD589; &#xACB0;&#xACFC;">
-      <header class="evidence-header">
+    <section class="policy-pane" aria-label="정책 검토 결과">
+      <header class="pane-header">
         <div>
-          <p class="kicker">G3 / RESULT</p>
-          <h2>&#xC2E4;&#xD589; &#xACB0;&#xACFC;</h2>
+          <p class="kicker">정책 / 실행 전 검증</p>
+          <h1>정책 검토</h1>
         </div>
-        <div class="evidence-actions">
-          <button type="button" id="reload-trace">&#xB2E4;&#xC2DC; &#xBD88;&#xB7EC;&#xC624;&#xAE30;</button>
-          <label class="file-button" for="trace-file-input">JSON &#xC5F4;&#xAE30;</label>
-          <input id="trace-file-input" type="file" accept="application/json,.json">
-        </div>
+        <span id="stage-badge" class="stage-badge">불러오는 중</span>
       </header>
 
       <div id="status-region" class="status-region" role="status" aria-live="polite"></div>
 
-      <section class="overview" aria-labelledby="overview-title">
-        <div class="overview-copy">
-          <h3 id="overview-title">&#xC0C1;&#xD0DC;</h3>
-          <p id="run-state" class="run-state">&#xB300;&#xAE30;</p>
-          <p class="trace-meta"><span id="source-label">&mdash;</span> <span id="verify-tag" class="verify-tag"></span> <span aria-hidden="true">/</span> <time id="generated-time">&mdash;</time></p>
-        </div>
-        <div class="progress-block" aria-label="&#xC2E4;&#xD589; &#xC9C4;&#xD589;&#xB960;">
-          <p><strong id="progress-current">0</strong><span> / </span><span id="progress-total">0</span></p>
-          <div id="progress-track" class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
-        </div>
+      <section class="flow-strip" aria-label="정책 생성 상태">
+        <div id="stage-request"><span>요청</span><strong>대기</strong></div>
+        <div id="stage-response"><span>응답 검증</span><strong>대기</strong></div>
+        <div id="stage-proposal"><span>제안</span><strong>대기</strong></div>
+        <div id="stage-approval"><span>승인</span><strong>대기</strong></div>
       </section>
 
-      <section class="metrics-section" aria-labelledby="metrics-title">
-        <h3 id="metrics-title">&#xC8FC;&#xC694; &#xAC12;</h3>
-        <dl class="metrics">
-          <div><dt>&#xD68C;&#xCC28;</dt><dd id="metric-steps">&mdash;</dd></div>
-          <div><dt>&#xC774;&#xCCB4; &#xD569;&#xACC4;</dt><dd id="metric-transfer">&mdash;</dd></div>
-          <div><dt>&#xC2DC;&#xC791; &#xAC00;&#xCE58;</dt><dd id="metric-start">&mdash;</dd></div>
-          <div><dt>&#xC885;&#xB8CC; &#xAC00;&#xCE58;</dt><dd id="metric-end">&mdash;</dd></div>
-          <div><dt>&#xB204;&#xC801; &#xC190;&#xC2E4;</dt><dd id="metric-loss">&mdash;</dd></div>
-          <div><dt>&#xC190;&#xC2E4;&#xB960;</dt><dd id="metric-loss-rate">&mdash;</dd></div>
-        </dl>
-      </section>
-
-      <section aria-labelledby="steps-title">
-        <h3 id="steps-title">&#xC2E4;&#xD589; &#xD68C;&#xCC28;</h3>
-        <ol id="steps-list" class="steps-list"></ol>
-      </section>
-
-      <details class="supporting-details">
-        <summary>&#xAC80;&#xC99D; &#xAE30;&#xB85D; &#xBCF4;&#xAE30;</summary>
-        <div class="evidence-columns">
-          <section aria-labelledby="periods-title">
-            <h3 id="periods-title">&#xAE30;&#xAC04;&#xBCC4; &#xBD84;&#xD3EC;</h3>
-            <ol id="periods-list" class="rule-list"></ol>
-          </section>
-          <section aria-labelledby="caveats-title">
-            <h3 id="caveats-title">&#xC801;&#xC6A9; &#xC81C;&#xC57D;</h3>
-            <ol id="caveats-list" class="rule-list"></ol>
-          </section>
+      <section class="review-section">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">원문 정책</p>
+            <h2>사용자 요청</h2>
+          </div>
+          <code id="request-hash">—</code>
         </div>
+        <p id="intent-text" class="intent-text">—</p>
+      </section>
 
-        <section aria-labelledby="checks-title">
-          <h3 id="checks-title">&#xAC80;&#xC99D; &#xD56D;&#xBAA9;</h3>
-          <ul id="checks-list" class="checks-list"></ul>
-        </section>
-
-        <details id="technical-details" class="technical-details">
-          <summary>&#xAE30;&#xC220; &#xC0C1;&#xC138;</summary>
-          <dl id="technical-list"></dl>
+      <section class="review-section">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">확정 정책 내용</p>
+            <h2>불변조건</h2>
+          </div>
+          <span id="compiler-source" class="source-tag">—</span>
+        </div>
+        <p id="compiler-source-note" class="microcopy"></p>
+        <div id="invariant-list" class="invariant-list"></div>
+        <details class="json-details" open>
+          <summary>정확한 정책 JSON</summary>
+          <pre id="policy-json">제안 없음</pre>
         </details>
-      </details>
+      </section>
+
+      <section class="review-section structured-editor-section">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">조건 직접 수정</p>
+            <h2>구조화된 조건 편집기</h2>
+          </div>
+          <span class="source-tag">로컬 편집 / 실시간 AI 아님</span>
+        </div>
+        <p class="microcopy">
+          원본 JSON을 직접 편집하지 않고 4종의 지원 조건만 값으로 채워 넣습니다. 제출하면
+          로컬 편집기가 실시간 AI 호출 없이 새로운 미승인 정책 제안을 동일한 규칙으로
+          생성하고, 기존 승인과 후보 평가는 즉시 무효화됩니다. 원문 정책은 검토를 위해
+          그대로 보존되며 값을 추론하는 데 쓰이지 않습니다.
+        </p>
+        <div id="structured-condition-list" class="structured-condition-list"></div>
+        <div class="structured-add-row">
+          <label for="structured-kind-select" class="sr-only">추가할 조건 종류</label>
+          <select id="structured-kind-select"></select>
+          <button id="structured-add-btn" type="button">조건 추가</button>
+        </div>
+        <form id="structured-conditions-form" class="structured-conditions-form" autocomplete="off">
+          <p id="structured-error" class="structured-error" role="alert"></p>
+          <button type="submit">구조화된 조건으로 새 제안 만들기</button>
+        </form>
+      </section>
+
+      <section class="review-grid">
+        <section class="review-section compact">
+          <p class="section-label">조건 설정 근거</p>
+          <h2>왜 이 조건이 만들어졌나요?</h2>
+          <ul id="rationale-list" class="plain-list"></ul>
+        </section>
+        <section class="review-section compact">
+          <p class="section-label">적용 가정</p>
+          <h2>어떻게 해석했나요?</h2>
+          <ul id="assumption-list" class="plain-list"></ul>
+        </section>
+      </section>
+
+      <section class="review-section binding-section">
+        <div>
+          <p class="section-label">검증 기준 블록</p>
+          <dl class="binding-list">
+            <div><dt>chainId</dt><dd id="fork-chain">—</dd></div>
+            <div><dt>blockNumber</dt><dd id="fork-block">—</dd></div>
+            <div><dt>blockHash</dt><dd id="fork-hash">—</dd></div>
+          </dl>
+        </div>
+        <div>
+          <p class="section-label">제안 해시 (SHA-256)</p>
+          <code id="proposal-hash" class="full-hash">—</code>
+        </div>
+      </section>
+
+      <section class="review-section approval-section">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">정확한 해시 승인</p>
+            <h2>사용자 승인</h2>
+          </div>
+          <span id="approval-state" class="approval-state">미승인</span>
+        </div>
+        <p class="microcopy">승인은 지갑 서명이 아닌 로컬 감사 기록입니다. 아래 제안 해시를 정확히 승인합니다.</p>
+        <form id="approval-form" class="approval-form" autocomplete="off">
+          <label for="approval-input" class="sr-only">정확한 승인 문구</label>
+          <input id="approval-input" type="text" placeholder="APPROVE 0x…" spellcheck="false">
+          <button type="submit">해시 승인</button>
+        </form>
+        <code id="approval-hash" class="full-hash">—</code>
+      </section>
+
+      <section id="candidate-evaluation" class="review-section evaluation-section" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="section-label">후보 평가 결과</p>
+            <h2>정책 조건을 충족했나요?</h2>
+          </div>
+          <span id="candidate-result" class="candidate-result">—</span>
+        </div>
+        <p class="microcopy">승인한 정책으로 후보 기록을 검사한 결과입니다. 지갑 또는 MetaMask의 실제 거래 결과는 아닙니다.</p>
+        <dl class="candidate-meta">
+          <div><dt>후보 기록 ID (candidateTraceId)</dt><dd id="candidate-trace-id">—</dd></div>
+          <div><dt>후보 기록 해시 (candidateTraceSha256)</dt><dd id="candidate-trace-hash">—</dd></div>
+        </dl>
+        <div id="evaluation-list" class="evaluation-list"></div>
+        <details class="json-details">
+          <summary>원본 평가 JSON (기술 정보)</summary>
+          <pre id="evaluation-json">—</pre>
+        </details>
+      </section>
+
+      <section class="broadcast-state" aria-labelledby="broadcast-title">
+        <div>
+          <p class="section-label">거래 실행 상태</p>
+          <h2 id="broadcast-title">브로드캐스트 불가</h2>
+        </div>
+        <p id="broadcast-reason">정확한 거래 요청이 아직 없습니다.</p>
+      </section>
     </section>
 
-    <section class="terminal-pane" aria-label="&#xCF58;&#xC194;">
-      <header class="terminal-header">
+    <section class="terminal-pane" aria-label="개발자 로그">
+      <header class="pane-header terminal-header">
         <div>
-          <p class="kicker">G3 / LOCAL FORK</p>
-          <h1>G3 &#xC2E4;&#xD589; &#xCF58;&#xC194;</h1>
+          <p class="kicker">로컬 감사 기록</p>
+          <h2>개발자 로그</h2>
         </div>
-        <p class="connection"><span id="connection-dot" aria-hidden="true"></span>LOCAL</p>
+        <p class="connection"><span id="connection-dot" aria-hidden="true"></span>로컬</p>
       </header>
 
       <div id="terminal-output" class="terminal-output" role="log" aria-live="polite" aria-relevant="additions"></div>
 
-      <form id="command-form" class="command-form" autocomplete="off">
-        <span class="prompt" aria-hidden="true">&gt;</span>
-        <label for="command-input" class="sr-only">&#xBA85;&#xB839; &#xC785;&#xB825;</label>
-        <input id="command-input" name="command" type="text" autocomplete="off" spellcheck="false" autofocus>
-        <button type="submit">&#xC2E4;&#xD589;</button>
+      <form id="intent-form" class="intent-form" autocomplete="off">
+        <label for="intent-input">자연어 정책 입력</label>
+        <textarea id="intent-input" rows="3" maxlength="4000" placeholder="예: 포트폴리오 가치를 … 이상으로 유지하고…" required></textarea>
+        <div class="intent-actions">
+          <p>자연어만 제출하면 요청 생성 후 AI 응답 대기 상태로 멈춥니다. 조건을 직접 지정하려면 위 구조화된 조건 편집기를 사용하세요.</p>
+          <button type="submit">정책 요청 만들기</button>
+        </div>
       </form>
-      <p class="terminal-hint"><code>help</code> &mdash; &#xBA85;&#xB839; &#xBAA9;&#xB85D; &#xBCF4;&#xAE30;</p>
     </section>
   </main>
-
-  <template id="step-template">
-    <li class="step-row">
-      <span class="step-number"></span>
-      <span class="step-period"></span>
-      <span class="step-amount"></span>
-      <span class="step-remaining"></span>
-      <span class="step-status"></span>
-      <code class="step-tx-hash"></code>
-      <details class="step-expand">
-        <summary>&#xC0C1;&#xC138;</summary>
-        <dl class="step-detail-list"></dl>
-      </details>
-    </li>
-  </template>
 </body>
 </html>

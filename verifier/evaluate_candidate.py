@@ -13,7 +13,12 @@ from pydantic import ValidationError
 
 from candidate_models import CandidateTrace
 from evaluate_invariants import EvaluationInputError, PortfolioPoint, evaluate_points
-from invariant_models import CumulativeLossCap, InvariantPolicy, canonical_policy_sha256
+from invariant_models import (
+    CumulativeLossCap,
+    CumulativeLossCapBps,
+    InvariantPolicy,
+    canonical_policy_sha256,
+)
 
 
 def canonical_candidate_sha256(trace: CandidateTrace) -> str:
@@ -67,7 +72,7 @@ def evaluate_candidate(policy: InvariantPolicy, trace: CandidateTrace) -> dict[s
     candidate_timestamp = int(trace.transitions[-1].timestamp)
     coverage_start = int(trace.coverageStartTimestamp)
     for invariant in policy.invariants:
-        if isinstance(invariant, CumulativeLossCap):
+        if isinstance(invariant, (CumulativeLossCap, CumulativeLossCapBps)):
             required_start = candidate_timestamp - int(invariant.windowSeconds)
             if required_start < 0 or coverage_start > required_start:
                 raise EvaluationInputError(

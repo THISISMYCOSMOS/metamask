@@ -110,6 +110,39 @@ class CandidateEvaluatorStressTest(unittest.TestCase):
         with self.assertRaises(EvaluationInputError):
             evaluate_candidate(self.policy(), self.candidate(data))
 
+    def test_bps_incomplete_history_fails_closed(self) -> None:
+        policy_data = copy.deepcopy(self.policy_data)
+        policy_data["invariants"][1] = {
+            "id": "rolling-day-loss-cap-bps-mvp",
+            "kind": "cumulativeLossCapBps",
+            "windowSeconds": "86400",
+            "maxLossBps": "5000",
+        }
+        candidate_data = copy.deepcopy(self.candidate_data)
+        candidate_data["transitions"].pop(0)
+        for index, transition in enumerate(candidate_data["transitions"]):
+            transition["transitionIndex"] = index
+        candidate_data["coverageStartTimestamp"] = candidate_data["transitions"][0]["timestamp"]
+        candidate_data["initialValue1e18"] = candidate_data["transitions"][0]["beforeValue1e18"]
+        with self.assertRaises(EvaluationInputError):
+            evaluate_candidate(self.policy(policy_data), self.candidate(candidate_data))
+
+    def test_bps_coverage_gap_fails_closed_even_when_non_bps_cap_is_covered(self) -> None:
+        policy_data = copy.deepcopy(self.policy_data)
+        policy_data["invariants"].append(
+            {
+                "id": "rolling-week-loss-cap-bps-mvp",
+                "kind": "cumulativeLossCapBps",
+                "windowSeconds": str(7 * 86_400),
+                "maxLossBps": "5000",
+            }
+        )
+        candidate_data = copy.deepcopy(self.candidate_data)
+        candidate_timestamp = int(candidate_data["transitions"][-1]["timestamp"])
+        candidate_data["coverageStartTimestamp"] = str(candidate_timestamp - 86_400)
+        with self.assertRaises(EvaluationInputError):
+            evaluate_candidate(self.policy(policy_data), self.candidate(candidate_data))
+
     def test_fork_mismatch_fails_closed(self) -> None:
         data = copy.deepcopy(self.policy_data)
         data["fork"]["blockNumber"] = "25700001"
