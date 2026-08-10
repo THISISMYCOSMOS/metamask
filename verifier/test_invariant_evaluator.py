@@ -158,6 +158,103 @@ class InvariantEvaluatorStressTest(unittest.TestCase):
         second = evaluate(self.policy(), self.trace())
         self.assertEqual(first, second)
 
+    def test_old_policy_hash_and_shape_unchanged(self) -> None:
+        policy = self.policy()
+        dumped = policy.model_dump(mode="json")
+        self.assertEqual(set(dumped["invariants"][0].keys()), {"id", "kind", "floorValue1e18"})
+        self.assertEqual(
+            set(dumped["invariants"][1].keys()), {"id", "kind", "windowSeconds", "maxLossValue1e18"}
+        )
+        self.assertEqual(canonical_policy_sha256(policy), canonical_policy_sha256(self.policy()))
+
+    def _drawdown_policy(self, max_drawdown_bps: str) -> InvariantPolicy:
+        data = copy.deepcopy(self.policy_data)
+        data["invariants"] = [
+            {
+                "id": "drawdown-boundary",
+                "kind": "portfolioDrawdownCapBps",
+                "referenceValue1e18": "100000",
+                "maxDrawdownBps": max_drawdown_bps,
+            }
+        ]
+        return self.policy(data)
+
+    def test_portfolio_drawdown_cap_bps_exact_boundary_passes_and_one_unit_below_fails(self) -> None:
+        policy = self._drawdown_policy("2000")
+        boundary_points = [PortfolioPoint(step_index=0, timestamp=100, before_value1e18=100_000, after_value1e18=80_000)]
+        evaluation = evaluate_points(policy, boundary_points)[0]
+        self.assertTrue(evaluation["passed"])
+        self.assertEqual(evaluation["observedMinimumValue1e18"], "80000")
+        self.assertEqual(evaluation["referenceValue1e18"], "100000")
+
+        failing_points = [PortfolioPoint(step_index=0, timestamp=100, before_value1e18=100_000, after_value1e18=79_999)]
+        self.assertFalse(evaluate_points(policy, failing_points)[0]["passed"])
+
+    def test_portfolio_drawdown_cap_bps_reference_mismatch_raises(self) -> None:
+        policy = self._drawdown_policy("2000")
+        mismatched_points = [PortfolioPoint(step_index=0, timestamp=100, before_value1e18=99_999, after_value1e18=80_000)]
+        with self.assertRaises(EvaluationInputError):
+            evaluate_points(policy, mismatched_points)
+
+    def _cumulative_loss_cap_bps_policy(self, max_loss_bps: str) -> InvariantPolicy:
+        data = copy.deepcopy(self.policy_data)
+        data["invariants"] = [
+            {
+                "id": "rolling-loss-boundary",
+                "kind": "cumulativeLossCapBps",
+                "windowSeconds": "1000",
+                "maxLossBps": max_loss_bps,
+            }
+        ]
+        return self.policy(data)
+
+    def test_cumulative_loss_cap_bps_exact_boundary_passes_and_one_unit_over_fails(self) -> None:
+        policy = self._cumulative_loss_cap_bps_policy("1000")
+        boundary_points = [PortfolioPoint(step_index=0, timestamp=100, before_value1e18=100_000, after_value1e18=90_000)]
+        evaluation = evaluate_points(policy, boundary_points)[0]
+        self.assertTrue(evaluation["passed"])
+        self.assertEqual(evaluation["observedMaximumLossValue1e18"], "10000")
+        self.assertEqual(evaluation["observedReferenceValue1e18"], "100000")
+
+        failing_points = [PortfolioPoint(step_index=0, timestamp=100, before_value1e18=100_000, after_value1e18=89_999)]
+        self.assertFalse(evaluate_points(policy, failing_points)[0]["passed"])
+
+    def test_bps_fields_over_10000_are_rejected_by_schema(self) -> None:
+        drawdown_data = copy.deepcopy(self.policy_data)
+        drawdown_data["invariants"] = [
+            {
+                "id": "drawdown-overflow",
+                "kind": "portfolioDrawdownCapBps",
+                "referenceValue1e18": "100000",
+                "maxDrawdownBps": "10001",
+            }
+        ]
+        with self.assertRaises(ValidationError):
+            self.policy(drawdown_data)
+
+        loss_cap_data = copy.deepcopy(self.policy_data)
+        loss_cap_data["invariants"] = [
+            {
+                "id": "loss-cap-overflow",
+                "kind": "cumulativeLossCapBps",
+                "windowSeconds": "1000",
+                "maxLossBps": "10001",
+            }
+        ]
+        with self.assertRaises(ValidationError):
+            self.policy(loss_cap_data)
+
+        boundary_data = copy.deepcopy(self.policy_data)
+        boundary_data["invariants"] = [
+            {
+                "id": "loss-cap-max-valid",
+                "kind": "cumulativeLossCapBps",
+                "windowSeconds": "1000",
+                "maxLossBps": "10000",
+            }
+        ]
+        self.policy(boundary_data)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -14,7 +14,9 @@ from pydantic import ValidationError
 
 from invariant_models import (
     CumulativeLossCap,
+    CumulativeLossCapBps,
     InvariantPolicy,
+    PortfolioDrawdownCapBps,
     PortfolioValueFloor,
     canonical_policy_sha256,
 )
@@ -125,6 +127,15 @@ def normalize_phase1_trace(trace: Trace) -> list[PortfolioPoint]:
     ]
 
 
+def _ratio_greater(loss_a: int, denom_a: int, loss_b: int, denom_b: int) -> bool:
+    """Return True iff loss_a/denom_a > loss_b/denom_b, without division. 0/0 is 0."""
+    if denom_a == 0:
+        return False
+    if denom_b == 0:
+        return loss_a > 0
+    return loss_a * denom_b > loss_b * denom_a
+
+
 def evaluate_points(
     policy: InvariantPolicy,
     points: Sequence[PortfolioPoint],
@@ -167,6 +178,34 @@ def evaluate_points(
             )
             continue
 
+        if isinstance(invariant, PortfolioDrawdownCapBps):
+            first = points[0]
+            reference = int(invariant.referenceValue1e18)
+            if first.before_value1e18 != reference:
+                raise EvaluationInputError(
+                    f"portfolioDrawdownCapBps referenceValue1e18 does not match the first portfolio point for invariant {invariant.id}"
+                )
+            if final_candidate_only:
+                final = points[-1]
+                step_index, position, observed = final.step_index, "after", final.after_value1e18
+            else:
+                candidates = [(points[0].step_index, "before", points[0].before_value1e18)]
+                candidates.extend((point.step_index, "after", point.after_value1e18) for point in points)
+                step_index, position, observed = min(candidates, key=lambda candidate: candidate[2])
+            max_drawdown_bps = int(invariant.maxDrawdownBps)
+            evaluations.append(
+                {
+                    "id": invariant.id,
+                    "kind": invariant.kind,
+                    "passed": observed * 10000 >= reference * (10000 - max_drawdown_bps),
+                    "observedMinimumValue1e18": str(observed),
+                    "referenceValue1e18": invariant.referenceValue1e18,
+                    "maxDrawdownBps": invariant.maxDrawdownBps,
+                    "evidence": {"stepIndex": step_index, "position": position},
+                }
+            )
+            continue
+
         if isinstance(invariant, CumulativeLossCap):
             window_seconds = int(invariant.windowSeconds)
             maximum_loss = -1
@@ -189,6 +228,45 @@ def evaluate_points(
                     "passed": maximum_loss <= cap,
                     "observedMaximumLossValue1e18": str(maximum_loss),
                     "maxLossValue1e18": invariant.maxLossValue1e18,
+                    "windowSeconds": invariant.windowSeconds,
+                    "evidence": {
+                        "startStepIndex": start.step_index,
+                        "endStepIndex": end.step_index,
+                        "startTimestamp": str(start.timestamp),
+                        "endTimestamp": str(end.timestamp),
+                    },
+                }
+            )
+            continue
+
+        if isinstance(invariant, CumulativeLossCapBps):
+            window_seconds = int(invariant.windowSeconds)
+            end_candidates = [(len(points) - 1, points[-1])] if final_candidate_only else list(enumerate(points))
+            best_loss = 0
+            best_denom = 0
+            best_window = (points[0], points[0])
+            first_candidate = True
+            for end_index, end in end_candidates:
+                for start in points[: end_index + 1]:
+                    if end.timestamp - start.timestamp > window_seconds:
+                        continue
+                    loss = max(0, start.before_value1e18 - end.after_value1e18)
+                    denom = start.before_value1e18
+                    if first_candidate or _ratio_greater(loss, denom, best_loss, best_denom):
+                        best_loss = loss
+                        best_denom = denom
+                        best_window = (start, end)
+                        first_candidate = False
+            max_loss_bps = int(invariant.maxLossBps)
+            start, end = best_window
+            evaluations.append(
+                {
+                    "id": invariant.id,
+                    "kind": invariant.kind,
+                    "passed": best_loss * 10000 <= best_denom * max_loss_bps,
+                    "observedMaximumLossValue1e18": str(best_loss),
+                    "observedReferenceValue1e18": str(best_denom),
+                    "maxLossBps": invariant.maxLossBps,
                     "windowSeconds": invariant.windowSeconds,
                     "evidence": {
                         "startStepIndex": start.step_index,

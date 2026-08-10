@@ -28,6 +28,11 @@ def _require_uint256(value: str, field_name: str, *, positive: bool = False) -> 
         raise ValueError(f"{field_name} must be greater than zero")
 
 
+def _require_bps(value: str, field_name: str) -> None:
+    if int(value) > 10000:
+        raise ValueError(f"{field_name} must be within 0..10000")
+
+
 class ForkBinding(StrictModel):
     chainId: int = Field(ge=1)
     blockNumber: UintStr
@@ -50,6 +55,20 @@ class PortfolioValueFloor(StrictModel):
         return self
 
 
+class PortfolioDrawdownCapBps(StrictModel):
+    id: PolicyIdentifier
+    kind: Literal["portfolioDrawdownCapBps"]
+    referenceValue1e18: UintStr
+    maxDrawdownBps: UintStr
+
+    @model_validator(mode="after")
+    def _check_uints(self) -> "PortfolioDrawdownCapBps":
+        _require_uint256(self.referenceValue1e18, "referenceValue1e18", positive=True)
+        _require_uint256(self.maxDrawdownBps, "maxDrawdownBps")
+        _require_bps(self.maxDrawdownBps, "maxDrawdownBps")
+        return self
+
+
 class CumulativeLossCap(StrictModel):
     id: PolicyIdentifier
     kind: Literal["cumulativeLossCap"]
@@ -63,7 +82,32 @@ class CumulativeLossCap(StrictModel):
         return self
 
 
-Invariant = Annotated[Union[PortfolioValueFloor, CumulativeLossCap], Field(discriminator="kind")]
+class CumulativeLossCapBps(StrictModel):
+    id: PolicyIdentifier
+    kind: Literal["cumulativeLossCapBps"]
+    windowSeconds: UintStr
+    maxLossBps: UintStr
+
+    @model_validator(mode="after")
+    def _check_uints(self) -> "CumulativeLossCapBps":
+        _require_uint256(self.windowSeconds, "windowSeconds", positive=True)
+        _require_uint256(self.maxLossBps, "maxLossBps")
+        _require_bps(self.maxLossBps, "maxLossBps")
+        return self
+
+
+CANONICAL_INVARIANT_KINDS: tuple[str, ...] = (
+    "portfolioValueFloor",
+    "portfolioDrawdownCapBps",
+    "cumulativeLossCap",
+    "cumulativeLossCapBps",
+)
+
+
+Invariant = Annotated[
+    Union[PortfolioValueFloor, PortfolioDrawdownCapBps, CumulativeLossCap, CumulativeLossCapBps],
+    Field(discriminator="kind"),
+]
 
 
 class InvariantPolicy(StrictModel):

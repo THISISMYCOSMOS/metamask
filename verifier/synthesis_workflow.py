@@ -28,6 +28,14 @@ MVP_COMPILER_RULES = [
     "If the intent is ambiguous, record the ambiguity in assumptions instead of inventing hidden policy.",
 ]
 
+PERCENTAGE_INVARIANT_KINDS = frozenset({"portfolioDrawdownCapBps", "cumulativeLossCapBps"})
+
+PERCENTAGE_COMPILER_RULES = [
+    "Compile portfolioDrawdownCapBps and cumulativeLossCapBps only when the intent explicitly requests a percentage-based threshold.",
+    "Represent every basis-point threshold as an unsigned integer string in the closed range 0 to 10000.",
+    "portfolioDrawdownCapBps.referenceValue1e18 must equal the trace's first portfolio before-value; do not invent a different reference.",
+]
+
 
 def artifact_json(model: BaseModel) -> str:
     return json.dumps(model.model_dump(mode="json"), ensure_ascii=False, indent=2) + "\n"
@@ -40,6 +48,10 @@ def write_artifact(path: Path, model: BaseModel) -> None:
 def create_intent_request(*, request_id: str, intent_text: str, policy_template: InvariantPolicy) -> IntentCompilerRequest:
     if policy_template.traceKind != "portfolio-candidate":
         raise SynthesisInputError("MVP synthesis requires a portfolio-candidate policy template")
+    allowed_invariants = [invariant.kind for invariant in policy_template.invariants]
+    compiler_rules = list(MVP_COMPILER_RULES)
+    if any(kind in PERCENTAGE_INVARIANT_KINDS for kind in allowed_invariants):
+        compiler_rules = compiler_rules + PERCENTAGE_COMPILER_RULES
     return IntentCompilerRequest(
         schemaVersion=1,
         kind="intent-compiler-request",
@@ -47,9 +59,9 @@ def create_intent_request(*, request_id: str, intent_text: str, policy_template:
         intentText=intent_text,
         targetTraceKind="portfolio-candidate",
         fork=policy_template.fork,
-        allowedInvariants=["portfolioValueFloor", "cumulativeLossCap"],
+        allowedInvariants=allowed_invariants,
         outputUnit="usd-1e18",
-        compilerRules=MVP_COMPILER_RULES,
+        compilerRules=compiler_rules,
     )
 
 

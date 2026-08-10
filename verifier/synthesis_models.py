@@ -8,6 +8,7 @@ from typing import Annotated, List, Literal
 from pydantic import Field, StringConstraints, model_validator
 
 from invariant_models import (
+    CANONICAL_INVARIANT_KINDS,
     Bytes32,
     ForkBinding,
     InvariantPolicy,
@@ -39,16 +40,26 @@ class IntentCompilerRequest(StrictModel):
     targetTraceKind: Literal["portfolio-candidate"]
     fork: ForkBinding
     allowedInvariants: Annotated[
-        List[Literal["portfolioValueFloor", "cumulativeLossCap"]],
-        Field(min_length=2, max_length=2),
+        List[
+            Literal[
+                "portfolioValueFloor",
+                "portfolioDrawdownCapBps",
+                "cumulativeLossCap",
+                "cumulativeLossCapBps",
+            ]
+        ],
+        Field(min_length=1, max_length=4),
     ]
     outputUnit: Literal["usd-1e18"]
     compilerRules: Annotated[List[NonEmptyText], Field(min_length=1, max_length=16)]
 
     @model_validator(mode="after")
     def _check_allowed_invariants(self) -> "IntentCompilerRequest":
-        if self.allowedInvariants != ["portfolioValueFloor", "cumulativeLossCap"]:
-            raise ValueError("allowedInvariants must contain the two MVP invariants in canonical order")
+        if len(set(self.allowedInvariants)) != len(self.allowedInvariants):
+            raise ValueError("allowedInvariants must not contain duplicates")
+        expected = [kind for kind in CANONICAL_INVARIANT_KINDS if kind in self.allowedInvariants]
+        if self.allowedInvariants != expected:
+            raise ValueError("allowedInvariants must be a canonical-order subset of the four invariant kinds")
         return self
 
 
