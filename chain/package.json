@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "deploy": "tsx src/deploy.ts",
-    "negative-control": "tsx src/negative-control.ts"
+    "negative-control": "tsx src/negative-control.ts",
+    "test:pre-execution": "tsx --test src/pre-execution-gate.test.ts"
   },
   "dependencies": {
     "viem": "^2.21.0"

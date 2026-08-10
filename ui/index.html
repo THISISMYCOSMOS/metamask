@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>G3 &#xC2E4;&#xD589; &#xBAA8;&#xB2C8;&#xD130;</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="console-layout">
+    <section class="evidence-pane" aria-label="&#xC2E4;&#xD589; &#xACB0;&#xACFC;">
+      <header class="evidence-header">
+        <div>
+          <p class="kicker">G3 / RESULT</p>
+          <h2>&#xC2E4;&#xD589; &#xACB0;&#xACFC;</h2>
+        </div>
+        <div class="evidence-actions">
+          <button type="button" id="reload-trace">&#xB2E4;&#xC2DC; &#xBD88;&#xB7EC;&#xC624;&#xAE30;</button>
+          <label class="file-button" for="trace-file-input">JSON &#xC5F4;&#xAE30;</label>
+          <input id="trace-file-input" type="file" accept="application/json,.json">
+        </div>
+      </header>
+
+      <div id="status-region" class="status-region" role="status" aria-live="polite"></div>
+
+      <section class="overview" aria-labelledby="overview-title">
+        <div class="overview-copy">
+          <h3 id="overview-title">&#xC0C1;&#xD0DC;</h3>
+          <p id="run-state" class="run-state">&#xB300;&#xAE30;</p>
+          <p class="trace-meta"><span id="source-label">&mdash;</span> <span id="verify-tag" class="verify-tag"></span> <span aria-hidden="true">/</span> <time id="generated-time">&mdash;</time></p>
+        </div>
+        <div class="progress-block" aria-label="&#xC2E4;&#xD589; &#xC9C4;&#xD589;&#xB960;">
+          <p><strong id="progress-current">0</strong><span> / </span><span id="progress-total">0</span></p>
+          <div id="progress-track" class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+        </div>
+      </section>
+
+      <section class="metrics-section" aria-labelledby="metrics-title">
+        <h3 id="metrics-title">&#xC8FC;&#xC694; &#xAC12;</h3>
+        <dl class="metrics">
+          <div><dt>&#xD68C;&#xCC28;</dt><dd id="metric-steps">&mdash;</dd></div>
+          <div><dt>&#xC774;&#xCCB4; &#xD569;&#xACC4;</dt><dd id="metric-transfer">&mdash;</dd></div>
+          <div><dt>&#xC2DC;&#xC791; &#xAC00;&#xCE58;</dt><dd id="metric-start">&mdash;</dd></div>
+          <div><dt>&#xC885;&#xB8CC; &#xAC00;&#xCE58;</dt><dd id="metric-end">&mdash;</dd></div>
+          <div><dt>&#xB204;&#xC801; &#xC190;&#xC2E4;</dt><dd id="metric-loss">&mdash;</dd></div>
+          <div><dt>&#xC190;&#xC2E4;&#xB960;</dt><dd id="metric-loss-rate">&mdash;</dd></div>
+        </dl>
+      </section>
+
+      <section aria-labelledby="steps-title">
+        <h3 id="steps-title">&#xC2E4;&#xD589; &#xD68C;&#xCC28;</h3>
+        <ol id="steps-list" class="steps-list"></ol>
+      </section>
+
+      <details class="supporting-details">
+        <summary>&#xAC80;&#xC99D; &#xAE30;&#xB85D; &#xBCF4;&#xAE30;</summary>
+        <div class="evidence-columns">
+          <section aria-labelledby="periods-title">
+            <h3 id="periods-title">&#xAE30;&#xAC04;&#xBCC4; &#xBD84;&#xD3EC;</h3>
+            <ol id="periods-list" class="rule-list"></ol>
+          </section>
+          <section aria-labelledby="caveats-title">
+            <h3 id="caveats-title">&#xC801;&#xC6A9; &#xC81C;&#xC57D;</h3>
+            <ol id="caveats-list" class="rule-list"></ol>
+          </section>
+        </div>
+
+        <section aria-labelledby="checks-title">
+          <h3 id="checks-title">&#xAC80;&#xC99D; &#xD56D;&#xBAA9;</h3>
+          <ul id="checks-list" class="checks-list"></ul>
+        </section>
+
+        <details id="technical-details" class="technical-details">
+          <summary>&#xAE30;&#xC220; &#xC0C1;&#xC138;</summary>
+          <dl id="technical-list"></dl>
+        </details>
+      </details>
+    </section>
+
+    <section class="terminal-pane" aria-label="&#xCF58;&#xC194;">
+      <header class="terminal-header">
+        <div>
+          <p class="kicker">G3 / LOCAL FORK</p>
+          <h1>G3 &#xC2E4;&#xD589; &#xCF58;&#xC194;</h1>
+        </div>
+        <p class="connection"><span id="connection-dot" aria-hidden="true"></span>LOCAL</p>
+      </header>
+
+      <div id="terminal-output" class="terminal-output" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+      <form id="command-form" class="command-form" autocomplete="off">
+        <span class="prompt" aria-hidden="true">&gt;</span>
+        <label for="command-input" class="sr-only">&#xBA85;&#xB839; &#xC785;&#xB825;</label>
+        <input id="command-input" name="command" type="text" autocomplete="off" spellcheck="false" autofocus>
+        <button type="submit">&#xC2E4;&#xD589;</button>
+      </form>
+      <p class="terminal-hint"><code>help</code> &mdash; &#xBA85;&#xB839; &#xBAA9;&#xB85D; &#xBCF4;&#xAE30;</p>
+    </section>
+  </main>
+
+  <template id="step-template">
+    <li class="step-row">
+      <span class="step-number"></span>
+      <span class="step-period"></span>
+      <span class="step-amount"></span>
+      <span class="step-remaining"></span>
+      <span class="step-status"></span>
+      <code class="step-tx-hash"></code>
+      <details class="step-expand">
+        <summary>&#xC0C1;&#xC138;</summary>
+        <dl class="step-detail-list"></dl>
+      </details>
+    </li>
+  </template>
+</body>
+</html>
