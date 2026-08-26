@@ -364,6 +364,10 @@
   }
 
   function parseRpcQuantity(value, field) {
+    if (typeof value === "number") {
+      if (!Number.isSafeInteger(value) || value < 0) throw new Error(`${field} RPC 값이 올바르지 않습니다.`);
+      return BigInt(value);
+    }
     if (typeof value !== "string" || !/^0x[0-9a-f]+$/i.test(value)) throw new Error(`${field} RPC 값이 올바르지 않습니다.`);
     return BigInt(value);
   }
@@ -655,11 +659,14 @@
     const evaluationInvalid = evaluation?.status === "evaluation-invalid";
     const rejected = evaluation?.accepted === false;
     const transaction = state.transaction || {};
+    const confirmed = transaction.status === "confirmed";
     const submitted = transaction.status === "submitted";
     const metamaskMode = transaction.mode === "metamask" || (
       walletConfig.enabled && connectedWallet && state.proposal?.policy?.walletAddress?.toLowerCase() === connectedWallet.walletAddress
     );
-    const stageLabel = submitted
+    const stageLabel = confirmed
+      ? "MetaMask 영수증 확인 완료"
+      : submitted
       ? metamaskMode ? "MetaMask 테스트넷 제출됨" : "로컬 전송 제출됨"
       : evaluationInvalid
       ? "승인 기록됨 — 평가 입력 무효"
@@ -672,9 +679,11 @@
             : "LLM 응답 대기";
 
     $("stage-badge").textContent = stageLabel;
-    $("stage-badge").className = `stage-badge ${submitted ? "approved" : evaluationInvalid ? "invalid" : rejected ? "rejected" : approved ? "approved" : hasProposal ? "review" : "waiting"}`;
+    $("stage-badge").className = `stage-badge ${confirmed || submitted ? "approved" : evaluationInvalid ? "invalid" : rejected ? "rejected" : approved ? "approved" : hasProposal ? "review" : "waiting"}`;
     setStatus(
-      submitted
+      confirmed
+        ? "테스트넷 영수증과 ERC-20 Transfer 이벤트, 정책 적용 후 잔고 검증을 완료했습니다."
+        : submitted
         ? metamaskMode
           ? "결정론적 사전 판정 후 MetaMask가 테스트넷 거래 해시를 반환했습니다. 영수증 검증은 남아 있습니다."
           : "결정론적 게이트 승인 후 로컬 Anvil에 거래를 1회 제출했습니다."
@@ -737,20 +746,24 @@
     proposalRevisionError.textContent = "";
     renderCandidateEvaluation(evaluation);
 
-    executionPlanSection.hidden = !approved || ["submitted", "rejected"].includes(transaction.status);
+    executionPlanSection.hidden = !approved || ["submitted", "confirmed", "rejected"].includes(transaction.status);
     $("execution-mode-title").textContent = metamaskMode ? "MetaMask 테스트넷 실행" : "로컬 Anvil 제어 실행";
     $("execution-mode-copy").textContent = metamaskMode
       ? "MetaMask가 제공한 잔고·nonce·eth_call·gas estimate를 정책과 결합해 판정한 뒤, 허용된 정확한 ERC-20 거래만 지갑 확인창으로 보냅니다."
       : "수취인과 전송량을 입력하면 스냅샷 시뮬레이션 후 결정론적 게이트가 허용한 경우에만 로컬 Anvil에 1회 제출합니다.";
     executionSubmit.textContent = metamaskMode ? "사전 검증 후 MetaMask 확인" : "시뮬레이션 후 실행";
-    $("broadcast-title").textContent = transaction.eligibleForBroadcast
-      ? metamaskMode ? "MetaMask 사용자 확인 대기" : "브로드캐스트 가능"
-      : "브로드캐스트 불가";
+    $("broadcast-title").textContent = transaction.status === "confirmed"
+      ? "테스트넷 영수증 확인 완료"
+      : transaction.status === "submitted"
+        ? "테스트넷 영수증 확인 중"
+        : transaction.eligibleForBroadcast
+          ? metamaskMode ? "MetaMask 사용자 확인 대기" : "브로드캐스트 가능"
+          : "브로드캐스트 불가";
     $("broadcast-reason").textContent = transaction.reason || "정확한 거래 요청이 아직 없습니다.";
 
     if (addLogs) {
       (state.logs || []).forEach((line) => appendLog(localizeAuditLog(line), line.includes("중단") ? "warn" : "success"));
-      const stageNames = { "request-created": "요청 생성", "proposal-ready": "제안 준비", approved: "승인 기록", executed: "로컬 전송 제출", "wallet-authorized": "MetaMask 확인 대기", "wallet-submitted": "MetaMask 테스트넷 제출", rejected: "게이트 거절" };
+      const stageNames = { "request-created": "요청 생성", "proposal-ready": "제안 준비", approved: "승인 기록", executed: "로컬 전송 제출", "wallet-authorized": "MetaMask 확인 대기", "wallet-submitted": "MetaMask 테스트넷 제출", "wallet-confirmed": "MetaMask 영수증 확인", rejected: "게이트 거절" };
       appendLog(`진행 단계=${stageNames[state.stage] || state.stage} · 요청=${shorten(state.requestSha256)}`, "dim");
     }
     $("connection-dot").classList.add("connected");
