@@ -27,6 +27,14 @@
         <div id="stage-approval"><span>승인</span><strong>대기</strong></div>
       </section>
 
+      <p class="flow-label">거래 실행</p>
+      <section class="flow-strip execution-flow" aria-label="거래 실행 상태">
+        <div id="stage-preflight"><span>사전검증</span><strong>대기</strong></div>
+        <div id="stage-wallet-confirm"><span>지갑 확인</span><strong>대기</strong></div>
+        <div id="stage-submit"><span>제출</span><strong>대기</strong></div>
+        <div id="stage-receipt"><span>영수증</span><strong>대기</strong></div>
+      </section>
+
       <section class="review-section">
         <div class="section-heading">
           <div>
@@ -48,7 +56,7 @@
         </div>
         <p id="compiler-source-note" class="microcopy"></p>
         <div id="invariant-list" class="invariant-list"></div>
-        <details class="json-details" open>
+        <details class="json-details">
           <summary>정확한 정책 JSON</summary>
           <pre id="policy-json">제안 없음</pre>
         </details>
@@ -183,7 +191,36 @@
         </details>
       </section>
 
-      <section class="broadcast-state" aria-labelledby="broadcast-title">
+      <section id="receipt-evidence" class="review-section receipt-evidence" aria-labelledby="receipt-evidence-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="section-label">검증된 온체인 결과</p>
+            <h2 id="receipt-evidence-title">거래 영수증</h2>
+          </div>
+          <span class="receipt-status">검증 완료</span>
+        </div>
+        <div class="balance-summary" aria-label="토큰 잔액 변화">
+          <div><span>전송 전</span><strong id="receipt-balance-before">—</strong></div>
+          <div><span>전송</span><strong id="receipt-transfer-amount">—</strong></div>
+          <div><span>전송 후</span><strong id="receipt-balance-after">—</strong></div>
+        </div>
+        <dl class="receipt-list">
+          <div><dt>송신 지갑</dt><dd id="receipt-sender">—</dd></div>
+          <div><dt>수신 지갑</dt><dd id="receipt-recipient">—</dd></div>
+          <div><dt>블록</dt><dd id="receipt-block">—</dd></div>
+          <div>
+            <dt>거래 해시</dt>
+            <dd class="receipt-hash-row"><code id="receipt-transaction-hash">—</code><button id="copy-transaction-hash" type="button">복사</button></dd>
+          </div>
+          <div>
+            <dt>영수증 감사 해시</dt>
+            <dd class="receipt-hash-row"><code id="receipt-audit-hash">—</code><button id="copy-receipt-hash" type="button">복사</button></dd>
+          </div>
+        </dl>
+        <a id="receipt-explorer-link" class="explorer-link" target="_blank" rel="noopener noreferrer" hidden>Sepolia Etherscan에서 거래 확인 ↗</a>
+      </section>
+
+      <section id="broadcast-state" class="broadcast-state" aria-labelledby="broadcast-title">
         <div>
           <p class="section-label">거래 실행 상태</p>
           <h2 id="broadcast-title">브로드캐스트 불가</h2>
@@ -204,10 +241,17 @@
       <div id="terminal-output" class="terminal-output" role="log" aria-live="polite" aria-relevant="additions"></div>
 
       <section class="wallet-panel" aria-label="MetaMask 테스트넷 연결">
-        <div>
-          <p class="section-label">지갑 실행 경로</p>
-          <strong id="wallet-status">MetaMask 연결 안 됨</strong>
-          <p id="wallet-binding" class="microcopy">서버에 테스트넷 토큰 바인딩을 설정하면 연결할 수 있습니다.</p>
+        <div class="wallet-panel-details">
+          <div>
+            <p class="section-label">현재 브라우저 지갑</p>
+            <strong id="wallet-status">MetaMask 연결 안 됨</strong>
+            <p id="wallet-binding" class="microcopy">서버에 테스트넷 토큰 바인딩을 설정하면 연결할 수 있습니다.</p>
+          </div>
+          <div id="verified-wallet-record" class="verified-wallet-record" hidden>
+            <p class="section-label">검증된 실행 지갑</p>
+            <strong id="verified-wallet">—</strong>
+            <p id="verified-wallet-note" class="microcopy">완료된 영수증에 기록된 지갑입니다.</p>
+          </div>
         </div>
         <button id="wallet-connect" type="button">MetaMask 연결</button>
       </section>

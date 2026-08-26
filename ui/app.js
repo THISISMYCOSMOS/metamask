@@ -20,6 +20,11 @@
   const walletConnect = $("wallet-connect");
   const walletStatus = $("wallet-status");
   const walletBinding = $("wallet-binding");
+  const verifiedWalletRecord = $("verified-wallet-record");
+  const verifiedWallet = $("verified-wallet");
+  const verifiedWalletNote = $("verified-wallet-note");
+  const receiptEvidence = $("receipt-evidence");
+  const broadcastState = $("broadcast-state");
   const structuredForm = $("structured-conditions-form");
   const structuredError = $("structured-error");
   const structuredList = $("structured-condition-list");
@@ -436,6 +441,34 @@
     return source.length > front + back + 1 ? `${source.slice(0, front)}…${source.slice(-back)}` : source || "—";
   }
 
+  function formatTokenAmount(value, decimals, symbol) {
+    if (!/^\d+$/.test(String(value ?? "")) || !Number.isInteger(decimals) || decimals < 0) return "—";
+    const raw = String(value).padStart(decimals + 1, "0");
+    const whole = raw.slice(0, raw.length - decimals) || "0";
+    const fraction = decimals ? raw.slice(-decimals).replace(/0+$/, "") : "";
+    const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return `${grouped}${fraction ? `.${fraction}` : ""}${symbol ? ` ${symbol}` : ""}`;
+  }
+
+  function explorerTransactionUrl(chainId, transactionHash) {
+    if (chainId === 11155111 && /^0x[0-9a-f]{64}$/i.test(transactionHash || "")) {
+      return `https://sepolia.etherscan.io/tx/${transactionHash}`;
+    }
+    return null;
+  }
+
+  async function copyText(value, button) {
+    if (!value || value === "—") return;
+    try {
+      await navigator.clipboard.writeText(value);
+      const previous = button.textContent;
+      button.textContent = "복사됨";
+      window.setTimeout(() => { button.textContent = previous; }, 1200);
+    } catch {
+      setStatus("클립보드 복사에 실패했습니다. 값을 직접 선택해 복사하세요.", true);
+    }
+  }
+
   function bpsLabel(value) {
     if (!/^\d+$/.test(String(value ?? ""))) return "—";
     const raw = BigInt(String(value));
@@ -456,14 +489,18 @@
     });
   }
 
-  function setFlowStage(id, done, label = "완료") {
+  function setFlowStage(id, done, label = "완료", rejected = false) {
     const node = $(id);
     node.classList.toggle("done", done);
+    node.classList.toggle("rejected", rejected);
     node.querySelector("strong").textContent = done ? label : "대기";
   }
 
   function invariantValue(invariant) {
-    if (invariant.kind === "assetBalanceFloor") return `최소 잔고 ${invariant.assetBalanceFloor} base-units`;
+    if (invariant.kind === "assetBalanceFloor") {
+      const amount = formatTokenAmount(invariant.assetBalanceFloor, walletConfig.tokenDecimals, walletConfig.tokenSymbol);
+      return `최소 잔고 ${amount} · 원시값 ${invariant.assetBalanceFloor} base units`;
+    }
     if (invariant.kind === "portfolioValueFloor") return `최저 가치 원시값 ${invariant.floorValue1e18}`;
     if (invariant.kind === "portfolioDrawdownCapBps") {
       return `허용 낙폭 ${bpsLabel(invariant.maxDrawdownBps)} / 원시값 ${invariant.maxDrawdownBps} bps`;
@@ -507,6 +544,9 @@
 
   function displayEvaluationValue(key, value) {
     if (key.endsWith("Bps")) return `${bpsLabel(value)} / 원시값 ${value} bps`;
+    if (["assetBalanceFloor", "observedAfterBalance"].includes(key)) {
+      return `${formatTokenAmount(value, walletConfig.tokenDecimals, walletConfig.tokenSymbol)} · 원시값 ${value}`;
+    }
     return String(value);
   }
 
@@ -520,9 +560,17 @@
     maxLossValue1e18: "허용 최대 손실",
     maxLossBps: "허용 최대 손실률",
     windowSeconds: "검사 구간(초)",
+    assetBalanceFloor: "허용 최소 잔고",
+    observedAfterBalance: "예상 전송 후 잔고",
   };
 
   function localizeRationale(item, invariants) {
+    if (item === "The user requested to keep at least 20 USDC in the wallet, which translates to a minimum balance floor of 20 USDC.") {
+      return "사용자가 지갑에 최소 20 USDC를 유지하도록 요청해 잔고 하한을 20 USDC로 설정했습니다.";
+    }
+    if (item === "Given 6 decimals for USDC, 20 USDC equals 20,000,000 base units.") {
+      return "USDC의 소수점 6자리를 적용하면 20 USDC는 20,000,000 base units입니다.";
+    }
     if (typeof item === "string") return item;
     const invariant = invariants.find((entry) => entry.id === item.invariantId);
     const label = KIND_LABELS[invariant?.kind] || item.invariantId;
@@ -539,6 +587,9 @@
   }
 
   function localizeAssumption(assumption) {
+    if (assumption === "The request implies maintaining a continuous balance floor of 20 USDC.") {
+      return "요청을 모든 전송 이후에도 20 USDC 이상의 잔액을 계속 유지해야 한다는 의미로 해석했습니다.";
+    }
     if (assumption === "The comma characters are thousands separators and USD amounts use decimal notation.") {
       return "쉼표는 천 단위 구분자로, USD 금액은 소수 표기로 해석했습니다.";
     }
@@ -649,6 +700,39 @@
     });
   }
 
+  function renderReceiptEvidence(state) {
+    const transaction = state.transaction || {};
+    const receipt = transaction.receipt;
+    const confirmed = transaction.status === "confirmed" && receipt;
+    receiptEvidence.hidden = !confirmed;
+    verifiedWalletRecord.hidden = !confirmed;
+    if (!confirmed) return;
+
+    const decimals = walletConfig.tokenDecimals;
+    const symbol = walletConfig.tokenSymbol;
+    const amount = BigInt(receipt.amountBaseUnits);
+    const after = BigInt(receipt.assetBalanceAfter);
+    $("receipt-balance-before").textContent = formatTokenAmount((after + amount).toString(), decimals, symbol);
+    $("receipt-transfer-amount").textContent = `−${formatTokenAmount(amount.toString(), decimals, symbol)}`;
+    $("receipt-balance-after").textContent = formatTokenAmount(after.toString(), decimals, symbol);
+    $("receipt-sender").textContent = shorten(receipt.from, 12, 10);
+    $("receipt-sender").title = receipt.from;
+    $("receipt-recipient").textContent = shorten(receipt.recipientAddress, 12, 10);
+    $("receipt-recipient").title = receipt.recipientAddress;
+    $("receipt-block").textContent = receipt.blockNumber || "—";
+    $("receipt-transaction-hash").textContent = receipt.transactionHash || "—";
+    $("receipt-audit-hash").textContent = receipt.receiptSha256 || "—";
+
+    const explorerUrl = explorerTransactionUrl(state.proposal?.policy?.chainId, receipt.transactionHash);
+    const explorerLink = $("receipt-explorer-link");
+    explorerLink.hidden = !explorerUrl;
+    if (explorerUrl) explorerLink.href = explorerUrl;
+
+    verifiedWallet.textContent = shorten(receipt.from, 12, 10);
+    verifiedWallet.title = receipt.from;
+    verifiedWalletNote.textContent = `block ${receipt.blockNumber}에서 ${formatTokenAmount(after.toString(), decimals, symbol)} 사후 잔액 검증 완료`;
+  }
+
   function renderState(state, { addLogs = true } = {}) {
     latestState = state;
     const hasProposal = Boolean(state.proposal);
@@ -699,6 +783,15 @@
     setFlowStage("stage-response", hasProposal, hasProposal ? "검증됨" : "대기");
     setFlowStage("stage-proposal", hasProposal);
     setFlowStage("stage-approval", approved, approved ? "기록됨" : "대기");
+    setFlowStage(
+      "stage-preflight",
+      Boolean(evaluation),
+      evaluation?.accepted === false ? "거절" : "통과",
+      evaluation?.accepted === false,
+    );
+    setFlowStage("stage-wallet-confirm", ["submitted", "confirmed"].includes(transaction.status), "확인됨");
+    setFlowStage("stage-submit", ["submitted", "confirmed"].includes(transaction.status), "제출됨");
+    setFlowStage("stage-receipt", confirmed, "확인됨");
 
     $("intent-text").textContent = state.request?.intentText || "—";
     intentInput.value = state.request?.intentText || "";
@@ -745,6 +838,7 @@
     $("proposal-revision-source-hash").textContent = state.proposalSha256 || "—";
     proposalRevisionError.textContent = "";
     renderCandidateEvaluation(evaluation);
+    renderReceiptEvidence(state);
 
     executionPlanSection.hidden = !approved || ["submitted", "confirmed", "rejected"].includes(transaction.status);
     $("execution-mode-title").textContent = metamaskMode ? "MetaMask 테스트넷 실행" : "로컬 Anvil 제어 실행";
@@ -760,6 +854,7 @@
           ? metamaskMode ? "MetaMask 사용자 확인 대기" : "브로드캐스트 가능"
           : "브로드캐스트 불가";
     $("broadcast-reason").textContent = transaction.reason || "정확한 거래 요청이 아직 없습니다.";
+    broadcastState.className = `broadcast-state ${confirmed ? "confirmed" : submitted ? "submitted" : transaction.eligibleForBroadcast ? "eligible" : rejected ? "rejected" : "blocked"}`;
 
     if (addLogs) {
       (state.logs || []).forEach((line) => appendLog(localizeAuditLog(line), line.includes("중단") ? "warn" : "success"));
@@ -834,6 +929,14 @@
       setBusy(false);
       renderWalletPanel();
     }
+  });
+
+  $("copy-transaction-hash").addEventListener("click", (event) => {
+    void copyText(latestState?.transaction?.receipt?.transactionHash, event.currentTarget);
+  });
+
+  $("copy-receipt-hash").addEventListener("click", (event) => {
+    void copyText(latestState?.transaction?.receipt?.receiptSha256, event.currentTarget);
   });
 
   intentForm.addEventListener("submit", async (event) => {
