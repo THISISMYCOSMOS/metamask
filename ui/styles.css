@@ -279,6 +279,13 @@ h2 { margin-bottom: 0; font-size: 18px; letter-spacing: -0.02em; }
 }
 .approval-form button { padding: 0 16px; }
 
+.execution-plan-section { padding: 20px; border: 1px solid var(--rule); background: var(--panel); }
+.execution-plan-form { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(150px, 0.8fr) minmax(130px, 0.6fr) auto; gap: 8px; align-items: end; }
+.execution-plan-form label { color: var(--muted); font-size: 11px; }
+.execution-plan-form input { display: block; width: 100%; margin-top: 7px; border: 1px solid var(--rule); border-radius: 0; outline: 0; background: #050505; color: var(--ink); padding: 10px; font: 11px/1 var(--mono); }
+.execution-plan-form input:focus { border-color: var(--orange); }
+.execution-plan-form button { min-height: 37px; border: 1px solid var(--orange); border-radius: 0; background: var(--orange); color: #090909; padding: 0 14px; font-weight: 800; }
+
 .evaluation-section { padding: 20px; border: 1px solid var(--rule); background: var(--panel); }
 .candidate-result { padding: 7px 9px; border: 1px solid var(--rule); font: 800 11px/1 var(--mono); }
 .candidate-result.accepted { border-color: var(--green); color: var(--green); }
@@ -328,6 +335,20 @@ h2 { margin-bottom: 0; font-size: 18px; letter-spacing: -0.02em; }
 .terminal-line.command { color: var(--ink); }
 .terminal-line.dim { color: var(--muted); }
 
+.wallet-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 28px;
+  border-top: 1px solid var(--rule);
+  background: #070707;
+}
+.wallet-panel strong { display: block; margin: 5px 0 4px; color: var(--ink); font: 700 12px/1.25 var(--mono); }
+.wallet-panel p { margin: 0; }
+.wallet-panel button { flex: 0 0 auto; border: 1px solid var(--orange); background: transparent; color: var(--orange); padding: 10px 14px; font-weight: 800; }
+.wallet-panel button:hover { background: var(--orange); color: #090909; }
+
 .intent-form { padding: 20px 28px 24px; border-top: 1px solid var(--rule); background: #090909; }
 .intent-form label { display: block; margin-bottom: 9px; color: var(--orange); font: 700 11px/1 var(--mono); }
 .intent-form textarea { width: 100%; padding: 12px; resize: vertical; line-height: 1.55; }
@@ -364,6 +385,8 @@ h2 { margin-bottom: 0; font-size: 18px; letter-spacing: -0.02em; }
   .review-grid, .binding-section { grid-template-columns: 1fr; }
   .candidate-meta div, .evaluation-list dl div { grid-template-columns: 1fr; }
   .approval-form, .broadcast-state { grid-template-columns: 1fr; }
+  .execution-plan-form { grid-template-columns: 1fr; }
+  .wallet-panel { align-items: flex-start; flex-direction: column; }
   .approval-form button { padding: 11px 14px; }
   .intent-actions { align-items: stretch; flex-direction: column; }
   .bps-input-row { grid-template-columns: 1fr; }

@@ -10,15 +10,136 @@ LLM 기반 불변식 합성과 실행 직전 검증을 통한 에이전트 거�
 
 | 디렉터리 | 언어 | 역할 |
 | --- | --- | --- |
+| `backend/` | Python | Gemini 무료 티어 구조화 출력 → 공유 정책 제안 컴파일 |
+| `core/` | Python | 공유 계약, 정확한 해시 승인, 로컬 시뮬레이션, 결정론적 판정, 실행 게이트 |
 | `chain/` | TS (viem + anvil) | 포크 환경, 위임 실행 경로, 상태 스냅샷 → trace JSON |
 | `verifier/` | Python | 불변식 스키마 + 결정론적 평가기 |
-| `synth/` | Python | 자연어 의도 → 불변식 JSON 합성 |
+| `synth/` | Python | 기존 오프라인 fixture 기반 자연어 계약 테스트 |
 | `specs/` | Solidity interface | 결과 기반 enforcer 인터페이스 명세 |
 | `traces/` | JSON | 실행 트레이스 (커밋 대상 산출물) |
 | `docs/` | Markdown | baseline 구성, 페이즈별 합격 기준 |
 
-`chain/`과 `verifier/`의 유일한 접점은 `traces/*.json` 이다. 불변식 스키마는
-`verifier/`에 단일 정의하고 `synth/`가 같은 스키마를 공유한다.
+기존 Phase 1~3 재현 경로에서 `chain/`과 `verifier/`의 접점은 `traces/*.json`이다.
+새 제어 실행 경로는 `backend/`와 `core/`가 같은 Pydantic 계약을 직접 공유한다.
+
+## 현재 제어 실행 경로
+
+`자연어 입력 → 실제 Gemini 구조화 출력 → 단일 정책 제안 → 정확한 제안 해시 승인 →`
+`로컬 Anvil 스냅샷에서 예정 전송 실행 → 상태 복원 확인 → 결정론적 판정 → 승인 시 1회 전송`
+
+- Backend는 Gemini Developer API 무료 티어를 기본으로 사용하며, fixture fallback 없이 실패 시 제안을 만들지 않는다.
+- LLM은 체인·지갑·토큰·식별자를 선택할 수 없고 ERC-20 잔고 하한만 제안한다.
+- Core는 시뮬레이션된 calldata·nonce·gas·잔고 변화와 실행 직전 컨텍스트를 다시 검증한다.
+- Core의 직접 외부 전송 구현은 loopback Anvil 전용이다. 브라우저 MetaMask 테스트넷 경로와
+  Agent Wallet CLI 어댑터는 아래처럼 별도 경계로 유지한다.
+- `ui/`의 자연어 제출 경로는 Gemini Backend/Core 공유 계약에 연결되어 있다. 구조화 편집기는
+  기존 회귀 테스트용으로만 남아 있으며 화면에서는 노출하지 않는다. UI는 현재 컴파일과
+  정확한 해시 승인까지만 제공하고 실행 API에는 연결하지 않는다.
+- `chain/src/delegated-floor-gate.ts`는 단일 root delegation의 실제 `redeemDelegations`
+  calldata를 디코딩해 delegate·delegator·manager·토큰·수취인·금액을 직접 대조한다. 이 게이트의
+  승인 결과는 `agent-wallet-cli.ts`가 활성 Agent Wallet 주소까지 다시 대조한 뒤 공식 `mm wallet
+  send-transaction --wait` 명령에 정확한 outer transaction으로 전달한다. 실제 원격 실행에는
+  별도의 Agent Wallet 로그인·초기화와 서명된 delegation이 필요하다.
+
+외부 LLM 호출 없이 공유 계약과 전체 제어 경로를 검증하려면:
+
+```powershell
+uv run --cache-dir tmp\uv-cache --project verifier python -m unittest `
+  backend.test_gemini_compiler backend.test_policy_compiler `
+  core.test_core core.test_integration `
+  core.test_rpc_simulator -v
+
+cd ui
+uv run --cache-dir ..\tmp\uv-cache --project ..\verifier python -m unittest test_server -v
+
+cd ..\chain
+npm test
+```
+
+실제 Gemini 컴파일에는 Google AI Studio의 `GEMINI_API_KEY`가 필요하다.
+`GEMINI_MODEL`의 기본값은 `gemini-3.5-flash-lite`다. 무료 티어 입력은 Google 제품 개선에
+사용될 수 있으므로 비밀키나 비공개 지갑 메타데이터를 자연어 입력에 포함하지 않는다.
+실패 시 오프라인 응답으로 자동 전환하지 않는다.
+
+### 로컬 제어 실행 프로그램
+
+UI는 승인 이후 예정 ERC-20 전송을 받아 다음 세로 흐름을 실제로 실행한다.
+
+`예정 거래 입력 → loopback Anvil snapshot 실행 → receipt/잔고 변화 확인 → evm_revert 복원 →`
+`결정론적 판정 → 컨텍스트 재확인 → 승인 시 동일 거래 1회 제출`
+
+브라우저는 수취인·전송량·선택적 gas limit만 보낼 수 있다. chain·wallet·token은 사용자가
+승인한 제안과 서버의 제어 실행 설정에서 가져오며, 원격 RPC는 Core가 거부한다. 로컬 데모는
+다음처럼 별도 Anvil에서 실행한다.
+
+```powershell
+# 터미널 1
+anvil --port 18547 --chain-id 31337
+
+# 터미널 2: 출력되는 Deployed to 주소를 아래 CONTROLLED_TOKEN_ADDRESS에 사용
+forge create src/TestERC20.sol:TestERC20 --root core/test_contract `
+  --rpc-url http://127.0.0.1:18547 `
+  --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 `
+  --unlocked --broadcast --constructor-args 1000000000000000000000000
+
+$env:ANVIL_RPC_URL = "http://127.0.0.1:18547"
+$env:CONTROLLED_CHAIN_ID = "31337"
+$env:CONTROLLED_WALLET_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+$env:CONTROLLED_TOKEN_ADDRESS = "<Deployed to 주소>"
+$env:CONTROLLED_TOKEN_SYMBOL = "CTT"
+$env:CONTROLLED_TOKEN_DECIMALS = "18"
+$env:GEMINI_API_KEY = "<Google AI Studio key>"
+
+uv run --env-file .env --cache-dir tmp\uv-cache --project verifier python ui\server.py
+```
+
+`CONTROLLED_*` 중 하나라도 설정하면 다섯 값을 모두 요구한다. 실행 API는 `ANVIL_RPC_URL`이
+없거나 loopback Anvil이 아니면 실패하며, 동일 승인·수취인·금액·gas plan의 재제출을 현재
+서버 프로세스에서 거부한다. 이것은 로컬 연구 프로그램이며 Agent Wallet 네이티브 집행이나
+원격 체인 전송이 아니다.
+
+### MetaMask devnet/testnet 실행
+
+테스트넷 ERC-20을 MetaMask 계정으로 받은 뒤 `.env`에 공개 바인딩 정보를 설정한다. 지갑
+주소는 환경변수로 고정하지 않고 브라우저에서 연결된 MetaMask 계정을 사용한다.
+
+```dotenv
+METAMASK_CHAIN_ID=<MetaMask에 추가한 devnet/testnet chain id>
+METAMASK_TOKEN_ADDRESS=<해당 네트워크의 테스트 ERC-20 주소>
+METAMASK_TOKEN_SYMBOL=TESTUSDC
+METAMASK_TOKEN_DECIMALS=6
+```
+
+서버를 `uv run --env-file .env ...`로 실행하고 화면에서 MetaMask를 연결한다. 자연어 정책은
+연결된 `chainId + wallet`과 서버의 토큰 정보에 결합된다. 승인 후 예정 거래를 제출하면
+브라우저가 MetaMask RPC로 `balanceOf`, nonce, `eth_call`, gas estimate를 구하고 서버가
+정책 하한과 정확한 ERC-20 calldata를 결정론적으로 검사한다. 통과한 요청만
+`eth_sendTransaction`으로 MetaMask 확인창에 전달된다.
+
+전송 후 브라우저는 테스트넷 영수증을 기다리고 영수증 블록의 토큰 잔고를 다시 읽는다. 서버는
+성공 status, transaction/from/to 결합, 정확히 한 개의 ERC-20 `Transfer` 이벤트, 승인된 하한 이상인
+사후 잔고를 모두 확인해야 `wallet-confirmed`로 기록한다.
+
+이 경로는 devnet/testnet 통합용 **애플리케이션 수준 게이트**다. MetaMask 밖에서 보내는
+거래를 막는 지갑 네이티브 정책은 아니며, 실제 서명·전송은 MetaMask 확인창에서 사용자가 결정한다.
+
+### MetaMask Agent Wallet 실행 어댑터
+
+공식 Agent Wallet CLI가 준비된 환경에서는 실행 게이트의 `send`에
+`createAgentWalletCliSender()`를 주입한다. 어댑터는 먼저 `mm wallet address`를 호출해 활성 지갑이
+검증된 delegation의 delegate와 정확히 같은지 확인하고, 이후에만 chain/to/value/data/gas/nonce가
+고정된 raw transaction을 `mm wallet send-transaction --wait`로 한 번 전달한다. 트랜잭션 해시가
+하나로 확인되지 않으면 성공으로 처리하지 않는다.
+
+```powershell
+npm install -g @metamask/agent-wallet@latest
+mm login browser
+mm init
+mm doctor --json
+```
+
+CLI 설치와 코드 어댑터 테스트는 실제 자금 이동 증거가 아니다. 원격 실행 완료를 주장하려면 동일
+지갑 주소, 대상 체인, 서명된 delegation, 시뮬레이션 후보, 최종 영수증을 별도로 검증해야 한다.
 
 ## 설계 원칙
 
@@ -28,8 +149,9 @@ LLM이 개입하면 검증자도 같은 프롬프트 인젝션 표면을 갖는�
 
 ## 시작하기
 
-```bash
-cp .env.example .env   # RPC_URL 을 채운다
+```powershell
+Copy-Item .env.example .env
+uv run --env-file .env --cache-dir tmp\uv-cache --project verifier python ui\server.py
 ```
 
 `.env`는 커밋하지 않는다.

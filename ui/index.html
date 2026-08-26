@@ -54,7 +54,7 @@
         </details>
       </section>
 
-      <section class="review-section structured-editor-section">
+      <section class="review-section structured-editor-section" hidden>
         <div class="section-heading">
           <div>
             <p class="section-label">조건 직접 수정</p>
@@ -95,11 +95,11 @@
 
       <section class="review-section binding-section">
         <div>
-          <p class="section-label">검증 기준 블록</p>
+          <p class="section-label">정책 실행 바인딩</p>
           <dl class="binding-list">
             <div><dt>chainId</dt><dd id="fork-chain">—</dd></div>
-            <div><dt>blockNumber</dt><dd id="fork-block">—</dd></div>
-            <div><dt>blockHash</dt><dd id="fork-hash">—</dd></div>
+            <div><dt>wallet</dt><dd id="fork-block">—</dd></div>
+            <div><dt>token</dt><dd id="fork-hash">—</dd></div>
           </dl>
         </div>
         <div>
@@ -125,6 +125,22 @@
         <code id="approval-hash" class="full-hash">—</code>
       </section>
 
+      <section id="execution-plan-section" class="review-section execution-plan-section" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="section-label">예정 거래</p>
+            <h2 id="execution-mode-title">제어 실행</h2>
+          </div>
+        </div>
+        <p id="execution-mode-copy" class="microcopy">승인된 정책의 wallet·token은 변경할 수 없습니다.</p>
+        <form id="execution-plan-form" class="execution-plan-form" autocomplete="off">
+          <label>수취인 주소<input id="execution-recipient" type="text" placeholder="0x…" spellcheck="false" required></label>
+          <label>전송량 (base units)<input id="execution-amount" type="text" inputmode="numeric" placeholder="1000000" required></label>
+          <label>Gas limit (선택)<input id="execution-gas" type="text" inputmode="numeric" placeholder="자동 추정"></label>
+          <button id="execution-submit" type="submit">사전 검증</button>
+        </form>
+      </section>
+
       <section id="candidate-evaluation" class="review-section evaluation-section" hidden>
         <div class="section-heading">
           <div>
@@ -133,7 +149,7 @@
           </div>
           <span id="candidate-result" class="candidate-result">—</span>
         </div>
-        <p class="microcopy">승인한 정책으로 후보 기록을 검사한 결과입니다. 지갑 또는 MetaMask의 실제 거래 결과는 아닙니다.</p>
+        <p class="microcopy">승인한 정책으로 실행 후보를 검사한 결과입니다. MetaMask 경로에서는 지갑 확인 전 사전 판정이며, 실제 체인 영수증과는 별도입니다.</p>
         <dl class="candidate-meta">
           <div><dt>후보 기록 ID (candidateTraceId)</dt><dd id="candidate-trace-id">—</dd></div>
           <div><dt>후보 기록 해시 (candidateTraceSha256)</dt><dd id="candidate-trace-hash">—</dd></div>
@@ -165,12 +181,21 @@
 
       <div id="terminal-output" class="terminal-output" role="log" aria-live="polite" aria-relevant="additions"></div>
 
+      <section class="wallet-panel" aria-label="MetaMask 테스트넷 연결">
+        <div>
+          <p class="section-label">지갑 실행 경로</p>
+          <strong id="wallet-status">MetaMask 연결 안 됨</strong>
+          <p id="wallet-binding" class="microcopy">서버에 테스트넷 토큰 바인딩을 설정하면 연결할 수 있습니다.</p>
+        </div>
+        <button id="wallet-connect" type="button">MetaMask 연결</button>
+      </section>
+
       <form id="intent-form" class="intent-form" autocomplete="off">
         <label for="intent-input">자연어 정책 입력</label>
-        <textarea id="intent-input" rows="3" maxlength="4000" placeholder="예: 포트폴리오 가치를 … 이상으로 유지하고…" required></textarea>
+        <textarea id="intent-input" rows="3" maxlength="4000" placeholder="예: USDC를 20개 이상 남겨줘" required></textarea>
         <div class="intent-actions">
-          <p>자연어만 제출하면 요청 생성 후 AI 응답 대기 상태로 멈춥니다. 조건을 직접 지정하려면 위 구조화된 조건 편집기를 사용하세요.</p>
-          <button type="submit">정책 요청 만들기</button>
+          <p>제출하면 Gemini 무료 API가 ERC-20 잔고 하한 정책으로 해석합니다. 전체 요청을 표현할 수 없거나 API 호출이 실패하면 제안을 만들지 않습니다.</p>
+          <button type="submit">Gemini로 정책 제안 만들기</button>
         </div>
       </form>
     </section>

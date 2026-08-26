@@ -7,12 +7,24 @@
   const intentInput = $("intent-input");
   const approvalForm = $("approval-form");
   const approvalInput = $("approval-input");
+  const executionPlanSection = $("execution-plan-section");
+  const executionPlanForm = $("execution-plan-form");
+  const executionRecipient = $("execution-recipient");
+  const executionAmount = $("execution-amount");
+  const executionGas = $("execution-gas");
+  const executionSubmit = $("execution-submit");
+  const walletConnect = $("wallet-connect");
+  const walletStatus = $("wallet-status");
+  const walletBinding = $("wallet-binding");
   const structuredForm = $("structured-conditions-form");
   const structuredError = $("structured-error");
   const structuredList = $("structured-condition-list");
   const structuredKindSelect = $("structured-kind-select");
   const structuredAddBtn = $("structured-add-btn");
   let busy = false;
+  let walletConfig = { enabled: false };
+  let connectedWallet = null;
+  let latestState = null;
 
   const CANONICAL_KINDS = [
     "portfolioValueFloor",
@@ -21,6 +33,7 @@
     "cumulativeLossCapBps",
   ];
   const KIND_LABELS = {
+    assetBalanceFloor: "ERC-20 잔고 하한",
     portfolioValueFloor: "포트폴리오 최저 가치",
     portfolioDrawdownCapBps: "낙폭 한도 (%)",
     cumulativeLossCap: "누적 손실 한도",
@@ -33,11 +46,15 @@
     cumulativeLossCapBps: "cumulative-loss-cap-bps-structured",
   };
   const COMPILER_SOURCE_LABELS = {
+    "gemini-api": "Gemini 무료 API",
+    "gemini-required": "Gemini 응답 필요",
     "offline-fixture": "오프라인 고정 응답",
     "local-structured-editor": "로컬 구조화 편집기",
     "provider-required": "AI 응답 필요",
   };
   const COMPILER_SOURCE_NOTES = {
+    "gemini-api": "Gemini Developer API의 구조화 JSON 응답을 로컬 계약으로 다시 검증한 결과입니다. 무료 티어 입력은 Google 제품 개선에 사용될 수 있습니다.",
+    "gemini-required": "자연어 요청을 제출하면 Gemini Developer API를 호출합니다. API 키가 없거나 호출이 실패하면 제안을 만들지 않습니다.",
     "offline-fixture": "저장된 오프라인 테스트 응답과 결합한 결과입니다. 실시간 AI 호출이 아닙니다.",
     "local-structured-editor": "구조화된 조건 편집기가 로컬에서 동일한 규칙으로 생성했습니다. 실시간 AI 해석 결과가 아닙니다.",
     "provider-required": "현재 입력에 결합된 응답이 없습니다. 자연어만으로는 새 제안이 생성되지 않습니다.",
@@ -329,8 +346,71 @@
     approvalInput.disabled = value;
     intentForm.querySelector("button").disabled = value;
     approvalForm.querySelector("button").disabled = value;
+    executionPlanForm.querySelector("button").disabled = value;
+    executionRecipient.disabled = value;
+    executionAmount.disabled = value;
+    executionGas.disabled = value;
+    walletConnect.disabled = value || !walletConfig.enabled;
     structuredForm.querySelector("button").disabled = value;
     updateStructuredAddAvailability();
+  }
+
+  function parseRpcQuantity(value, field) {
+    if (typeof value !== "string" || !/^0x[0-9a-f]+$/i.test(value)) throw new Error(`${field} RPC 값이 올바르지 않습니다.`);
+    return BigInt(value);
+  }
+
+  function requireAddress(value, field) {
+    if (typeof value !== "string" || !/^0x[0-9a-f]{40}$/i.test(value)) throw new Error(`${field} 주소가 올바르지 않습니다.`);
+    return value.toLowerCase();
+  }
+
+  function encodeBalanceOf(address) {
+    return `0x70a08231${requireAddress(address, "지갑").slice(2).padStart(64, "0")}`;
+  }
+
+  function encodeTransfer(recipient, amount) {
+    const target = requireAddress(recipient, "수취인");
+    const value = BigInt(amount);
+    if (value <= 0n || value >= 1n << 256n) throw new Error("전송량이 올바르지 않습니다.");
+    return `0xa9059cbb${target.slice(2).padStart(64, "0")}${value.toString(16).padStart(64, "0")}`;
+  }
+
+  function delay(milliseconds) {
+    return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+  }
+
+  async function waitForReceipt(provider, transactionHash, timeoutMilliseconds = 180000) {
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < timeoutMilliseconds) {
+      const receipt = await provider.request({
+        method: "eth_getTransactionReceipt",
+        params: [transactionHash],
+      });
+      if (receipt) return receipt;
+      await delay(1500);
+    }
+    throw new Error("MetaMask 거래 영수증 대기 시간이 초과되었습니다. 거래 해시로 상태를 다시 확인하세요.");
+  }
+
+  function renderWalletPanel() {
+    if (!walletConfig.enabled) {
+      walletStatus.textContent = "MetaMask 테스트넷 설정 필요";
+      walletBinding.textContent = "METAMASK_CHAIN_ID와 테스트 토큰 정보를 .env에 설정하세요.";
+      walletConnect.disabled = true;
+      return;
+    }
+    if (!connectedWallet) {
+      walletStatus.textContent = "MetaMask 연결 안 됨";
+      walletBinding.textContent = `chainId ${walletConfig.chainId} · ${walletConfig.tokenSymbol} ${shorten(walletConfig.tokenAddress)}`;
+      walletConnect.textContent = "MetaMask 연결";
+      walletConnect.disabled = busy;
+      return;
+    }
+    walletStatus.textContent = `${shorten(connectedWallet.walletAddress)} 연결됨`;
+    walletBinding.textContent = `chainId ${connectedWallet.chainId} · ${walletConfig.tokenSymbol} ${shorten(walletConfig.tokenAddress)}`;
+    walletConnect.textContent = "연결 다시 확인";
+    walletConnect.disabled = busy;
   }
 
   function setStatus(message, isError = false) {
@@ -371,6 +451,7 @@
   }
 
   function invariantValue(invariant) {
+    if (invariant.kind === "assetBalanceFloor") return `최소 잔고 ${invariant.assetBalanceFloor} base-units`;
     if (invariant.kind === "portfolioValueFloor") return `최저 가치 원시값 ${invariant.floorValue1e18}`;
     if (invariant.kind === "portfolioDrawdownCapBps") {
       return `허용 낙폭 ${bpsLabel(invariant.maxDrawdownBps)} / 원시값 ${invariant.maxDrawdownBps} bps`;
@@ -387,7 +468,8 @@
   function renderInvariants(state) {
     const list = $("invariant-list");
     list.replaceChildren();
-    const invariants = state.proposal?.policy?.invariants;
+    const policy = state.proposal?.policy;
+    const invariants = policy?.kind === "assetBalanceFloor" ? [policy] : policy?.invariants;
     if (!Array.isArray(invariants) || invariants.length === 0) {
       const allowed = state.request?.allowedInvariants || [];
       const empty = document.createElement("p");
@@ -403,7 +485,7 @@
       const id = document.createElement("code");
       const value = document.createElement("p");
       kind.textContent = `${KIND_LABELS[invariant.kind] || "지원 조건"} (${invariant.kind})`;
-      id.textContent = invariant.id;
+      id.textContent = invariant.id || invariant.policyId || "—";
       value.textContent = invariantValue(invariant);
       heading.append(kind, id);
       card.append(heading, value);
@@ -429,6 +511,7 @@
   };
 
   function localizeRationale(item, invariants) {
+    if (typeof item === "string") return item;
     const invariant = invariants.find((entry) => entry.id === item.invariantId);
     const label = KIND_LABELS[invariant?.kind] || item.invariantId;
     if (item.summary === "The stated minimum portfolio value is represented as USD scaled by 1e18.") {
@@ -555,12 +638,20 @@
   }
 
   function renderState(state, { addLogs = true } = {}) {
+    latestState = state;
     const hasProposal = Boolean(state.proposal);
     const approved = Boolean(state.approval);
     const evaluation = state.candidateEvaluation;
     const evaluationInvalid = evaluation?.status === "evaluation-invalid";
     const rejected = evaluation?.accepted === false;
-    const stageLabel = evaluationInvalid
+    const transaction = state.transaction || {};
+    const submitted = transaction.status === "submitted";
+    const metamaskMode = transaction.mode === "metamask" || (
+      walletConfig.enabled && connectedWallet && state.proposal?.policy?.walletAddress?.toLowerCase() === connectedWallet.walletAddress
+    );
+    const stageLabel = submitted
+      ? metamaskMode ? "MetaMask 테스트넷 제출됨" : "로컬 전송 제출됨"
+      : evaluationInvalid
       ? "승인 기록됨 — 평가 입력 무효"
       : rejected
         ? "후보 거절"
@@ -571,9 +662,13 @@
             : "LLM 응답 대기";
 
     $("stage-badge").textContent = stageLabel;
-    $("stage-badge").className = `stage-badge ${evaluationInvalid ? "invalid" : rejected ? "rejected" : approved ? "approved" : hasProposal ? "review" : "waiting"}`;
+    $("stage-badge").className = `stage-badge ${submitted ? "approved" : evaluationInvalid ? "invalid" : rejected ? "rejected" : approved ? "approved" : hasProposal ? "review" : "waiting"}`;
     setStatus(
-      evaluationInvalid
+      submitted
+        ? metamaskMode
+          ? "결정론적 사전 판정 후 MetaMask가 테스트넷 거래 해시를 반환했습니다. 영수증 검증은 남아 있습니다."
+          : "결정론적 게이트 승인 후 로컬 Anvil에 거래를 1회 제출했습니다."
+        : evaluationInvalid
         ? `정책 승인은 기록되었지만 후보 평가 입력이 유효하지 않습니다: ${localizeEvaluationReason(evaluation.reason)}`
         : rejected
           ? "승인된 정책이 G3 기반 후보를 거절했습니다. 거래 요청과 지갑 호출은 없습니다."
@@ -610,11 +705,17 @@
       "기록된 가정 없음",
     );
 
-    const fork = state.proposal?.policy?.fork || state.request?.fork || {};
-    $("fork-chain").textContent = String(fork.chainId ?? "—");
-    $("fork-block").textContent = String(fork.blockNumber ?? "—");
-    $("fork-hash").textContent = shorten(fork.blockHash, 12, 10);
-    $("fork-hash").title = fork.blockHash || "";
+    const policy = state.proposal?.policy;
+    const coreBinding = policy?.kind === "assetBalanceFloor";
+    const fork = policy?.fork || state.request?.fork || {};
+    const chainId = coreBinding ? policy.chainId : fork.chainId;
+    const wallet = coreBinding ? policy.walletAddress : fork.blockNumber;
+    const token = coreBinding ? policy.tokenAddress : fork.blockHash;
+    $("fork-chain").textContent = String(chainId ?? "—");
+    $("fork-block").textContent = coreBinding ? shorten(wallet, 10, 8) : String(wallet ?? "—");
+    $("fork-block").title = coreBinding ? wallet || "" : "";
+    $("fork-hash").textContent = shorten(token, 12, 10);
+    $("fork-hash").title = token || "";
     $("proposal-hash").textContent = state.proposalSha256 || "—";
     $("approval-hash").textContent = state.approvalSha256 || "—";
     $("approval-state").textContent = approved ? "승인 기록됨" : "미승인";
@@ -624,13 +725,20 @@
     approvalInput.value = hasProposal && !approved ? `APPROVE ${state.proposalSha256}` : "";
     renderCandidateEvaluation(evaluation);
 
-    const transaction = state.transaction || {};
-    $("broadcast-title").textContent = transaction.eligibleForBroadcast ? "브로드캐스트 가능" : "브로드캐스트 불가";
+    executionPlanSection.hidden = !approved || ["submitted", "rejected"].includes(transaction.status);
+    $("execution-mode-title").textContent = metamaskMode ? "MetaMask 테스트넷 실행" : "로컬 Anvil 제어 실행";
+    $("execution-mode-copy").textContent = metamaskMode
+      ? "MetaMask가 제공한 잔고·nonce·eth_call·gas estimate를 정책과 결합해 판정한 뒤, 허용된 정확한 ERC-20 거래만 지갑 확인창으로 보냅니다."
+      : "수취인과 전송량을 입력하면 스냅샷 시뮬레이션 후 결정론적 게이트가 허용한 경우에만 로컬 Anvil에 1회 제출합니다.";
+    executionSubmit.textContent = metamaskMode ? "사전 검증 후 MetaMask 확인" : "시뮬레이션 후 실행";
+    $("broadcast-title").textContent = transaction.eligibleForBroadcast
+      ? metamaskMode ? "MetaMask 사용자 확인 대기" : "브로드캐스트 가능"
+      : "브로드캐스트 불가";
     $("broadcast-reason").textContent = transaction.reason || "정확한 거래 요청이 아직 없습니다.";
 
     if (addLogs) {
       (state.logs || []).forEach((line) => appendLog(localizeAuditLog(line), line.includes("중단") ? "warn" : "success"));
-      const stageNames = { "request-created": "요청 생성", "proposal-ready": "제안 준비", approved: "승인 기록" };
+      const stageNames = { "request-created": "요청 생성", "proposal-ready": "제안 준비", approved: "승인 기록", executed: "로컬 전송 제출", "wallet-authorized": "MetaMask 확인 대기", "wallet-submitted": "MetaMask 테스트넷 제출", rejected: "게이트 거절" };
       appendLog(`진행 단계=${stageNames[state.stage] || state.stage} · 요청=${shorten(state.requestSha256)}`, "dim");
     }
     $("connection-dot").classList.add("connected");
@@ -643,10 +751,40 @@
     return payload;
   }
 
+  async function connectMetaMask() {
+    if (!walletConfig.enabled) throw new Error("MetaMask 테스트넷 바인딩이 서버에 설정되지 않았습니다.");
+    const provider = window.ethereum;
+    if (!provider || typeof provider.request !== "function") throw new Error("이 브라우저에서 MetaMask를 찾을 수 없습니다.");
+    const accounts = await provider.request({ method: "eth_requestAccounts" });
+    const chainHex = await provider.request({ method: "eth_chainId" });
+    if (!Array.isArray(accounts) || accounts.length === 0) throw new Error("MetaMask 계정이 연결되지 않았습니다.");
+    const chainId = Number(parseRpcQuantity(chainHex, "chainId"));
+    if (chainId !== walletConfig.chainId) throw new Error(`MetaMask 네트워크를 chainId ${walletConfig.chainId}로 변경하세요.`);
+    connectedWallet = { walletAddress: requireAddress(accounts[0], "MetaMask"), chainId };
+    renderWalletPanel();
+    appendLog(`MetaMask 연결: ${shorten(connectedWallet.walletAddress)} chainId=${chainId}`, "success");
+  }
+
+  function invalidateWalletConnection(message) {
+    connectedWallet = null;
+    renderWalletPanel();
+    appendLog(message, "warn");
+  }
+
+  function installWalletListeners() {
+    const provider = window.ethereum;
+    if (!provider || typeof provider.on !== "function") return;
+    provider.on("accountsChanged", () => invalidateWalletConnection("MetaMask 계정이 변경되어 정책 바인딩을 다시 생성해야 합니다."));
+    provider.on("chainChanged", () => invalidateWalletConnection("MetaMask 네트워크가 변경되어 정책 바인딩을 다시 생성해야 합니다."));
+  }
+
   async function loadState() {
     setBusy(true);
     try {
       appendLog("정책 상태 불러오는 중", "dim");
+      walletConfig = await requestJson("/api/wallet/config");
+      renderWalletPanel();
+      installWalletListeners();
       renderState(await requestJson("/api/policy"));
     } catch (error) {
       const message = error instanceof Error ? error.message : "정책 상태를 불러올 수 없습니다.";
@@ -654,21 +792,41 @@
       appendLog(message, "error");
     } finally {
       setBusy(false);
+      renderWalletPanel();
     }
   }
+
+  walletConnect.addEventListener("click", async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await connectMetaMask();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "MetaMask 연결 실패";
+      setStatus(message, true);
+      appendLog(message, "error");
+    } finally {
+      setBusy(false);
+      renderWalletPanel();
+    }
+  });
 
   intentForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (busy) return;
     const intent = intentInput.value.trim();
     if (!intent) return;
+    if (walletConfig.enabled && !connectedWallet) {
+      setStatus("먼저 MetaMask 테스트넷 지갑을 연결하세요.", true);
+      return;
+    }
     setBusy(true);
     appendLog(`intent 제출: ${intent}`, "command");
     try {
       const state = await requestJson("/api/policy/intent", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Policy-Console": "1" },
-        body: JSON.stringify({ intent }),
+        body: JSON.stringify({ intent, walletBinding: connectedWallet }),
       });
       terminal.replaceChildren();
       renderState(state);
@@ -699,6 +857,113 @@
       const message = error instanceof Error ? error.message : "approval failed";
       setStatus(`승인 입력 불일치: ${message}`, true);
       appendLog(`approval invalid: ${message}`, "error");
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  executionPlanForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (busy) return;
+    const recipientAddress = executionRecipient.value.trim();
+    const amountBaseUnits = executionAmount.value.trim();
+    const gasLimit = executionGas.value.trim() || null;
+    setBusy(true);
+    appendLog(`예정 거래 제출: recipient=${recipientAddress} amount=${amountBaseUnits}`, "command");
+    try {
+      const policy = latestState?.proposal?.policy;
+      const metamaskMode = Boolean(
+        walletConfig.enabled && connectedWallet && policy?.walletAddress?.toLowerCase() === connectedWallet.walletAddress,
+      );
+      if (walletConfig.enabled && !metamaskMode) throw new Error("현재 승인 정책과 MetaMask 계정이 일치하지 않습니다. 정책을 다시 생성하세요.");
+      if (metamaskMode) {
+        const provider = window.ethereum;
+        const tokenAddress = requireAddress(policy.tokenAddress, "토큰");
+        const sender = connectedWallet.walletAddress;
+        const transferData = encodeTransfer(recipientAddress, amountBaseUnits);
+        const requestBase = { from: sender, to: tokenAddress, value: "0x0", data: transferData };
+        const [balanceResult, nonceResult, transferCallResult] = await Promise.all([
+          provider.request({ method: "eth_call", params: [{ to: tokenAddress, data: encodeBalanceOf(sender) }, "latest"] }),
+          provider.request({ method: "eth_getTransactionCount", params: [sender, "pending"] }),
+          provider.request({ method: "eth_call", params: [requestBase, "latest"] }),
+        ]);
+        const gasHex = gasLimit
+          ? `0x${BigInt(gasLimit).toString(16)}`
+          : await provider.request({ method: "eth_estimateGas", params: [requestBase] });
+        const authorized = await requestJson("/api/policy/wallet/authorize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Policy-Console": "1" },
+          body: JSON.stringify({
+            walletAddress: sender,
+            chainId: connectedWallet.chainId,
+            recipientAddress,
+            amountBaseUnits,
+            gasLimit: parseRpcQuantity(gasHex, "gasLimit").toString(),
+            assetBalance: parseRpcQuantity(balanceResult, "assetBalance").toString(),
+            senderNonce: parseRpcQuantity(nonceResult, "senderNonce").toString(),
+            transferCallResult,
+          }),
+        });
+        renderState(authorized);
+        if (!authorized.transaction?.eligibleForBroadcast || !authorized.transaction?.walletRequest) return;
+
+        const currentAccounts = await provider.request({ method: "eth_accounts" });
+        const currentChain = Number(parseRpcQuantity(await provider.request({ method: "eth_chainId" }), "chainId"));
+        if (!Array.isArray(currentAccounts) || currentAccounts[0]?.toLowerCase() !== sender || currentChain !== connectedWallet.chainId) {
+          throw new Error("사전 판정 후 MetaMask 계정 또는 네트워크가 변경되었습니다. 전송을 중단합니다.");
+        }
+        const [freshBalance, freshNonce] = await Promise.all([
+          provider.request({ method: "eth_call", params: [{ to: tokenAddress, data: encodeBalanceOf(sender) }, "latest"] }),
+          provider.request({ method: "eth_getTransactionCount", params: [sender, "pending"] }),
+        ]);
+        if (
+          parseRpcQuantity(freshBalance, "assetBalance") !== parseRpcQuantity(balanceResult, "assetBalance")
+          || parseRpcQuantity(freshNonce, "senderNonce") !== parseRpcQuantity(nonceResult, "senderNonce")
+        ) {
+          throw new Error("사전 판정 후 잔고 또는 nonce가 변경되었습니다. 전송을 중단하고 다시 판정하세요.");
+        }
+        appendLog("MetaMask 사용자 거래 확인 요청", "command");
+        const transactionHash = await provider.request({
+          method: "eth_sendTransaction",
+          params: [authorized.transaction.walletRequest],
+        });
+        const submitted = await requestJson("/api/policy/wallet/submitted", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Policy-Console": "1" },
+          body: JSON.stringify({ planSha256: authorized.transaction.planSha256, transactionHash }),
+        });
+        renderState(submitted);
+        appendLog("테스트넷 영수증 대기", "dim");
+        const receipt = await waitForReceipt(provider, transactionHash);
+        const receiptBlock = receipt.blockNumber;
+        if (typeof receiptBlock !== "string") throw new Error("MetaMask 영수증에 blockNumber가 없습니다.");
+        const confirmedBalance = await provider.request({
+          method: "eth_call",
+          params: [{ to: tokenAddress, data: encodeBalanceOf(sender) }, receiptBlock],
+        });
+        const confirmed = await requestJson("/api/policy/wallet/confirmed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Policy-Console": "1" },
+          body: JSON.stringify({
+            planSha256: authorized.transaction.planSha256,
+            transactionHash,
+            receipt,
+            assetBalanceAfter: parseRpcQuantity(confirmedBalance, "assetBalanceAfter").toString(),
+          }),
+        });
+        renderState(confirmed);
+      } else {
+        const state = await requestJson("/api/policy/execute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Policy-Console": "1" },
+          body: JSON.stringify({ recipientAddress, amountBaseUnits, gasLimit }),
+        });
+        renderState(state);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "controlled execution failed";
+      setStatus(message, true);
+      appendLog(message, "error");
     } finally {
       setBusy(false);
     }

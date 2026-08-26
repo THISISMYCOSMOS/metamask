@@ -181,6 +181,15 @@ caveat 배열에서 앞 index에서 막힌 회차일수록 가스가 적고, NC3
 동일)으로 **단 하나의 root delegation**을 서명해서 재사용하고, 그 delegation으로 500 USDC
 전송을 **20회 연속** 성공시켜 delegator의 USDC를 10,000 → 0으로 고갈시킨다.
 
+`src/cumulative-loss.ts`는 취약한 baseline을 입증하는 **공격 재현 경로**다. 이 파일의 직접
+위임 실행을 제품 전송 경로로 재사용하지 않으며, 실행 게이트를 끼워 G3 공격을 무효화하지도
+않는다. 제품 후보용 `src/delegated-floor-gate.ts`는 승인·정책·체인 컨텍스트·시뮬레이션된
+토큰 효과·실제 바깥쪽 위임 calldata의 결합을 모두 확인한 뒤에만 주입된 `send`를 1회 호출한다.
+`src/agent-wallet-cli.ts`가 이 게이트의 주입형 `send`를 공식 MetaMask Agent Wallet CLI에 연결한다.
+활성 Agent Wallet 주소가 candidate의 delegate와 다르거나 `--wait` 결과에서 트랜잭션 해시 하나를
+확인하지 못하면 fail closed로 중단한다. 이 코드 연결과 실제 Agent Wallet 로그인·서명된 delegation·
+원격 체인 영수증은 별도의 완료 조건이다.
+
 ### 무엇을 증명하는가
 
 - 20회차 **전부 성공**(revert 0건) — G3의 정의가 "baseline을 전부 통과하면서 손실이 난다"
@@ -258,8 +267,8 @@ G2(포트 8545/8546)의 PC0 상태(400 USDC 이체, period 소진량 등)가 G3(
 실패 진단은 `traces/cumulative-loss.failed.json`에 따로 기록해 마지막 성공 정본을
 덮어쓰지 않는다.
 
-npm script alias는 없다 — `chain/package.json`은 이 작업의 편집 금지 파일이라 위 명령을
-Git Bash에서 직접 실행한다.
+G2/G3 포크 재현은 위 Bash 스크립트를 직접 실행한다. `npm test`는 네트워크를 사용하지 않는
+실행 게이트 단위 테스트만 실행하며 포크 재현을 대신하지 않는다.
 
 ## 구성
 
@@ -274,6 +283,8 @@ Git Bash에서 직접 실행한다.
 | `src/state-digest.ts` | G1 정본 상태 다이제스트 (delegation 해시 재계산·대조 포함) |
 | `src/determinism-report.ts` | G1 2회 실행 비교 → `traces/determinism.json` |
 | `src/cumulative-loss.ts` | G3 → `traces/cumulative-loss.json` |
+| `src/delegated-floor-gate.ts` | 승인·정책·시뮬레이션 효과·위임 calldata를 묶는 제품 후보 실행 게이트 |
+| `src/agent-wallet-cli.ts` | 검증된 outer transaction만 공식 MetaMask Agent Wallet CLI로 전달하는 실행 어댑터 |
 | `src/g3-determinism-report.ts` | G3 2회 실행 비교 → `traces/g3-determinism.json` |
 | `scripts/reproduce.sh` | 배포+G2+상태 다이제스트를 한 명령으로 |
 | `scripts/verify-determinism.sh` | `reproduce.sh`를 포트 분리해 2회 실행 후 비교 |
