@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "test": "npm run test:pre-execution",
+    "agent-wallet:execute": "tsx src/run-agent-wallet.ts",
     "deploy": "tsx src/deploy.ts",
     "negative-control": "tsx src/negative-control.ts",
-    "test:pre-execution": "tsx --test src/pre-execution-gate.test.ts src/delegated-floor-gate.test.ts src/agent-wallet-cli.test.ts"
+    "test:pre-execution": "tsx --test src/pre-execution-gate.test.ts src/delegated-floor-gate.test.ts src/agent-wallet-cli.test.ts src/agent-wallet-runtime.test.ts"
   },
   "dependencies": {
     "viem": "^2.21.0"

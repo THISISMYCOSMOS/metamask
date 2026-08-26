@@ -59,7 +59,7 @@ export interface BalanceFloorApproval {
   confirmation: string;
   proposal: {
     schemaVersion: 1;
-    kind: "policy-proposal";
+    kind: "policy-proposal" | "revised-policy-proposal";
     policySha256: `0x${string}`;
     policy: {
       schemaVersion: 1;

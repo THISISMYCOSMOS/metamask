@@ -19,7 +19,11 @@ sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(VERIFIER_DIR))
 
 from backend.compiler_contract import CompilerUnavailableError, ProviderResponseError  # noqa: E402
-from backend.policy_service import PolicyProposalService  # noqa: E402
+from backend.policy_service import (  # noqa: E402
+    PolicyProposalService,
+    PolicyRevisionError,
+    revise_asset_balance_floor,
+)
 from core.canonical import canonical_sha256  # noqa: E402
 from core.execution_service import Erc20ExecutionService, anvil_sender, live_context_reader  # noqa: E402
 from core.gate import ExecutionGate  # noqa: E402
@@ -27,6 +31,7 @@ from core.models import (  # noqa: E402
     ApprovedPolicyEnvelope,
     CompileRequest,
     PolicyProposal as CorePolicyProposal,
+    RevisedPolicyProposal,
 )
 from core.policy_binding import PolicyApprovalError  # noqa: E402
 from core.rpc_simulator import (  # noqa: E402
@@ -208,6 +213,7 @@ def _empty_core_policy_state(request):
         "requestSha256": canonical_sha256(request),
         "proposal": None,
         "proposalSha256": None,
+        "proposalHistory": [],
         "approval": None,
         "approvalSha256": None,
         "candidateEvaluation": None,
@@ -382,6 +388,52 @@ def replace_policy_flow(intent_text, service=None, wallet_binding=None):
         return copy.deepcopy(policy_state)
 
 
+def revise_current_policy(source_proposal_sha256, asset_balance_floor):
+    """Replace the reviewed Core proposal with a fresh user-authored revision."""
+    global policy_state
+    with policy_lock:
+        if policy_state is None or policy_state.get("proposal") is None:
+            raise PolicyRevisionError("수정할 정책 제안이 없습니다")
+        proposal_data = policy_state["proposal"]
+        proposal_kind = proposal_data.get("kind") if isinstance(proposal_data, dict) else None
+        if proposal_kind == "policy-proposal":
+            source = CorePolicyProposal.model_validate(proposal_data)
+        elif proposal_kind == "revised-policy-proposal":
+            source = RevisedPolicyProposal.model_validate(proposal_data)
+        else:
+            raise PolicyRevisionError("실제 LLM 잔액 하한 제안만 이 경로에서 수정할 수 있습니다")
+
+        revised = revise_asset_balance_floor(
+            source,
+            source_proposal_sha256=source_proposal_sha256,
+            asset_balance_floor=asset_balance_floor,
+            revised_by="user",
+        )
+        source_hash = canonical_sha256(source)
+        history = list(policy_state.get("proposalHistory") or [])
+        history.append({"proposalSha256": source_hash, "proposal": source.model_dump(mode="json")})
+        policy_state.update(
+            {
+                "stage": "proposal-ready",
+                "compilerSource": "gemini-api-user-revision",
+                "proposal": revised.model_dump(mode="json"),
+                "proposalSha256": canonical_sha256(revised),
+                "proposalHistory": history,
+                "approval": None,
+                "approvalSha256": None,
+                "candidateEvaluation": None,
+                "transaction": {
+                    "status": "not-created",
+                    "eligibleForBroadcast": False,
+                    "reason": "수정된 제안의 새 해시 승인이 필요합니다.",
+                },
+            }
+        )
+        policy_state["logs"].append("사용자 검토 수정으로 새 미승인 revised-policy-proposal 생성")
+        policy_state["logs"].append("기존 승인·평가·거래 상태 무효화 — 새 proposalSha256 승인 필요")
+        return copy.deepcopy(policy_state)
+
+
 def approve_current_policy(confirmation):
     global policy_state
     with policy_lock:
@@ -390,13 +442,17 @@ def approve_current_policy(confirmation):
         proposal_data = policy_state["proposal"]
         policy_data = proposal_data.get("policy")
         is_core_proposal = (
-            proposal_data.get("kind") == "policy-proposal"
+            proposal_data.get("kind") in {"policy-proposal", "revised-policy-proposal"}
             and "proposalId" in proposal_data
             and isinstance(policy_data, dict)
             and policy_data.get("kind") == "assetBalanceFloor"
         )
         if is_core_proposal:
-            proposal = CorePolicyProposal.model_validate(policy_state["proposal"])
+            proposal = (
+                RevisedPolicyProposal.model_validate(policy_state["proposal"])
+                if proposal_data.get("kind") == "revised-policy-proposal"
+                else CorePolicyProposal.model_validate(policy_state["proposal"])
+            )
             request = CompileRequest.model_validate(policy_state["request"])
             approval = PolicyProposalService.approve(
                 proposal,
@@ -1029,6 +1085,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if self.path in {
             "/api/policy/intent",
+            "/api/policy/revise",
             "/api/policy/approve",
             "/api/policy/conditions",
             "/api/policy/execute",
@@ -1051,6 +1108,13 @@ class Handler(BaseHTTPRequestHandler):
                         self._send_json(400, {"error": "invalid intent"})
                         return
                     state = replace_policy_flow(intent.strip(), wallet_binding=body.get("walletBinding"))
+                elif self.path == "/api/policy/revise":
+                    source_hash = body.get("sourceProposalSha256")
+                    floor = body.get("assetBalanceFloor")
+                    if not isinstance(source_hash, str) or not isinstance(floor, str):
+                        self._send_json(400, {"error": "invalid policy revision"})
+                        return
+                    state = revise_current_policy(source_hash, floor)
                 elif self.path == "/api/policy/conditions":
                     intent = body.get("intent")
                     invariants = body.get("invariants")
@@ -1092,7 +1156,7 @@ class Handler(BaseHTTPRequestHandler):
                     amount = body.get("amountBaseUnits")
                     gas_limit = body.get("gasLimit")
                     state = execute_current_policy(recipient, amount, gas_limit)
-            except (SynthesisInputError, PolicyApprovalError) as exc:
+            except (SynthesisInputError, PolicyApprovalError, PolicyRevisionError) as exc:
                 self._send_json(422, {"error": str(exc)}, no_store=True)
                 return
             except CompilerUnavailableError as exc:

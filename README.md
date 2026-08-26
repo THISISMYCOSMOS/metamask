@@ -24,7 +24,7 @@ LLM 기반 불변식 합성과 실행 직전 검증을 통한 에이전트 거�
 
 ## 현재 제어 실행 경로
 
-`자연어 입력 → 실제 Gemini 구조화 출력 → 단일 정책 제안 → 정확한 제안 해시 승인 →`
+`자연어 입력 → 실제 Gemini 구조화 출력 → 정책 제안 → 사용자 검토 수정(선택) → 정확한 제안 해시 승인 →`
 `로컬 Anvil 스냅샷에서 예정 전송 실행 → 상태 복원 확인 → 결정론적 판정 → 승인 시 1회 전송`
 
 - Backend는 Gemini Developer API 무료 티어를 기본으로 사용하며, fixture fallback 없이 실패 시 제안을 만들지 않는다.
@@ -32,9 +32,11 @@ LLM 기반 불변식 합성과 실행 직전 검증을 통한 에이전트 거�
 - Core는 시뮬레이션된 calldata·nonce·gas·잔고 변화와 실행 직전 컨텍스트를 다시 검증한다.
 - Core의 직접 외부 전송 구현은 loopback Anvil 전용이다. 브라우저 MetaMask 테스트넷 경로와
   Agent Wallet CLI 어댑터는 아래처럼 별도 경계로 유지한다.
-- `ui/`의 자연어 제출 경로는 Gemini Backend/Core 공유 계약에 연결되어 있다. 구조화 편집기는
-  기존 회귀 테스트용으로만 남아 있으며 화면에서는 노출하지 않는다. UI는 현재 컴파일과
-  정확한 해시 승인까지만 제공하고 실행 API에는 연결하지 않는다.
+- `ui/`의 자연어 제출 경로는 Gemini Backend/Core 공유 계약에 연결되어 있다. 사용자가 LLM의
+  잔고 하한을 수정하면 원본 제안과 해시는 이력에 남고, 변경 전·후 값과 수정 주체를 포함한
+  `revised-policy-proposal`이 새 해시로 생성된다. 기존 승인은 무효화되며 새 해시 승인이 필요하다.
+  예전 4종 구조화 편집기는 회귀 테스트용으로만 남아 있고 화면에서는 노출하지 않는다.
+- 승인 후 UI는 로컬 Anvil 제어 실행 또는 브라우저 MetaMask 테스트넷 실행 API로 이어진다.
 - `chain/src/delegated-floor-gate.ts`는 단일 root delegation의 실제 `redeemDelegations`
   calldata를 디코딩해 delegate·delegator·manager·토큰·수취인·금액을 직접 대조한다. 이 게이트의
   승인 결과는 `agent-wallet-cli.ts`가 활성 Agent Wallet 주소까지 다시 대조한 뒤 공식 `mm wallet
@@ -131,6 +133,35 @@ METAMASK_TOKEN_DECIMALS=6
 고정된 raw transaction을 `mm wallet send-transaction --wait`로 한 번 전달한다. 트랜잭션 해시가
 하나로 확인되지 않으면 성공으로 처리하지 않는다.
 
+실제 실행 진입점은 승인 envelope와 서명된 delegation을 포함한 `delegated-floor-candidate`를
+다음 wrapper로 묶어 입력받는다. 파서는 중첩 객체의 누락·추가 필드까지 거부한다.
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "agent-wallet-execution-bundle",
+  "approval": { "...": "approved-policy-envelope" },
+  "candidate": { "...": "delegated-floor-candidate" }
+}
+```
+
+먼저 전송 없는 사전 검증을 수행한다. 대상 RPC에서 정확한 outer transaction을 `eth_call`하고,
+최신 block hash·delegate nonce·delegator token balance가 candidate와 같은지 다시 확인한다.
+
+```powershell
+$env:AGENT_WALLET_RPC_URL = "<target chain RPC>"
+cd chain
+npm run agent-wallet:execute -- --bundle <bundle.json>
+```
+
+사전 검증 결과가 `eligibleForBroadcast=true`인 동일 bundle에만 명시적으로 `--broadcast`를 붙인다.
+그때만 활성 Agent Wallet 주소 대조와 `mm wallet send-transaction --wait`가 실행된다. 반환된 해시는
+RPC 영수증·from/to/calldata/value/gas/nonce 및 영수증 블록의 사후 토큰 잔고와 다시 대조된다.
+
+```powershell
+npm run agent-wallet:execute -- --bundle <bundle.json> --broadcast
+```
+
 ```powershell
 npm install -g @metamask/agent-wallet@latest
 mm login browser
@@ -138,8 +169,8 @@ mm init
 mm doctor --json
 ```
 
-CLI 설치와 코드 어댑터 테스트는 실제 자금 이동 증거가 아니다. 원격 실행 완료를 주장하려면 동일
-지갑 주소, 대상 체인, 서명된 delegation, 시뮬레이션 후보, 최종 영수증을 별도로 검증해야 한다.
+CLI 설치, bundle 사전 검증, 코드 테스트는 실제 자금 이동 증거가 아니다. 원격 실행 완료를 주장하려면
+실제 로그인된 동일 지갑 주소, 대상 체인, 서명된 delegation, 라이브 candidate와 최종 영수증이 필요하다.
 
 ## 설계 원칙
 

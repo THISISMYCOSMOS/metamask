@@ -1,11 +1,11 @@
 """Turn one reviewed :class:`PolicyProposal` into one user approval.
 
-There is a single proposal artifact in this system and a single approval over
-it.  Backend assembles that proposal from a trusted :class:`CompileRequest` plus
-validated model output; the user reads *that* proposal and confirms the exact
-sentence :func:`approval_confirmation` returns.  Nothing is translated,
-re-hashed, or re-proposed in between, so "the text the user read" and "the
-policy the evaluator enforces" cannot drift apart.
+There is one current proposal artifact and one approval over its exact hash.
+Backend assembles the original proposal from a trusted :class:`CompileRequest`
+plus validated model output.  An explicit user revision is a new typed proposal
+that links its source hash and therefore requires a new confirmation.  The
+proposal the user approves and the policy the evaluator enforces remain the
+same object.
 
 Approval is an explicit *record* of consent, not cryptographic authentication of
 who gave it.
@@ -13,20 +13,20 @@ who gave it.
 from __future__ import annotations
 
 from .canonical import canonical_sha256
-from .models import ApprovedPolicyEnvelope, CompileRequest, PolicyProposal
+from .models import ApprovablePolicyProposal, ApprovedPolicyEnvelope, CompileRequest, PolicyProposal, RevisedPolicyProposal
 
 
 class PolicyApprovalError(ValueError):
     """The proposal cannot be approved as presented."""
 
 
-def verify_request_binding(proposal: PolicyProposal, request: CompileRequest) -> None:
+def verify_request_binding(proposal: ApprovablePolicyProposal, request: CompileRequest) -> None:
     """Fail closed unless ``proposal`` is the compilation of exactly ``request``.
 
     Re-derives the request hash instead of trusting the field the proposal
     carries, and re-checks every fact the caller -- never the model -- supplied.
     """
-    if not isinstance(proposal, PolicyProposal) or not isinstance(request, CompileRequest):
+    if not isinstance(proposal, (PolicyProposal, RevisedPolicyProposal)) or not isinstance(request, CompileRequest):
         raise PolicyApprovalError("request binding requires the shared CompileRequest and PolicyProposal models")
     if proposal.requestSha256 != canonical_sha256(request):
         raise PolicyApprovalError("proposal does not bind the exact compile request")
@@ -45,15 +45,15 @@ def verify_request_binding(proposal: PolicyProposal, request: CompileRequest) ->
         raise PolicyApprovalError("policy tokenAddress does not match the compile request")
 
 
-def approval_confirmation(proposal: PolicyProposal) -> str:
+def approval_confirmation(proposal: ApprovablePolicyProposal) -> str:
     """Return the exact sentence the user must type to approve ``proposal``."""
-    if not isinstance(proposal, PolicyProposal):
+    if not isinstance(proposal, (PolicyProposal, RevisedPolicyProposal)):
         raise PolicyApprovalError("only the shared PolicyProposal model can be approved")
     return f"APPROVE {canonical_sha256(proposal)}"
 
 
 def approve(
-    proposal: PolicyProposal,
+    proposal: ApprovablePolicyProposal,
     *,
     approval_id: str,
     approved_by: str,

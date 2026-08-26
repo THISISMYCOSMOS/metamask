@@ -7,6 +7,10 @@
   const intentInput = $("intent-input");
   const approvalForm = $("approval-form");
   const approvalInput = $("approval-input");
+  const proposalRevisionSection = $("proposal-revision-section");
+  const proposalRevisionForm = $("proposal-revision-form");
+  const proposalRevisionFloor = $("proposal-revision-floor");
+  const proposalRevisionError = $("proposal-revision-error");
   const executionPlanSection = $("execution-plan-section");
   const executionPlanForm = $("execution-plan-form");
   const executionRecipient = $("execution-recipient");
@@ -47,6 +51,7 @@
   };
   const COMPILER_SOURCE_LABELS = {
     "gemini-api": "Gemini 무료 API",
+    "gemini-api-user-revision": "Gemini 원본 + 사용자 수정",
     "gemini-required": "Gemini 응답 필요",
     "offline-fixture": "오프라인 고정 응답",
     "local-structured-editor": "로컬 구조화 편집기",
@@ -54,6 +59,7 @@
   };
   const COMPILER_SOURCE_NOTES = {
     "gemini-api": "Gemini Developer API의 구조화 JSON 응답을 로컬 계약으로 다시 검증한 결과입니다. 무료 티어 입력은 Google 제품 개선에 사용될 수 있습니다.",
+    "gemini-api-user-revision": "원본 Gemini 제안과 해시는 이력에 보존되고, 현재 값은 사용자가 직접 수정해 새 해시가 생성된 결과입니다.",
     "gemini-required": "자연어 요청을 제출하면 Gemini Developer API를 호출합니다. API 키가 없거나 호출이 실패하면 제안을 만들지 않습니다.",
     "offline-fixture": "저장된 오프라인 테스트 응답과 결합한 결과입니다. 실시간 AI 호출이 아닙니다.",
     "local-structured-editor": "구조화된 조건 편집기가 로컬에서 동일한 규칙으로 생성했습니다. 실시간 AI 해석 결과가 아닙니다.",
@@ -346,6 +352,8 @@
     approvalInput.disabled = value;
     intentForm.querySelector("button").disabled = value;
     approvalForm.querySelector("button").disabled = value;
+    proposalRevisionForm.querySelector("button").disabled = value;
+    proposalRevisionFloor.disabled = value;
     executionPlanForm.querySelector("button").disabled = value;
     executionRecipient.disabled = value;
     executionAmount.disabled = value;
@@ -641,6 +649,8 @@
     latestState = state;
     const hasProposal = Boolean(state.proposal);
     const approved = Boolean(state.approval);
+    const policy = state.proposal?.policy;
+    const coreBinding = policy?.kind === "assetBalanceFloor";
     const evaluation = state.candidateEvaluation;
     const evaluationInvalid = evaluation?.status === "evaluation-invalid";
     const rejected = evaluation?.accepted === false;
@@ -705,8 +715,6 @@
       "기록된 가정 없음",
     );
 
-    const policy = state.proposal?.policy;
-    const coreBinding = policy?.kind === "assetBalanceFloor";
     const fork = policy?.fork || state.request?.fork || {};
     const chainId = coreBinding ? policy.chainId : fork.chainId;
     const wallet = coreBinding ? policy.walletAddress : fork.blockNumber;
@@ -723,6 +731,10 @@
     approvalForm.hidden = !hasProposal || approved;
     approvalInput.placeholder = hasProposal ? `APPROVE ${state.proposalSha256}` : "승인할 제안 없음";
     approvalInput.value = hasProposal && !approved ? `APPROVE ${state.proposalSha256}` : "";
+    proposalRevisionSection.hidden = !coreBinding;
+    proposalRevisionFloor.value = coreBinding ? policy.assetBalanceFloor : "";
+    $("proposal-revision-source-hash").textContent = state.proposalSha256 || "—";
+    proposalRevisionError.textContent = "";
     renderCandidateEvaluation(evaluation);
 
     executionPlanSection.hidden = !approved || ["submitted", "rejected"].includes(transaction.status);
@@ -857,6 +869,36 @@
       const message = error instanceof Error ? error.message : "approval failed";
       setStatus(`승인 입력 불일치: ${message}`, true);
       appendLog(`approval invalid: ${message}`, "error");
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  proposalRevisionForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (busy || !latestState?.proposalSha256) return;
+    const assetBalanceFloor = proposalRevisionFloor.value.trim();
+    if (!/^(0|[1-9][0-9]*)$/.test(assetBalanceFloor)) {
+      proposalRevisionError.textContent = "잔고 하한은 앞자리 0이 없는 base-unit 정수여야 합니다.";
+      return;
+    }
+    setBusy(true);
+    proposalRevisionError.textContent = "";
+    appendLog("LLM 제안의 잔고 하한 사용자 수정", "command");
+    try {
+      const state = await requestJson("/api/policy/revise", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Policy-Console": "1" },
+        body: JSON.stringify({
+          sourceProposalSha256: latestState.proposalSha256,
+          assetBalanceFloor,
+        }),
+      });
+      renderState(state);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "policy revision failed";
+      proposalRevisionError.textContent = message;
+      appendLog(message, "error");
     } finally {
       setBusy(false);
     }

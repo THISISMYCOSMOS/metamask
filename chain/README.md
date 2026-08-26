@@ -190,6 +190,10 @@ caveat 배열에서 앞 index에서 막힌 회차일수록 가스가 적고, NC3
 확인하지 못하면 fail closed로 중단한다. 이 코드 연결과 실제 Agent Wallet 로그인·서명된 delegation·
 원격 체인 영수증은 별도의 완료 조건이다.
 
+`src/run-agent-wallet.ts`는 승인 envelope와 candidate를 strict execution bundle로 묶는 실제 진입점이다.
+기본 실행은 원격 `eth_call`과 컨텍스트 재확인만 수행하고 전송하지 않는다. `--broadcast`가 명시된
+경우에만 CLI sender를 호출하고, 이후 RPC 영수증·정확한 transaction·사후 token balance까지 확인한다.
+
 ### 무엇을 증명하는가
 
 - 20회차 **전부 성공**(revert 0건) — G3의 정의가 "baseline을 전부 통과하면서 손실이 난다"
@@ -285,6 +289,8 @@ G2/G3 포크 재현은 위 Bash 스크립트를 직접 실행한다. `npm test`�
 | `src/cumulative-loss.ts` | G3 → `traces/cumulative-loss.json` |
 | `src/delegated-floor-gate.ts` | 승인·정책·시뮬레이션 효과·위임 calldata를 묶는 제품 후보 실행 게이트 |
 | `src/agent-wallet-cli.ts` | 검증된 outer transaction만 공식 MetaMask Agent Wallet CLI로 전달하는 실행 어댑터 |
+| `src/agent-wallet-runtime.ts` | strict bundle, 원격 사전 시뮬레이션, 컨텍스트·영수증·사후 잔고 검증 |
+| `src/run-agent-wallet.ts` | `--broadcast`를 명시해야만 실제 CLI sender를 호출하는 실행 진입점 |
 | `src/g3-determinism-report.ts` | G3 2회 실행 비교 → `traces/g3-determinism.json` |
 | `scripts/reproduce.sh` | 배포+G2+상태 다이제스트를 한 명령으로 |
 | `scripts/verify-determinism.sh` | `reproduce.sh`를 포트 분리해 2회 실행 후 비교 |

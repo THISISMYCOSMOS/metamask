@@ -1,5 +1,9 @@
 # MVP scope
 
+> Historical boundary: this file records the offline MVP fixed on 2026-08-10. It is not the
+> current product-status document. The live Gemini, user-revision, browser MetaMask, and Agent
+> Wallet execution boundaries are documented in the repository `README.md`.
+
 Updated 2026-08-10. The MVP proves one narrow end-to-end claim:
 
 > An explicitly approved portfolio policy can deterministically reject a harmful candidate state

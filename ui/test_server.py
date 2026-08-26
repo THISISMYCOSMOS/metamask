@@ -8,7 +8,7 @@ from unittest.mock import patch
 import server
 from backend.gemini_compiler import GeminiConfig, GeminiPolicyCompiler
 from backend.compiler_contract import CompilerUnavailableError
-from backend.policy_service import PolicyProposalService
+from backend.policy_service import PolicyProposalService, PolicyRevisionError
 from core.canonical import canonical_sha256
 from core.rpc_simulator import RpcSimulationError
 from synthesis_workflow import SynthesisInputError
@@ -456,6 +456,38 @@ class LiveGeminiPolicyUiWorkflowTest(unittest.TestCase):
         self.assertIsNone(state["candidateEvaluation"])
         self.assertFalse(state["transaction"]["eligibleForBroadcast"])
 
+    def test_user_revision_preserves_source_and_requires_the_new_hash(self) -> None:
+        server.policy_state = server.build_live_policy_flow("USDC를 20개 이상 남겨줘", self.service())
+        source_hash = server.policy_state["proposalSha256"]
+        source_proposal = server.policy_state["proposal"]
+
+        state = server.revise_current_policy(source_hash, "25000000")
+        self.assertEqual("proposal-ready", state["stage"])
+        self.assertEqual("gemini-api-user-revision", state["compilerSource"])
+        self.assertEqual("revised-policy-proposal", state["proposal"]["kind"])
+        self.assertEqual("25000000", state["proposal"]["policy"]["assetBalanceFloor"])
+        self.assertEqual(source_hash, state["proposal"]["revision"]["sourceProposalSha256"])
+        self.assertEqual(source_proposal, state["proposalHistory"][0]["proposal"])
+        self.assertNotEqual(source_hash, state["proposalSha256"])
+        self.assertIsNone(state["approval"])
+
+        with self.assertRaisesRegex(Exception, "confirmation"):
+            server.approve_current_policy(f"APPROVE {source_hash}")
+        revised_hash = state["proposalSha256"]
+        approved = server.approve_current_policy(f"APPROVE {revised_hash}")
+        self.assertEqual(revised_hash, approved["approval"]["proposalSha256"])
+
+    def test_revision_fails_closed_on_stale_source_and_clears_an_existing_approval(self) -> None:
+        server.policy_state = server.build_live_policy_flow("USDC를 20개 이상 남겨줘", self.service())
+        source_hash = server.policy_state["proposalSha256"]
+        server.policy_state = server.approve_current_policy(f"APPROVE {source_hash}")
+
+        state = server.revise_current_policy(source_hash, "25000000")
+        self.assertIsNone(state["approval"])
+        self.assertFalse(state["transaction"]["eligibleForBroadcast"])
+        with self.assertRaisesRegex(PolicyRevisionError, "source proposal hash"):
+            server.revise_current_policy(source_hash, "26000000")
+
     def test_wrong_core_hash_does_not_record_approval(self) -> None:
         server.policy_state = server.build_live_policy_flow("USDC를 20개 이상 남겨줘", self.service())
         with self.assertRaisesRegex(Exception, "confirmation"):
@@ -518,6 +550,19 @@ class LiveGeminiPolicyUiWorkflowTest(unittest.TestCase):
         server.policy_state = server.build_live_policy_flow("USDC를 20개 이상 남겨줘", self.service())
         with self.assertRaisesRegex(Exception, "approval"):
             server.execute_current_policy("0x" + "22" * 20, "1000000", runner=lambda *_: None)
+
+    def test_approved_user_revision_reaches_the_same_controlled_execution_service(self) -> None:
+        server.policy_state = server.build_live_policy_flow("USDC를 20개 이상 남겨줘", self.service())
+        source_hash = server.policy_state["proposalSha256"]
+        revised = server.revise_current_policy(source_hash, "19000000")
+        server.policy_state = server.approve_current_policy(f"APPROVE {revised['proposalSha256']}")
+        state = server.execute_current_policy(
+            "0x" + "22" * 20,
+            "1000000",
+            runner=lambda *_: self.outcome(accepted=True),
+        )
+        self.assertEqual("executed", state["stage"])
+        self.assertEqual("19000000", state["approval"]["proposal"]["policy"]["assetBalanceFloor"])
 
     def test_approved_plan_reaches_simulation_decision_and_local_send_result(self) -> None:
         self.approved_state()

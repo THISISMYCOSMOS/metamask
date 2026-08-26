@@ -5,7 +5,7 @@ import json
 import unittest
 
 from core.canonical import canonical_sha256
-from core.models import CompilationResult, CompileRequest, CompilerIdentity
+from core.models import CompilationResult, CompileRequest, CompilerIdentity, RevisedPolicyProposal
 from core.policy_binding import PolicyApprovalError, approval_confirmation, approve
 
 from backend.anthropic_compiler import (
@@ -17,6 +17,7 @@ from backend.anthropic_compiler import (
     ProviderResponseError,
 )
 from backend.policy_models import ContractError, PolicyFloorOutput, assemble_compilation
+from backend.policy_service import PolicyRevisionError, revise_asset_balance_floor
 
 
 MODEL = "claude-test"
@@ -276,6 +277,57 @@ class ApprovalTests(unittest.TestCase):
                 confirmation=approval_confirmation(self.proposal),
                 request=other,
             )
+
+    def test_user_revision_preserves_the_source_hash_and_requires_a_fresh_approval(self) -> None:
+        source_hash = canonical_sha256(self.proposal)
+        revised = revise_asset_balance_floor(
+            self.proposal,
+            source_proposal_sha256=source_hash,
+            asset_balance_floor="25000000",
+            revised_by="wallet-owner",
+        )
+        self.assertIsInstance(revised, RevisedPolicyProposal)
+        self.assertEqual(revised.revision.sourceProposalSha256, source_hash)
+        self.assertEqual(revised.revision.assetBalanceFloorBefore, "20000000")
+        self.assertEqual(revised.revision.assetBalanceFloorAfter, "25000000")
+        self.assertEqual(revised.policy.assetBalanceFloor, "25000000")
+        self.assertNotEqual(canonical_sha256(revised), source_hash)
+        self.assertIn("사용자가 검토 후", revised.rationales[0])
+
+        with self.assertRaises(PolicyApprovalError):
+            approve(
+                revised,
+                approval_id="approval-revised",
+                approved_by="wallet-owner",
+                confirmation=approval_confirmation(self.proposal),
+                request=self.request,
+            )
+        envelope = approve(
+            revised,
+            approval_id="approval-revised",
+            approved_by="wallet-owner",
+            confirmation=approval_confirmation(revised),
+            request=self.request,
+        )
+        self.assertEqual(envelope.proposal, revised)
+        self.assertEqual(envelope.proposalSha256, canonical_sha256(revised))
+
+    def test_user_revision_fails_closed_on_stale_hash_invalid_uint_or_no_change(self) -> None:
+        source_hash = canonical_sha256(self.proposal)
+        for source, floor, pattern in (
+            ("0x" + "00" * 32, "25000000", "source proposal hash"),
+            (source_hash, "020000000", "canonical decimal uint256"),
+            (source_hash, "20.5", "canonical decimal uint256"),
+            (source_hash, "20000000", "must differ"),
+        ):
+            with self.subTest(source=source, floor=floor):
+                with self.assertRaisesRegex(PolicyRevisionError, pattern):
+                    revise_asset_balance_floor(
+                        self.proposal,
+                        source_proposal_sha256=source,
+                        asset_balance_floor=floor,
+                        revised_by="wallet-owner",
+                    )
 
 
 if __name__ == "__main__":

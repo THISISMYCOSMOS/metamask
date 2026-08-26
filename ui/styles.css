@@ -278,6 +278,11 @@ h2 { margin-bottom: 0; font-size: 18px; letter-spacing: -0.02em; }
   font-weight: 800;
 }
 .approval-form button { padding: 0 16px; }
+.proposal-revision-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; margin-top: 14px; }
+.proposal-revision-form label { color: var(--muted); font-size: 11px; }
+.proposal-revision-form input { display: block; width: 100%; margin-top: 7px; border: 1px solid var(--rule); border-radius: 0; outline: 0; background: #050505; color: var(--ink); padding: 10px; font: 11px/1 var(--mono); }
+.proposal-revision-form input:focus { border-color: var(--orange); }
+.proposal-revision-form button { min-height: 37px; border: 1px solid var(--orange); border-radius: 0; background: transparent; color: var(--orange); padding: 0 14px; font-weight: 800; }
 
 .execution-plan-section { padding: 20px; border: 1px solid var(--rule); background: var(--panel); }
 .execution-plan-form { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(150px, 0.8fr) minmax(130px, 0.6fr) auto; gap: 8px; align-items: end; }
@@ -384,7 +389,7 @@ h2 { margin-bottom: 0; font-size: 18px; letter-spacing: -0.02em; }
   .flow-strip > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
   .review-grid, .binding-section { grid-template-columns: 1fr; }
   .candidate-meta div, .evaluation-list dl div { grid-template-columns: 1fr; }
-  .approval-form, .broadcast-state { grid-template-columns: 1fr; }
+  .approval-form, .proposal-revision-form, .broadcast-state { grid-template-columns: 1fr; }
   .execution-plan-form { grid-template-columns: 1fr; }
   .wallet-panel { align-items: flex-start; flex-direction: column; }
   .approval-form button { padding: 11px 14px; }

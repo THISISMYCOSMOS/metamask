@@ -143,6 +143,46 @@ class PolicyProposal(StrictModel):
         return self
 
 
+class UserPolicyRevision(StrictModel):
+    """Audit link for one explicit user change to a compiled proposal."""
+
+    schemaVersion: Literal[1]
+    kind: Literal["user-policy-revision"]
+    sourceProposalSha256: Bytes32
+    revisedBy: Identifier
+    assetBalanceFloorBefore: Uint
+    assetBalanceFloorAfter: Uint
+
+    @model_validator(mode="after")
+    def _check_revision(self) -> "UserPolicyRevision":
+        _uint(self.assetBalanceFloorBefore, "assetBalanceFloorBefore")
+        _uint(self.assetBalanceFloorAfter, "assetBalanceFloorAfter")
+        if self.assetBalanceFloorBefore == self.assetBalanceFloorAfter:
+            raise ValueError("a revision must change assetBalanceFloor")
+        return self
+
+
+class RevisedPolicyProposal(PolicyProposal):
+    """A user-authored revision that keeps an exact link to its source proposal.
+
+    ``compiler`` identifies the provider that produced the source proposal.  It
+    does not claim the provider selected the revised value; ``revision`` records
+    that authority separately and the revised rationale must say so explicitly.
+    """
+
+    kind: Literal["revised-policy-proposal"]
+    revision: UserPolicyRevision
+
+    @model_validator(mode="after")
+    def _bind_revision(self) -> "RevisedPolicyProposal":
+        if self.policy.assetBalanceFloor != self.revision.assetBalanceFloorAfter:
+            raise ValueError("revised policy must contain assetBalanceFloorAfter")
+        return self
+
+
+ApprovablePolicyProposal = PolicyProposal | RevisedPolicyProposal
+
+
 class CompilationResult(StrictModel):
     """Compilation outcome, approvable only when ``supported`` is true.
 
@@ -205,7 +245,7 @@ class ApprovedPolicyEnvelope(StrictModel):
     approvalId: Identifier
     approvalScope: Literal["user"]
     approvedBy: Identifier
-    proposal: PolicyProposal
+    proposal: ApprovablePolicyProposal
     proposalSha256: Bytes32
     policySha256: Bytes32
     confirmation: Annotated[str, StringConstraints(min_length=1, max_length=80)]

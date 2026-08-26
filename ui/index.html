@@ -54,6 +54,28 @@
         </details>
       </section>
 
+      <section id="proposal-revision-section" class="review-section proposal-revision-section" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="section-label">LLM 제안 검토 수정</p>
+            <h2>ERC-20 잔고 하한 수정</h2>
+          </div>
+          <span class="source-tag">사용자 수정 / 새 해시</span>
+        </div>
+        <p class="microcopy">
+          Gemini가 만든 원본 제안은 이력에 보존됩니다. 값을 수정하면 사용자 변경 정보가 포함된
+          새 미승인 제안과 proposalSha256이 생성되며, 이전 승인은 즉시 무효화됩니다.
+        </p>
+        <form id="proposal-revision-form" class="proposal-revision-form" autocomplete="off">
+          <label>assetBalanceFloor (base units)
+            <input id="proposal-revision-floor" type="text" inputmode="numeric" required>
+          </label>
+          <button type="submit">수정본 새 해시 만들기</button>
+        </form>
+        <p id="proposal-revision-error" class="structured-error" role="alert"></p>
+        <p class="microcopy">현재 제안 해시: <code id="proposal-revision-source-hash">—</code></p>
+      </section>
+
       <section class="review-section structured-editor-section" hidden>
         <div class="section-heading">
           <div>

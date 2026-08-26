@@ -1,5 +1,9 @@
 # Phase 3 deterministic evaluator — stress-test acceptance
 
+> Historical phase acceptance: the statements below describe the 2026-08-09 evaluator slice,
+> not current repository completion. See the repository `README.md` for current integration
+> claims and the still-unverified live boundaries.
+
 Updated 2026-08-09. This phase starts with the two invariants directly demonstrated by the
 committed G3 trace. It does not claim that invariant synthesis or transaction pre-execution
 integration is complete.
