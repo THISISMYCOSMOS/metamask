@@ -254,14 +254,18 @@ function validateCandidate(value: unknown): void {
   uint(effect.afterAssetBalance, "candidate.effect.afterAssetBalance");
 }
 
-export function parseAgentWalletDirectBundle(value: unknown): AgentWalletDirectBundle {
+export function parseAgentWalletDirectBundleForEvaluation(value: unknown): AgentWalletDirectBundle {
   const bundle = record(value, "bundle");
   exactKeys(bundle, "bundle", ["schemaVersion", "kind", "approval", "candidate"]);
   literal(bundle.schemaVersion, 1, "bundle.schemaVersion");
   literal(bundle.kind, "agent-wallet-direct-floor-bundle", "bundle.kind");
   validateApproval(bundle.approval);
   validateCandidate(bundle.candidate);
-  const parsed = bundle as unknown as AgentWalletDirectBundle;
+  return bundle as unknown as AgentWalletDirectBundle;
+}
+
+export function parseAgentWalletDirectBundle(value: unknown): AgentWalletDirectBundle {
+  const parsed = parseAgentWalletDirectBundleForEvaluation(value);
   const decision = evaluateDirectFloor(parsed.approval, parsed.candidate);
   if (!decision.accepted) {
     throw new PreExecutionGateError(`bundle is not eligible for broadcast: ${decision.reasonCodes.join(",")}`);
@@ -376,27 +380,29 @@ export async function executeAgentWalletDirectBundle(options: {
   broadcast: boolean;
   send: (execution: Readonly<ExecutionRequest>) => Promise<AgentWalletCliSendResult>;
 }): Promise<Record<string, unknown>> {
-  const bundle = parseAgentWalletDirectBundle(JSON.parse(JSON.stringify(options.bundle)));
+  const bundle = parseAgentWalletDirectBundleForEvaluation(JSON.parse(JSON.stringify(options.bundle)));
   await options.rpc.simulate(bundle.candidate.execution);
   const current = await options.rpc.readContext(bundle.candidate);
   if (!contextStillValid(bundle.candidate.context, current)) {
     throw new PreExecutionGateError("direct execution context drifted before broadcast");
   }
   const decision = evaluateDirectFloor(bundle.approval, bundle.candidate);
-  if (!decision.accepted) throw new PreExecutionGateError("direct transaction rejected before broadcast");
 
   if (!options.broadcast) {
     return {
       schemaVersion: 1,
       kind: "agent-wallet-direct-preflight-result",
       broadcast: false,
-      eligibleForBroadcast: true,
+      eligibleForBroadcast: decision.accepted,
       candidateSha256: decision.candidateSha256,
       decisionSha256: canonicalSha256(decision),
+      reasonCodes: decision.reasonCodes,
       revalidatedAtBlockNumber: current.currentBlockNumber,
       revalidatedAtBlockHash: current.currentBlockHash,
     };
   }
+
+  if (!decision.accepted) throw new PreExecutionGateError("direct transaction rejected before broadcast");
 
   const sent = await options.send(Object.freeze({ ...bundle.candidate.execution }));
   const receipt = await options.rpc.verifyReceipt(sent, bundle.candidate);

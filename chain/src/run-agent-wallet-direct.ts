@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { createAgentWalletCliSender } from "./agent-wallet-cli.js";
 import {
   executeAgentWalletDirectBundle,
-  parseAgentWalletDirectBundle,
+  parseAgentWalletDirectBundleForEvaluation,
   ViemDirectFloorRpc,
 } from "./agent-wallet-direct-floor.js";
 
@@ -31,7 +31,7 @@ async function main(): Promise<void> {
   const rpcUrl = process.env.AGENT_WALLET_RPC_URL?.trim();
   if (!rpcUrl) throw new Error("AGENT_WALLET_RPC_URL is required");
   const raw = JSON.parse(await readFile(args.bundlePath, "utf8"));
-  const bundle = parseAgentWalletDirectBundle(raw);
+  const bundle = parseAgentWalletDirectBundleForEvaluation(raw);
   const result = await executeAgentWalletDirectBundle({
     bundle,
     rpc: new ViemDirectFloorRpc(rpcUrl),

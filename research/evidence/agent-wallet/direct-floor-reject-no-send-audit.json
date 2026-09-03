@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "agent-wallet-request-list-difference",
+  "beforeRequestIds": [
+    "dabc08b1-1b30-4609-80dc-ad586e050c6f",
+    "445a6bb3-bf61-4089-a19c-94ef0e07af48",
+    "96611067-bd7b-44a6-9176-b3f9d82f097a",
+    "3fef4086-d8a4-4ccb-845e-83ceaf4b9035"
+  ],
+  "afterRequestIds": [
+    "dabc08b1-1b30-4609-80dc-ad586e050c6f",
+    "445a6bb3-bf61-4089-a19c-94ef0e07af48",
+    "96611067-bd7b-44a6-9176-b3f9d82f097a",
+    "3fef4086-d8a4-4ccb-845e-83ceaf4b9035"
+  ],
+  "newRequestIds": [],
+  "broadcastInvocationResult": "direct transaction rejected before broadcast",
+  "transactionHash": null
+}

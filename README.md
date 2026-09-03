@@ -198,6 +198,10 @@ Sepolia 거래 `0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f5
 사후 잔액 0.9 USDC를 검증했다. 이는 application-level floor guard와 Agent Wallet 전송의
 end-to-end 증거이지만, Agent Wallet 네이티브 floor 정책이나 서명된 delegation redemption 증거는 아니다.
 
+같은 승인 정책과 Agent Wallet에서 0.9 USDC 중 0.5 USDC를 전송해 사후 잔액이 0.4 USDC가
+되는 대응 후보도 실행했다. RPC 시뮬레이션 뒤 `ASSET_BALANCE_FLOOR_VIOLATION`으로 거부됐고,
+`--broadcast` 호출에서도 Agent Wallet 요청 ID가 추가되지 않았으며 거래 해시는 생성되지 않았다.
+
 ## 설계 원칙
 
 LLM은 **컴파일러이지 심판이 아니다.** 의도 → 불변식 변환은 실행 전 1회,

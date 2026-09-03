@@ -210,9 +210,10 @@ test("floor rejection and state drift both keep the sender at zero calls", async
         return { transactionHash, walletAddress: wallet };
       },
     }),
-    /not eligible for broadcast/,
+    /rejected before broadcast/,
   );
-  assert.equal(rejectedRpc.simulations, 0);
+  assert.equal(rejectedRpc.simulations, 1);
+  assert.equal(rejectedRpc.contextReads, 1);
 
   const accepted = bundle();
   const driftedRpc = new FakeRpc({ ...accepted.candidate.context, senderNonce: "3" });
@@ -230,5 +231,25 @@ test("floor rejection and state drift both keep the sender at zero calls", async
   );
   assert.equal(driftedRpc.simulations, 1);
   assert.equal(driftedRpc.receiptChecks, 0);
+  assert.equal(sends, 0);
+});
+
+test("rejected dry preflight returns auditable reasons without calling the sender", async () => {
+  const rejected = bundle("901", "100");
+  const rpc = new FakeRpc(rejected.candidate.context);
+  let sends = 0;
+  const result = await executeAgentWalletDirectBundle({
+    bundle: rejected,
+    rpc,
+    broadcast: false,
+    send: async () => {
+      sends += 1;
+      return { transactionHash, walletAddress: wallet };
+    },
+  });
+  assert.equal(result.eligibleForBroadcast, false);
+  assert.deepEqual(result.reasonCodes, ["ASSET_BALANCE_FLOOR_VIOLATION"]);
+  assert.equal(rpc.simulations, 1);
+  assert.equal(rpc.contextReads, 1);
   assert.equal(sends, 0);
 });

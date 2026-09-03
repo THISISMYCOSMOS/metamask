@@ -108,6 +108,16 @@ uv run --cache-dir tmp\uv-cache --project verifier python -B research\capture_ag
   research\evidence\sources\live-floor-accept.source.json `
   --polling-id 3fef4086-d8a4-4ccb-845e-83ceaf4b9035 --overwrite
 
+uv run --cache-dir tmp\uv-cache --project verifier python -B research\build_agent_wallet_direct_reject_bundle.py `
+  research\evidence\agent-wallet\direct-floor-bundle.json `
+  research\evidence\agent-wallet\direct-floor-reject-bundle.json --overwrite
+
+uv run --cache-dir tmp\uv-cache --project verifier python -B research\capture_agent_wallet_direct_reject.py `
+  research\evidence\agent-wallet\direct-floor-reject-bundle.json `
+  research\evidence\agent-wallet\direct-floor-reject-result.json `
+  research\evidence\agent-wallet\direct-floor-reject-no-send-audit.json `
+  research\evidence\sources\live-floor-preflight-reject.source.json --overwrite
+
 $names = @('offline-g3-reject','offline-benign-accept','live-floor-accept','live-floor-preflight-reject')
 foreach ($name in $names) {
   uv run --cache-dir tmp\uv-cache --project verifier python -m verifier.export_evidence_bundle `
@@ -122,8 +132,8 @@ reused and which values are recomputed. The historical Sepolia record remains
 under `inputs/` as supplementary provenance, but the current live accept bundle
 is the fresh Agent Wallet transaction with its original off-chain bindings.
 
-To refresh the live no-broadcast rejection, load a configured Gemini key and
-run `python -m research.capture_live_floor_reject ...`. The capture performs
-read-only Sepolia RPC calls and a live Gemini compile, but contains no send
-operation. Its output must show `walletRequest: null`, `txHash: null` and
-`broadcastAttempted: false`.
+The direct rejection reuses the exact approved policy from the successful
+control, simulates a currently executable transfer, and records the Agent
+Wallet request-id set before and after a rejected `--broadcast` invocation.
+The older `capture_live_floor_reject.py` remains as an application/UI-path
+capture utility, but it is no longer the primary live rejection bundle.

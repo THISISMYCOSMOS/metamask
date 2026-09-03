@@ -20,16 +20,18 @@ URLs.
 | `offline-g3-reject` | reject | no | Pinned-fork G3 candidate and deterministic evaluator |
 | `offline-benign-accept` | accept | no | Constructed counterfactual control, not on-chain |
 | `live-floor-accept` | accept | yes | Live Gemini approval, application gate, MetaMask Agent Wallet MFA/broadcast, public-chain receipt |
-| `live-floor-preflight-reject` | reject | no | Live Gemini compile and public Sepolia preflight; application-level gate |
+| `live-floor-preflight-reject` | reject | no | Same approved Agent Wallet policy; live Sepolia preflight and unchanged CLI request list |
 
 Read each bundle's `claims` and `limitations` before citing it. In particular,
 `accepted` means the policy allowed a candidate; it is not synonymous with a
 confirmed transaction. `broadcastAttempted` and `receiptStatus` state the
 execution result separately.
 
-The live rejection was intentionally not broadcast. The capture script has no
-`eth_sendTransaction` operation and the artifact records both a null wallet
-request and null transaction hash.
+The live rejection used the same approved policy and Agent Wallet as the live
+accept. A 0.5 USDC candidate from the remaining 0.9 USDC would leave 0.4 USDC,
+below the 0.5 USDC floor. The `--broadcast` invocation failed closed before the
+CLI sender, the Agent Wallet request-id set remained unchanged, and no
+transaction hash was created.
 
 The live accept is a direct ERC-20 transfer from the active Agent Wallet, not a
 signed Delegation Framework redemption. The application gate enforced the

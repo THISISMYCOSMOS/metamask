@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "kind": "agent-wallet-direct-floor-bundle",
+  "approval": {
+    "schemaVersion": 1,
+    "kind": "approved-policy-envelope",
+    "approvalId": "approval-ui-proposal-a00286c142b477f5",
+    "approvalScope": "user",
+    "approvedBy": "user",
+    "proposal": {
+      "schemaVersion": 1,
+      "kind": "policy-proposal",
+      "proposalId": "ui-proposal-a00286c142b477f5",
+      "requestSha256": "0x0efc7021f8ded57768c88f60169d17e40d144dd90cbac61d290449978663120c",
+      "intentText": "이 Sepolia Agent Wallet에서 USDC를 0.5개 이상 남겨줘",
+      "compiler": {
+        "provider": "google-gemini",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "policy": {
+        "schemaVersion": 1,
+        "kind": "assetBalanceFloor",
+        "policyId": "ui-token-floor-a00286c142b477f5",
+        "chainId": 11155111,
+        "walletAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+        "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+        "assetBalanceFloor": "500000"
+      },
+      "policySha256": "0x1c54cb76de121664835e5dd9a532d6e768bcd8920b3b999e7f13f3901d1cea2e",
+      "rationales": [
+        "The user requested to keep at least 0.5 USDC in the wallet, which translates directly to a minimum balance floor of 0.5 USDC.",
+        "Given 6 decimals for USDC, 0.5 USDC is calculated as 500000 base units."
+      ],
+      "assumptions": [
+        "The phrase '0.5개 이상 남겨줘' is interpreted as maintaining a minimum balance floor of 0.5 USDC."
+      ],
+      "unsupportedItems": []
+    },
+    "proposalSha256": "0xd479eea4abdd39125312b1c73c35d68bf1ba8e001f4aa348cae527071c3b641c",
+    "policySha256": "0x1c54cb76de121664835e5dd9a532d6e768bcd8920b3b999e7f13f3901d1cea2e",
+    "confirmation": "APPROVE 0xd479eea4abdd39125312b1c73c35d68bf1ba8e001f4aa348cae527071c3b641c"
+  },
+  "candidate": {
+    "schemaVersion": 1,
+    "kind": "agent-wallet-direct-floor-candidate",
+    "candidateId": "sepolia-agent-wallet-direct-usdc-floor-reject-001",
+    "approvalSha256": "0xaf0de38fddabdc2414138bf2a8468afd8576442aafae0db3dc8de468b0749580",
+    "policySha256": "0x1c54cb76de121664835e5dd9a532d6e768bcd8920b3b999e7f13f3901d1cea2e",
+    "context": {
+      "chainId": 11155111,
+      "currentBlockNumber": "11628073",
+      "currentBlockHash": "0x738b11e58e12b5df754f72f759a36c9e5bfde934c23752b5deb4ed196d54c058",
+      "senderNonce": "3",
+      "walletAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+      "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+      "assetBalance": "900000"
+    },
+    "execution": {
+      "chainId": 11155111,
+      "fromAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+      "toAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+      "value": "0",
+      "data": "0xa9059cbb0000000000000000000000009f85d965258624053734d8caea00dc3f452f3c27000000000000000000000000000000000000000000000000000000000007a120",
+      "gas": "54513",
+      "nonce": "3"
+    },
+    "effect": {
+      "walletAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+      "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+      "recipientAddress": "0x9f85d965258624053734d8caea00dc3f452f3c27",
+      "transferAmount": "500000",
+      "afterAssetBalance": "400000"
+    }
+  }
+}

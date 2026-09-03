@@ -278,7 +278,7 @@ G3 누적 손실 시퀀스와 거부 평가에 더해, 같은 fork·oracle·초�
 
 ### 7.4 RQ3에 추가로 필요한 최소 증거
 
-동일한 application-level Sepolia 경로에서 39 USDC 잔고에 20 USDC 하한을 승인하고 25 USDC 전송을 계획한 라이브 거부 아티팩트를 추가했다. 공개 RPC 시뮬레이션의 예상 사후 잔액은 14 USDC였고, 결정론적 판정은 `ASSET_BALANCE_FLOOR_VIOLATION`으로 거부했다. `walletRequest: null`, `txHash: null`, `broadcastAttempted: false`가 같은 증거 번들에 기록된다.
+성공 사례와 같은 Agent Wallet·승인 정책·direct 실행 경로에서 0.9 USDC 잔고 중 0.5 USDC 전송을 계획한 라이브 거부 아티팩트를 추가했다. 공개 RPC 시뮬레이션의 예상 사후 잔액은 0.4 USDC로 승인 하한 0.5 USDC보다 낮았다. 결정론적 판정은 `ASSET_BALANCE_FLOOR_VIOLATION`으로 거부했고, `--broadcast`로 동일 후보를 다시 제출해도 Agent Wallet CLI 요청 목록에 새 요청 ID가 생성되지 않았다. `txHash: null`, `broadcastAttempted: false`가 증거 번들에 기록된다.
 
 별도로 현재 로그인된 MetaMask Agent Wallet 주소를 정책의 wallet과 실행 sender에 결합하는 direct ERC-20 실행 경로를 구현했다. 1 USDC 잔고에서 0.5 USDC 하한을 승인하고 0.1 USDC를 보내는 후보는 RPC 시뮬레이션과 nonce·잔고 재검증을 통과한 뒤 Agent Wallet CLI와 이메일 MFA를 거쳐 브로드캐스트됐고, 영수증·exact calldata·Transfer·0.9 USDC 사후 잔액까지 확인됐다.
 
@@ -313,7 +313,7 @@ G3 누적 손실 시퀀스와 거부 평가에 더해, 같은 fork·oracle·초�
 - UI: 34개 통과
 - Verifier: 55개 통과
 - Research: 15개 통과
-- Chain: 35개 통과
+- Chain: 36개 통과
 - Python compileall: 통과
 - TypeScript `tsc --noEmit`: 통과
 
