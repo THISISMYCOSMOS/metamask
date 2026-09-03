@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "agent-wallet-direct-broadcast-result",
+  "broadcast": true,
+  "eligibleForBroadcast": true,
+  "candidateSha256": "0x2ef30f41600d6ac40dd4be5c44aecfe29315951eac0149c80ab719161f8786e9",
+  "decisionSha256": "0x36b68cc172a52c46b87a816d286fc4fe871b774959f929f130ecf087d0a75330",
+  "transactionHash": "0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500",
+  "receipt": {
+    "transactionHash": "0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500",
+    "blockNumber": "11628030",
+    "blockHash": "0xb49e92a4199fce9587969acdda957fdefec65344357c61d88a1d55c56b746d59",
+    "receiptStatus": "success",
+    "assetBalanceAfter": "900000"
+  }
+}

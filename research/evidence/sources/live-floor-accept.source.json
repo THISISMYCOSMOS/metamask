@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "kind": "research-evidence-source",
+  "evidenceId": "rq3-sepolia-agent-wallet-direct-floor-accept",
+  "case": "live-floor-accept",
+  "claimScope": "application-level-testnet",
+  "network": {
+    "chainId": 11155111,
+    "networkName": "ethereum-sepolia",
+    "environment": "public-testnet",
+    "rpcClass": "public-testnet",
+    "blockNumber": "11628030",
+    "blockHash": "0xb49e92a4199fce9587969acdda957fdefec65344357c61d88a1d55c56b746d59"
+  },
+  "artifacts": [
+    {
+      "name": "approval",
+      "evidenceClass": "generated",
+      "value": {
+        "schemaVersion": 1,
+        "kind": "approved-policy-envelope",
+        "approvalId": "approval-ui-proposal-a00286c142b477f5",
+        "approvalScope": "user",
+        "approvedBy": "user",
+        "proposal": {
+          "schemaVersion": 1,
+          "kind": "policy-proposal",
+          "proposalId": "ui-proposal-a00286c142b477f5",
+          "requestSha256": "0x0efc7021f8ded57768c88f60169d17e40d144dd90cbac61d290449978663120c",
+          "intentText": "이 Sepolia Agent Wallet에서 USDC를 0.5개 이상 남겨줘",
+          "compiler": {
+            "provider": "google-gemini",
+            "model": "gemini-3.5-flash-lite"
+          },
+          "policy": {
+            "schemaVersion": 1,
+            "kind": "assetBalanceFloor",
+            "policyId": "ui-token-floor-a00286c142b477f5",
+            "chainId": 11155111,
+            "walletAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+            "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+            "assetBalanceFloor": "500000"
+          },
+          "policySha256": "0x1c54cb76de121664835e5dd9a532d6e768bcd8920b3b999e7f13f3901d1cea2e",
+          "rationales": [
+            "The user requested to keep at least 0.5 USDC in the wallet, which translates directly to a minimum balance floor of 0.5 USDC.",
+            "Given 6 decimals for USDC, 0.5 USDC is calculated as 500000 base units."
+          ],
+          "assumptions": [
+            "The phrase '0.5개 이상 남겨줘' is interpreted as maintaining a minimum balance floor of 0.5 USDC."
+          ],
+          "unsupportedItems": []
+        },
+        "proposalSha256": "0xd479eea4abdd39125312b1c73c35d68bf1ba8e001f4aa348cae527071c3b641c",
+        "policySha256": "0x1c54cb76de121664835e5dd9a532d6e768bcd8920b3b999e7f13f3901d1cea2e",
+        "confirmation": "APPROVE 0xd479eea4abdd39125312b1c73c35d68bf1ba8e001f4aa348cae527071c3b641c"
+      },
+      "source": "live Gemini proposal and exact-hash approval used by the direct Agent Wallet gate"
+    },
+    {
+      "name": "candidate",
+      "evidenceClass": "generated",
+      "value": {
+        "schemaVersion": 1,
+        "kind": "agent-wallet-direct-floor-candidate",
+        "candidateId": "sepolia-agent-wallet-direct-usdc-001",
+        "approvalSha256": "0xaf0de38fddabdc2414138bf2a8468afd8576442aafae0db3dc8de468b0749580",
+        "policySha256": "0x1c54cb76de121664835e5dd9a532d6e768bcd8920b3b999e7f13f3901d1cea2e",
+        "context": {
+          "chainId": 11155111,
+          "currentBlockNumber": "11627900",
+          "currentBlockHash": "0x12f2176f3eab05389289af0b5e6308c65dfee46d6f181b175dcc650c6eb6d5e9",
+          "senderNonce": "2",
+          "walletAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+          "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "assetBalance": "1000000"
+        },
+        "execution": {
+          "chainId": 11155111,
+          "fromAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+          "toAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "value": "0",
+          "data": "0xa9059cbb0000000000000000000000009f85d965258624053734d8caea00dc3f452f3c2700000000000000000000000000000000000000000000000000000000000186a0",
+          "gas": "54513",
+          "nonce": "2"
+        },
+        "effect": {
+          "walletAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+          "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "recipientAddress": "0x9f85d965258624053734d8caea00dc3f452f3c27",
+          "transferAmount": "100000",
+          "afterAssetBalance": "900000"
+        }
+      },
+      "source": "public Sepolia simulation snapshot bound to the exact direct ERC-20 request"
+    },
+    {
+      "name": "runtime-result",
+      "evidenceClass": "observed",
+      "value": {
+        "schemaVersion": 1,
+        "kind": "agent-wallet-direct-broadcast-result",
+        "broadcast": true,
+        "eligibleForBroadcast": true,
+        "candidateSha256": "0x2ef30f41600d6ac40dd4be5c44aecfe29315951eac0149c80ab719161f8786e9",
+        "decisionSha256": "0x36b68cc172a52c46b87a816d286fc4fe871b774959f929f130ecf087d0a75330",
+        "transactionHash": "0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500",
+        "receipt": {
+          "transactionHash": "0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500",
+          "blockNumber": "11628030",
+          "blockHash": "0xb49e92a4199fce9587969acdda957fdefec65344357c61d88a1d55c56b746d59",
+          "receiptStatus": "success",
+          "assetBalanceAfter": "900000"
+        }
+      },
+      "source": "chain run-agent-wallet-direct broadcast result after CLI and receipt verification"
+    },
+    {
+      "name": "agent-wallet-request",
+      "evidenceClass": "observed",
+      "value": {
+        "pollingId": "3fef4086-d8a4-4ccb-845e-83ceaf4b9035",
+        "status": "BROADCASTED",
+        "transactionHash": "0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500",
+        "intent": "Send the exact approved Sepolia USDC research transfer",
+        "chainId": 11155111
+      },
+      "source": "MetaMask Agent Wallet CLI request listing after MFA approval"
+    },
+    {
+      "name": "public-chain-verification",
+      "evidenceClass": "external-chain",
+      "value": {
+        "transactionHash": "0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500",
+        "blockNumber": "11628030",
+        "blockHash": "0xb49e92a4199fce9587969acdda957fdefec65344357c61d88a1d55c56b746d59",
+        "receiptStatus": "success",
+        "exactExecutionChecks": {
+          "from": true,
+          "to": true,
+          "input": true,
+          "value": true,
+          "gas": true,
+          "nonce": true
+        },
+        "transferEvent": {
+          "address": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x000000000000000000000000b11539d7b6423c4523e1fba35953154b6b393df9",
+            "0x0000000000000000000000009f85d965258624053734d8caea00dc3f452f3c27"
+          ],
+          "data": "0x00000000000000000000000000000000000000000000000000000000000186a0"
+        },
+        "assetBalanceBefore": "1000000",
+        "assetBalanceAfter": "900000"
+      },
+      "source": "independent public Ethereum Sepolia JSON-RPC verification; endpoint URL omitted"
+    }
+  ],
+  "outcome": {
+    "accepted": true,
+    "broadcastAttempted": true,
+    "txHash": "0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500",
+    "receiptStatus": "success",
+    "walletNativeEnforcement": false
+  },
+  "claims": [
+    {
+      "path": "/artifacts/approval/value/proposal/compiler",
+      "evidenceClass": "observed",
+      "source": "live Gemini provider identity embedded in the approved proposal"
+    },
+    {
+      "path": "/artifacts/runtime-result/value/candidateSha256",
+      "evidenceClass": "observed",
+      "source": "runtime output bound to the exact candidate"
+    },
+    {
+      "path": "/artifacts/agent-wallet-request/value/status",
+      "evidenceClass": "observed",
+      "source": "MetaMask Agent Wallet CLI reported BROADCASTED after MFA approval"
+    },
+    {
+      "path": "/artifacts/public-chain-verification/value/transferEvent",
+      "evidenceClass": "external-chain",
+      "source": "one matching Sepolia ERC-20 Transfer log"
+    },
+    {
+      "path": "/artifacts/public-chain-verification/value/assetBalanceAfter",
+      "evidenceClass": "external-chain",
+      "source": "USDC balanceOf at the receipt block"
+    }
+  ],
+  "limitations": [
+    "The result-state guard is application-level; MetaMask Agent Wallet independently enforced its own Guard Mode and MFA but did not natively enforce assetBalanceFloor.",
+    "This is one direct ERC-20 transfer on Ethereum Sepolia, not a signed Delegation Framework redemption or mainnet test.",
+    "The exact-hash approval was submitted by the user-authorized research workflow and does not prove user comprehension or cryptographic approver identity."
+  ]
+}

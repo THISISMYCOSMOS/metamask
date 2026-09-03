@@ -64,9 +64,17 @@ async function defaultRunner(
     });
     return { stdout: result.stdout, stderr: result.stderr };
   } catch (error) {
-    const code = (error as NodeJS.ErrnoException).code;
+    const failure = error as NodeJS.ErrnoException & { stdout?: string; stderr?: string };
+    const code = failure.code;
     if (code === "ENOENT") throw new PreExecutionGateError("MetaMask Agent Wallet CLI is not installed");
+    if (failure.stdout?.includes("AWAITING_MFA")) {
+      throw new PreExecutionGateError("MetaMask Agent Wallet is awaiting required MFA approval");
+    }
     if (code === "ETIMEDOUT") throw new PreExecutionGateError("MetaMask Agent Wallet CLI timed out");
+    // Agent Wallet 6.1.4 can hit a Windows libuv assertion after it has already
+    // emitted a complete result. Preserve that result and let the strict
+    // address/hash parser below decide whether the operation actually succeeded.
+    if (failure.stdout?.trim()) return { stdout: failure.stdout, stderr: failure.stderr ?? "" };
     throw new PreExecutionGateError("MetaMask Agent Wallet CLI refused the transaction");
   }
 }
@@ -90,8 +98,14 @@ export function createAgentWalletCliSender(options: {
   timeoutMilliseconds?: number;
   runner?: AgentWalletCliRunner;
 } = {}): (execution: Readonly<ExecutionRequest>) => Promise<AgentWalletCliSendResult> {
-  const windowsNpmExecutable = process.env.APPDATA ? join(process.env.APPDATA, "npm", "mm.cmd") : "mm.cmd";
-  const executable = options.executable ?? process.env.MM_CLI_PATH ?? (process.platform === "win32" ? windowsNpmExecutable : "mm");
+  const windowsCliScript = process.env.APPDATA
+    ? join(process.env.APPDATA, "npm", "node_modules", "@metamask", "agent-wallet", "dist", "index.js")
+    : "mm";
+  const useDefaultWindowsCli = process.platform === "win32" && !options.executable && !process.env.MM_CLI_PATH;
+  const executable = options.executable ?? process.env.MM_CLI_PATH ?? (useDefaultWindowsCli ? process.execPath : "mm");
+  const commandPrefix = useDefaultWindowsCli
+    ? [windowsCliScript]
+    : [];
   const timeoutMilliseconds = options.timeoutMilliseconds ?? 600_000;
   const intent = (options.intent ?? "Execute the exact user-approved delegated ERC-20 transfer").trim();
   const runner = options.runner ?? defaultRunner;
@@ -102,7 +116,7 @@ export function createAgentWalletCliSender(options: {
 
   return async (execution) => {
     const expectedWallet = requireAddress(execution.fromAddress, "execution sender");
-    const addressResult = await runner(executable, ["wallet", "address"], timeoutMilliseconds);
+    const addressResult = await runner(executable, [...commandPrefix, "wallet", "address"], timeoutMilliseconds);
     const activeWallets = uniqueMatches(addressResult.stdout, ADDRESS_PATTERN);
     if (activeWallets.length !== 1 || activeWallets[0] !== expectedWallet) {
       throw new PreExecutionGateError("active MetaMask Agent Wallet does not match the delegated execution sender");
@@ -112,6 +126,7 @@ export function createAgentWalletCliSender(options: {
     const sendResult = await runner(
       executable,
       [
+        ...commandPrefix,
         "wallet",
         "send-transaction",
         "--chain-id",

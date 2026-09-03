@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "kind": "research-evidence-source",
+  "evidenceId": "rq3-offline-benign-accept",
+  "case": "offline-benign-accept",
+  "claimScope": "offline-counterfactual-control",
+  "network": {
+    "chainId": 1,
+    "networkName": "ethereum-mainnet-fork",
+    "environment": "pinned-mainnet-fork",
+    "rpcClass": "pinned-fork",
+    "blockNumber": "25700000",
+    "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+  },
+  "artifacts": [
+    {
+      "name": "approval",
+      "evidenceClass": "configured",
+      "value": {
+        "schemaVersion": 1,
+        "kind": "policy-approval",
+        "approvalScope": "user",
+        "approvedBy": "user",
+        "proposalSha256": "0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+        "policySha256": "0x715c39c06217b3728939c5e1fe14d9ffe422605b4ca40df38c724440418e8dea",
+        "confirmation": "APPROVE 0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+        "proposal": {
+          "schemaVersion": 1,
+          "kind": "policy-proposal",
+          "requestSha256": "0xd66c2b1305d55d5981d55287cdb410b952b93e15bb3a481aa2031164042c6ba7",
+          "request": {
+            "schemaVersion": 1,
+            "kind": "intent-compiler-request",
+            "requestId": "mvp-intent-001",
+            "intentText": "포트폴리오 가치를 26,979.2516761 USD 이상으로 유지하고, 어느 연속 24시간 동안의 누적 손실도 1,999.53504 USD 이하로 제한해.",
+            "targetTraceKind": "portfolio-candidate",
+            "fork": {
+              "chainId": 1,
+              "blockNumber": "25700000",
+              "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+            },
+            "allowedInvariants": [
+              "portfolioValueFloor",
+              "cumulativeLossCap"
+            ],
+            "outputUnit": "usd-1e18",
+            "compilerRules": [
+              "Return JSON only and do not add fields outside the response schema.",
+              "Compile only portfolioValueFloor and cumulativeLossCap for portfolio-candidate traces.",
+              "Represent every USD threshold as an unsigned decimal string scaled by 1e18.",
+              "Do not infer user approval; this response is only a policy proposal.",
+              "If the intent is ambiguous, record the ambiguity in assumptions instead of inventing hidden policy."
+            ]
+          },
+          "compiler": {
+            "provider": "offline-fixture",
+            "model": "mvp-contract-test"
+          },
+          "policy": {
+            "schemaVersion": 1,
+            "policyId": "mvp-synthesized-loss-guard",
+            "traceKind": "portfolio-candidate",
+            "fork": {
+              "chainId": 1,
+              "blockNumber": "25700000",
+              "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+            },
+            "invariants": [
+              {
+                "id": "portfolio-floor-from-intent",
+                "kind": "portfolioValueFloor",
+                "floorValue1e18": "26979251676100000000000"
+              },
+              {
+                "id": "rolling-loss-cap-from-intent",
+                "kind": "cumulativeLossCap",
+                "windowSeconds": "86400",
+                "maxLossValue1e18": "1999535040000000000000"
+              }
+            ]
+          },
+          "rationales": [
+            {
+              "invariantId": "portfolio-floor-from-intent",
+              "summary": "The stated minimum portfolio value is represented as USD scaled by 1e18."
+            },
+            {
+              "invariantId": "rolling-loss-cap-from-intent",
+              "summary": "The stated 24-hour loss ceiling is represented as a rolling 86400-second cap."
+            }
+          ],
+          "assumptions": [
+            "The comma characters are thousands separators and USD amounts use decimal notation."
+          ]
+        }
+      },
+      "source": "specs/mvp-user-policy-approval.json"
+    },
+    {
+      "name": "candidate",
+      "evidenceClass": "generated",
+      "value": {
+        "schemaVersion": 1,
+        "kind": "portfolio-candidate",
+        "traceId": "g3-counterfactual-benign-control",
+        "fork": {
+          "chainId": 1,
+          "blockNumber": "25700000",
+          "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+        },
+        "valuation": {
+          "unit": "usd-1e18",
+          "mode": "pinned-fork-snapshot",
+          "priceBlockNumber": "25700000",
+          "priceBlockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+        },
+        "sourceTraceHashedContentSha256": "0xe567b3845ce3620b7337ac19001e9559d526fe248e2fa030706b2d608b63d27d",
+        "coverageStartTimestamp": "1786090091",
+        "initialValue1e18": "28978786716100000000000",
+        "transitions": [
+          {
+            "transitionIndex": 0,
+            "timestamp": "1786090091",
+            "beforeValue1e18": "28978786716100000000000",
+            "afterValue1e18": "28678856460100000000000",
+            "role": "history"
+          },
+          {
+            "transitionIndex": 1,
+            "timestamp": "1786111691",
+            "beforeValue1e18": "28678856460100000000000",
+            "afterValue1e18": "28378926204100000000000",
+            "role": "history"
+          },
+          {
+            "transitionIndex": 2,
+            "timestamp": "1786133291",
+            "beforeValue1e18": "28378926204100000000000",
+            "afterValue1e18": "28078995948100000000000",
+            "role": "history"
+          },
+          {
+            "transitionIndex": 3,
+            "timestamp": "1786154891",
+            "beforeValue1e18": "28078995948100000000000",
+            "afterValue1e18": "27779065692100000000000",
+            "role": "history"
+          },
+          {
+            "transitionIndex": 4,
+            "timestamp": "1786176491",
+            "beforeValue1e18": "27779065692100000000000",
+            "afterValue1e18": "27479135436100000000000",
+            "role": "candidate"
+          }
+        ]
+      },
+      "source": "traces/mvp-candidate-accept.json"
+    },
+    {
+      "name": "decision",
+      "evidenceClass": "generated",
+      "value": {
+        "schemaVersion": 1,
+        "kind": "approved-candidate-evaluation",
+        "approvalScope": "user",
+        "approvedBy": "user",
+        "approvalSha256": "0x6bc7ec4fccbd7478aa597b83b41cb91161f3483bc2a6fe66f3f8311c44e77828",
+        "proposalSha256": "0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+        "policySha256": "0x715c39c06217b3728939c5e1fe14d9ffe422605b4ca40df38c724440418e8dea",
+        "candidateTraceId": "g3-counterfactual-benign-control",
+        "candidateTraceSha256": "0xa1f32f58d181517689c68c01f117a79aef47d701c6d81ed50e721170c7fea277",
+        "accepted": true,
+        "evaluations": [
+          {
+            "id": "portfolio-floor-from-intent",
+            "kind": "portfolioValueFloor",
+            "passed": true,
+            "observedMinimumValue1e18": "27479135436100000000000",
+            "floorValue1e18": "26979251676100000000000",
+            "evidence": {
+              "stepIndex": 4,
+              "position": "after"
+            }
+          },
+          {
+            "id": "rolling-loss-cap-from-intent",
+            "kind": "cumulativeLossCap",
+            "passed": true,
+            "observedMaximumLossValue1e18": "1499651280000000000000",
+            "maxLossValue1e18": "1999535040000000000000",
+            "windowSeconds": "86400",
+            "evidence": {
+              "startStepIndex": 0,
+              "endStepIndex": 4,
+              "startTimestamp": "1786090091",
+              "endTimestamp": "1786176491"
+            }
+          }
+        ]
+      },
+      "source": "verifier/evaluate_approved_candidate.py"
+    },
+    {
+      "name": "counterfactual-provenance",
+      "evidenceClass": "generated",
+      "value": {
+        "schemaVersion": 1,
+        "kind": "counterfactual-benign-control-source",
+        "basedOnTraceHashedContentSha256": "0x6ac590003efab76fcb5a18b50b331ba47e70fd111008273371305391c57ce403",
+        "reuse": [
+          "fork-binding",
+          "oracle-snapshot",
+          "starting-portfolio-value",
+          "step-timestamps"
+        ],
+        "transformation": {
+          "description": "Replace each G3 transfer with a configured smaller USDC amount and recompute portfolio values using the pinned USDC/USD oracle.",
+          "stepAmountBaseUnits": "300000000",
+          "transitionCount": 5,
+          "perStepLossValue1e18": "299930256000000000000"
+        },
+        "classification": "constructed-counterfactual-not-onchain-observation"
+      },
+      "source": "traces/mvp-candidate-accept-source.json"
+    }
+  ],
+  "outcome": {
+    "accepted": true,
+    "broadcastAttempted": false,
+    "txHash": null,
+    "receiptStatus": "not-applicable",
+    "walletNativeEnforcement": false
+  },
+  "claims": [
+    {
+      "path": "/artifacts/decision/value/accepted",
+      "evidenceClass": "generated",
+      "source": "deterministic approved candidate evaluator"
+    },
+    {
+      "path": "/artifacts/decision/value/evaluations",
+      "evidenceClass": "generated",
+      "source": "deterministic integer-only invariant evaluation"
+    },
+    {
+      "path": "/artifacts/candidate/value/transitions",
+      "evidenceClass": "inferred",
+      "source": "constructed counterfactual transformation, not an on-chain observation"
+    }
+  ],
+  "limitations": [
+    "This is an offline pinned-fork evaluation and does not prove wallet-native enforcement or a live broadcast.",
+    "The benign sequence is a constructed counterfactual that shares the G3 fork, oracle snapshot, starting value and timestamps; it was not executed on-chain."
+  ]
+}

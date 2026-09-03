@@ -44,11 +44,86 @@ For a 60-case live run, write predictions to a new file and score them:
 
 ```powershell
 python -m research.run_gemini_benchmark `
-  research\data\compiler_cases.json tmp\gemini-predictions.jsonl
+  research\data\compiler_cases.json tmp\gemini-predictions.jsonl `
+  --manifest tmp\gemini-run-manifest.json
 
 python -m research.evaluate_compiler `
   research\data\compiler_cases.json tmp\gemini-predictions.jsonl
 ```
 
-Actual live metrics must not be claimed until the Gemini run completes. The
-unit tests use injected provider responses and prove contracts only.
+The current fixed run has 58 strict provider outputs and two fail-closed local
+contract failures. Its operational metrics across all 60 cases are support
+accuracy 0.9667, precision 1.0, recall 0.9583, false-positive rate 0.0 and
+exact-invariant accuracy 0.9667. This is one fixed-dataset run, not a general
+low-false-positive result. Because strict provider-output coverage is 58/60,
+the manifest status and strict `metrics` remain incomplete/null.
+
+The runner records a dataset hash, system-prompt hash, request/configuration
+hash per case, returned model version when available, token-count metadata and
+per-case failure state. It appends only strict valid predictions and resumes
+missing or failed cases without repeating completed calls. A different dataset,
+requested model or system prompt requires `--overwrite` so results from unlike
+runs cannot be silently mixed.
+
+When a provider response fails the strict local contract, no proposal is
+created. `operationalMetrics` scores that fail-closed system result as
+non-approvable while `metrics` remains `null` until all 60 provider outputs are
+strictly valid. Keep those two result types distinct in the paper.
+
+## Research evidence bundles
+
+The committed evidence set is under `research/evidence/`. All four cases use
+the same strict bundle schema:
+
+- `offline-g3-reject`
+- `offline-benign-accept`
+- `live-floor-accept`
+- `live-floor-preflight-reject`
+
+The bundle's deterministic `payload` is bound by `payloadSha256`. Wall-clock
+generation metadata is outside that hash. Every embedded artifact has its own
+canonical SHA-256 binding, and every bundle explicitly records whether a
+broadcast was attempted and whether wallet-native enforcement was used.
+
+Rebuild the counterfactual benign control, source records and bundles from the
+repository root:
+
+```powershell
+uv run --cache-dir tmp\uv-cache --project verifier python verifier\build_benign_candidate_fixture.py `
+  specs\mvp-candidate-invariants.json traces\cumulative-loss.json `
+  traces\mvp-candidate-accept.json traces\mvp-candidate-accept-source.json --overwrite
+
+uv run --cache-dir tmp\uv-cache --project verifier python -m research.build_evidence_sources `
+  offline offline-g3-reject specs\mvp-user-policy-approval.json `
+  traces\mvp-candidate-reject.json research\evidence\sources\offline-g3-reject.source.json --overwrite
+
+uv run --cache-dir tmp\uv-cache --project verifier python -m research.build_evidence_sources `
+  offline offline-benign-accept specs\mvp-user-policy-approval.json `
+  traces\mvp-candidate-accept.json research\evidence\sources\offline-benign-accept.source.json `
+  --provenance traces\mvp-candidate-accept-source.json --overwrite
+
+uv run --cache-dir tmp\uv-cache --project verifier python -B research\capture_agent_wallet_direct_accept.py `
+  research\evidence\agent-wallet\direct-floor-bundle.json `
+  research\evidence\agent-wallet\direct-floor-runtime-result.json `
+  research\evidence\sources\live-floor-accept.source.json `
+  --polling-id 3fef4086-d8a4-4ccb-845e-83ceaf4b9035 --overwrite
+
+$names = @('offline-g3-reject','offline-benign-accept','live-floor-accept','live-floor-preflight-reject')
+foreach ($name in $names) {
+  uv run --cache-dir tmp\uv-cache --project verifier python -m verifier.export_evidence_bundle `
+    "research\evidence\sources\$name.source.json" `
+    "research\evidence\bundles\$name.bundle.json" --overwrite
+}
+```
+
+`mvp-candidate-accept.json` is a constructed counterfactual, not a transaction
+observed in G3. Its provenance file records exactly which pinned G3 facts are
+reused and which values are recomputed. The historical Sepolia record remains
+under `inputs/` as supplementary provenance, but the current live accept bundle
+is the fresh Agent Wallet transaction with its original off-chain bindings.
+
+To refresh the live no-broadcast rejection, load a configured Gemini key and
+run `python -m research.capture_live_floor_reject ...`. The capture performs
+read-only Sepolia RPC calls and a live Gemini compile, but contains no send
+operation. Its output must show `walletRequest: null`, `txHash: null` and
+`broadcastAttempted: false`.

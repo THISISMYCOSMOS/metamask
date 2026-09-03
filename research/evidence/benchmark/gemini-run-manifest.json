@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "kind": "gemini-compiler-benchmark-run",
+  "status": "incomplete",
+  "startedAtUtc": "2026-09-03T16:34:51Z",
+  "updatedAtUtc": "2026-09-03T16:36:09Z",
+  "datasetPath": "research/data/compiler_cases.json",
+  "datasetSha256": "0xf2af7d2f4fb03c65bda4cd1392a664ac475818dcf324ff53d9feb2ea1c56720c",
+  "caseCount": 60,
+  "requestedModel": "gemini-3.5-flash-lite",
+  "systemPromptSha256": "0x99f4b872ee2850e5f1b694e4a6d2de42cf2269a8abcb0ec4332ac6199ee03b71",
+  "predictionPath": "research/evidence/benchmark/gemini-predictions.jsonl",
+  "caseResults": {
+    "pvf-001": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-002": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-003": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-004": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-006": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-007": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-008": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-009": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-011": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-012": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-001": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-002": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-003": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-005": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-006": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-007": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-008": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-009": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-012": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-001": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-003": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-004": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-006": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-008": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-009": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-010": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-011": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-012": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-001": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-002": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-003": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-004": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-005": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-006": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-007": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-008": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-009": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-010": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-011": {
+      "status": "completed",
+      "resumed": true
+    },
+    "clb-012": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-001": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-002": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-003": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-004": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-005": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-006": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-007": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-008": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-009": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-011": {
+      "status": "completed",
+      "resumed": true
+    },
+    "uns-012": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-005": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pvf-010": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-010": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-011": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-002": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-005": {
+      "status": "completed",
+      "resumed": true
+    },
+    "cla-007": {
+      "status": "completed",
+      "resumed": true
+    },
+    "pdd-004": {
+      "status": "failed",
+      "resumed": false,
+      "attempts": 1,
+      "promptSha256": "0x13c6b36b21b20aeac956dfeee7e358f641e46e8db34fe6d57afe51b2e2fde5b1",
+      "generationConfigSha256": "0xc54e3230aebbae0ae11db8842e21ddb07c23d7c7b3dfb253c04c10310697dc52",
+      "errorType": "ProviderResponseError",
+      "error": "Gemini output violated the local invariant contract",
+      "modelVersion": "gemini-3.5-flash-lite",
+      "usageMetadata": {
+        "promptTokenCount": 233,
+        "candidatesTokenCount": 160,
+        "totalTokenCount": 393,
+        "serviceTier": "standard"
+      }
+    },
+    "uns-010": {
+      "status": "failed",
+      "resumed": false,
+      "attempts": 1,
+      "promptSha256": "0x04a4ba07a920d081b14a0c650bf07924325dbfcf1951d397343c602f54b10e8c",
+      "generationConfigSha256": "0xc54e3230aebbae0ae11db8842e21ddb07c23d7c7b3dfb253c04c10310697dc52",
+      "errorType": "ProviderResponseError",
+      "error": "Gemini output violated the local invariant contract",
+      "modelVersion": "gemini-3.5-flash-lite",
+      "usageMetadata": {
+        "promptTokenCount": 201,
+        "candidatesTokenCount": 157,
+        "totalTokenCount": 358,
+        "serviceTier": "standard"
+      }
+    }
+  },
+  "completedCount": 58,
+  "failedCount": 2,
+  "metrics": null,
+  "operationalMetrics": {
+    "schemaVersion": 1,
+    "kind": "compiler-benchmark-report",
+    "caseCount": 60,
+    "confusionMatrix": {
+      "truePositive": 46,
+      "trueNegative": 12,
+      "falsePositive": 0,
+      "falseNegative": 2
+    },
+    "supportClassification": {
+      "accuracy": 0.9666666666666667,
+      "precision": 1.0,
+      "recall": 0.9583333333333334,
+      "falsePositiveRate": 0.0
+    },
+    "exactInvariantAccuracy": 0.9666666666666667,
+    "perExpectedKind": {
+      "cumulativeLossCap": {
+        "total": 12,
+        "exact": 12,
+        "accuracy": 1.0
+      },
+      "cumulativeLossCapBps": {
+        "total": 12,
+        "exact": 12,
+        "accuracy": 1.0
+      },
+      "portfolioDrawdownCapBps": {
+        "total": 12,
+        "exact": 10,
+        "accuracy": 0.8333333333333334
+      },
+      "portfolioValueFloor": {
+        "total": 12,
+        "exact": 12,
+        "accuracy": 1.0
+      },
+      "unsupported": {
+        "total": 12,
+        "exact": 12,
+        "accuracy": 1.0
+      }
+    },
+    "mismatches": [
+      {
+        "caseId": "pdd-004",
+        "expectedKind": "portfolioDrawdownCapBps",
+        "predictedKind": "unsupported"
+      },
+      {
+        "caseId": "pdd-005",
+        "expectedKind": "portfolioDrawdownCapBps",
+        "predictedKind": "unsupported"
+      }
+    ]
+  },
+  "failedCasePolicy": "Provider or strict-contract failures produce no proposal and are scored as non-approvable only in operationalMetrics."
+}

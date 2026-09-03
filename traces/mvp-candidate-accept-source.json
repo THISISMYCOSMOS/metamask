@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "counterfactual-benign-control-source",
+  "basedOnTraceHashedContentSha256": "0x6ac590003efab76fcb5a18b50b331ba47e70fd111008273371305391c57ce403",
+  "reuse": [
+    "fork-binding",
+    "oracle-snapshot",
+    "starting-portfolio-value",
+    "step-timestamps"
+  ],
+  "transformation": {
+    "description": "Replace each G3 transfer with a configured smaller USDC amount and recompute portfolio values using the pinned USDC/USD oracle.",
+    "stepAmountBaseUnits": "300000000",
+    "transitionCount": 5,
+    "perStepLossValue1e18": "299930256000000000000"
+  },
+  "classification": "constructed-counterfactual-not-onchain-observation"
+}

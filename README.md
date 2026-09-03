@@ -172,6 +172,32 @@ mm doctor --json
 CLI 설치, bundle 사전 검증, 코드 테스트는 실제 자금 이동 증거가 아니다. 원격 실행 완료를 주장하려면
 실제 로그인된 동일 지갑 주소, 대상 체인, 서명된 delegation, 라이브 candidate와 최종 영수증이 필요하다.
 
+서명된 delegation을 아직 준비하지 않은 Agent Wallet 자체 잔고에 대해서는 별도의 direct
+`assetBalanceFloor` 경로를 사용할 수 있다. 이 경로는 승인된 wallet을 transaction sender로,
+승인된 token을 transaction target으로 고정하고 ERC-20 `transfer` calldata의 수취인·수량과
+시뮬레이션된 사후 잔액을 직접 결합한다. 블록이 전진하더라도 pending nonce와 token balance가
+같아야 하며, 통과한 exact request만 Agent Wallet CLI에 전달한다.
+
+```powershell
+uv run --env-file .env --project verifier python -B research\build_agent_wallet_direct_bundle.py `
+  research\evidence\agent-wallet\direct-floor-bundle.json --overwrite
+
+$env:AGENT_WALLET_RPC_URL = "https://ethereum-sepolia-rpc.publicnode.com"
+cd chain
+npm run agent-wallet:direct -- --bundle ..\research\evidence\agent-wallet\direct-floor-bundle.json
+npm run agent-wallet:direct -- --bundle ..\research\evidence\agent-wallet\direct-floor-bundle.json --broadcast
+```
+
+기본 연구 bundle은 Ethereum Sepolia의 Circle USDC만 대상으로 1 USDC 잔고에서 0.5 USDC
+하한을 유지하며 0.1 USDC를 전송하도록 제한된다. `--broadcast`는 Agent Wallet의 독립적인
+정책과 MFA를 우회하지 않는다. MFA 대기는 거래 제출 성공이나 온체인 브로드캐스트 증거가 아니다.
+
+2026-09-04 실행에서는 해당 bundle이 실제 Agent Wallet Guard Mode와 이메일 MFA를 통과해
+Sepolia 거래 `0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500`으로
+브로드캐스트됐다. 블록 `11628030`의 성공 영수증, 정확한 transaction 필드와 Transfer 이벤트,
+사후 잔액 0.9 USDC를 검증했다. 이는 application-level floor guard와 Agent Wallet 전송의
+end-to-end 증거이지만, Agent Wallet 네이티브 floor 정책이나 서명된 delegation redemption 증거는 아니다.
+
 ## 설계 원칙
 
 LLM은 **컴파일러이지 심판이 아니다.** 의도 → 불변식 변환은 실행 전 1회,

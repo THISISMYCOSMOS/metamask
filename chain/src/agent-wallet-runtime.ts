@@ -159,7 +159,7 @@ function validateProposal(value: unknown): void {
   }
 }
 
-function validateApproval(value: unknown): void {
+export function validateApproval(value: unknown): void {
   const approval = record(value, "approval");
   exactKeys(approval, "approval", [
     "schemaVersion", "kind", "approvalId", "approvalScope", "approvedBy", "proposal", "proposalSha256",
