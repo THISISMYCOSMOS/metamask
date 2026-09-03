@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "kind": "research-evidence-bundle",
+  "envelope": {
+    "generatedAtUtc": "2026-09-03T17:36:50Z",
+    "exporterVersion": "1.0.0",
+    "redactionRulesetSha256": "0xae3f079eb5ff42971813a2b876f35498c4ba483082388ed10b93c97868e00970"
+  },
+  "payload": {
+    "schemaVersion": 1,
+    "evidenceId": "rq3-offline-g3-reject",
+    "case": "offline-g3-reject",
+    "claimScope": "offline-counterexample",
+    "reproducibility": {
+      "repositoryCommit": "6ba66a8cee4bace121f2bb7e10bbcef179b9aec4",
+      "repositoryBranch": "feat",
+      "repositoryDirty": true,
+      "delegationFrameworkCommit": "197463b4aba3409adef1df544dabafc3636ee82d",
+      "delegationFrameworkDirty": true,
+      "fileSha256": {
+        "verifier/uv.lock": "0x14894c0399cf86973ece95c064b960dceda1220b7186180d0e64c23084ad3abd",
+        "chain/package-lock.json": "0x99b39bb711c36421f367df513e084dc4c36da3892493a7026b9822b21058e213",
+        "research/data/compiler_cases.json": "0xf2af7d2f4fb03c65bda4cd1392a664ac475818dcf324ff53d9feb2ea1c56720c",
+        "verifier/evidence_bundle_models.py": "0x813c5d42f1395fcac6da175daa648ccf11860c8a23be6dc0bc67845dfc7cd9ba",
+        "verifier/export_evidence_bundle.py": "0x86263af7c467e0adea26aadf1b22c0daf3fe5d6dc862b45f3f60cced86c9661a"
+      }
+    },
+    "network": {
+      "chainId": 1,
+      "networkName": "ethereum-mainnet-fork",
+      "environment": "pinned-mainnet-fork",
+      "rpcClass": "pinned-fork",
+      "blockNumber": "25700000",
+      "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+    },
+    "artifacts": [
+      {
+        "name": "approval",
+        "evidenceClass": "configured",
+        "value": {
+          "schemaVersion": 1,
+          "kind": "policy-approval",
+          "approvalScope": "user",
+          "approvedBy": "user",
+          "proposalSha256": "0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+          "policySha256": "0x715c39c06217b3728939c5e1fe14d9ffe422605b4ca40df38c724440418e8dea",
+          "confirmation": "APPROVE 0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+          "proposal": {
+            "schemaVersion": 1,
+            "kind": "policy-proposal",
+            "requestSha256": "0xd66c2b1305d55d5981d55287cdb410b952b93e15bb3a481aa2031164042c6ba7",
+            "request": {
+              "schemaVersion": 1,
+              "kind": "intent-compiler-request",
+              "requestId": "mvp-intent-001",
+              "intentText": "포트폴리오 가치를 26,979.2516761 USD 이상으로 유지하고, 어느 연속 24시간 동안의 누적 손실도 1,999.53504 USD 이하로 제한해.",
+              "targetTraceKind": "portfolio-candidate",
+              "fork": {
+                "chainId": 1,
+                "blockNumber": "25700000",
+                "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+              },
+              "allowedInvariants": [
+                "portfolioValueFloor",
+                "cumulativeLossCap"
+              ],
+              "outputUnit": "usd-1e18",
+              "compilerRules": [
+                "Return JSON only and do not add fields outside the response schema.",
+                "Compile only portfolioValueFloor and cumulativeLossCap for portfolio-candidate traces.",
+                "Represent every USD threshold as an unsigned decimal string scaled by 1e18.",
+                "Do not infer user approval; this response is only a policy proposal.",
+                "If the intent is ambiguous, record the ambiguity in assumptions instead of inventing hidden policy."
+              ]
+            },
+            "compiler": {
+              "provider": "offline-fixture",
+              "model": "mvp-contract-test"
+            },
+            "policy": {
+              "schemaVersion": 1,
+              "policyId": "mvp-synthesized-loss-guard",
+              "traceKind": "portfolio-candidate",
+              "fork": {
+                "chainId": 1,
+                "blockNumber": "25700000",
+                "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+              },
+              "invariants": [
+                {
+                  "id": "portfolio-floor-from-intent",
+                  "kind": "portfolioValueFloor",
+                  "floorValue1e18": "26979251676100000000000"
+                },
+                {
+                  "id": "rolling-loss-cap-from-intent",
+                  "kind": "cumulativeLossCap",
+                  "windowSeconds": "86400",
+                  "maxLossValue1e18": "1999535040000000000000"
+                }
+              ]
+            },
+            "rationales": [
+              {
+                "invariantId": "portfolio-floor-from-intent",
+                "summary": "The stated minimum portfolio value is represented as USD scaled by 1e18."
+              },
+              {
+                "invariantId": "rolling-loss-cap-from-intent",
+                "summary": "The stated 24-hour loss ceiling is represented as a rolling 86400-second cap."
+              }
+            ],
+            "assumptions": [
+              "The comma characters are thousands separators and USD amounts use decimal notation."
+            ]
+          }
+        },
+        "source": "specs/mvp-user-policy-approval.json",
+        "sha256": "0x6bc7ec4fccbd7478aa597b83b41cb91161f3483bc2a6fe66f3f8311c44e77828"
+      },
+      {
+        "name": "candidate",
+        "evidenceClass": "observed",
+        "value": {
+          "schemaVersion": 1,
+          "kind": "portfolio-candidate",
+          "traceId": "g3-final-step-candidate",
+          "fork": {
+            "chainId": 1,
+            "blockNumber": "25700000",
+            "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+          },
+          "valuation": {
+            "unit": "usd-1e18",
+            "mode": "pinned-fork-snapshot",
+            "priceBlockNumber": "25700000",
+            "priceBlockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+          },
+          "sourceTraceHashedContentSha256": "0x6ac590003efab76fcb5a18b50b331ba47e70fd111008273371305391c57ce403",
+          "coverageStartTimestamp": "1786414091",
+          "initialValue1e18": "21480530316100000000000",
+          "transitions": [
+            {
+              "transitionIndex": 0,
+              "timestamp": "1786414091",
+              "beforeValue1e18": "21480530316100000000000",
+              "afterValue1e18": "20980646556100000000000",
+              "role": "history"
+            },
+            {
+              "transitionIndex": 1,
+              "timestamp": "1786435691",
+              "beforeValue1e18": "20980646556100000000000",
+              "afterValue1e18": "20480762796100000000000",
+              "role": "history"
+            },
+            {
+              "transitionIndex": 2,
+              "timestamp": "1786457291",
+              "beforeValue1e18": "20480762796100000000000",
+              "afterValue1e18": "19980879036100000000000",
+              "role": "history"
+            },
+            {
+              "transitionIndex": 3,
+              "timestamp": "1786478891",
+              "beforeValue1e18": "19980879036100000000000",
+              "afterValue1e18": "19480995276100000000000",
+              "role": "history"
+            },
+            {
+              "transitionIndex": 4,
+              "timestamp": "1786500491",
+              "beforeValue1e18": "19480995276100000000000",
+              "afterValue1e18": "18981111516100000000000",
+              "role": "candidate"
+            }
+          ]
+        },
+        "source": "traces/mvp-candidate-reject.json",
+        "sha256": "0x7fb702021d5d920ab82a99abe3bdd11c47b87c5968f30b7bd4d707b42c425c01"
+      },
+      {
+        "name": "decision",
+        "evidenceClass": "generated",
+        "value": {
+          "schemaVersion": 1,
+          "kind": "approved-candidate-evaluation",
+          "approvalScope": "user",
+          "approvedBy": "user",
+          "approvalSha256": "0x6bc7ec4fccbd7478aa597b83b41cb91161f3483bc2a6fe66f3f8311c44e77828",
+          "proposalSha256": "0xed84bfa046632e62ab288ec91328897e10b1b856346749862eda835de7149b21",
+          "policySha256": "0x715c39c06217b3728939c5e1fe14d9ffe422605b4ca40df38c724440418e8dea",
+          "candidateTraceId": "g3-final-step-candidate",
+          "candidateTraceSha256": "0x7fb702021d5d920ab82a99abe3bdd11c47b87c5968f30b7bd4d707b42c425c01",
+          "accepted": false,
+          "evaluations": [
+            {
+              "id": "portfolio-floor-from-intent",
+              "kind": "portfolioValueFloor",
+              "passed": false,
+              "observedMinimumValue1e18": "18981111516100000000000",
+              "floorValue1e18": "26979251676100000000000",
+              "evidence": {
+                "stepIndex": 4,
+                "position": "after"
+              }
+            },
+            {
+              "id": "rolling-loss-cap-from-intent",
+              "kind": "cumulativeLossCap",
+              "passed": false,
+              "observedMaximumLossValue1e18": "2499418800000000000000",
+              "maxLossValue1e18": "1999535040000000000000",
+              "windowSeconds": "86400",
+              "evidence": {
+                "startStepIndex": 0,
+                "endStepIndex": 4,
+                "startTimestamp": "1786414091",
+                "endTimestamp": "1786500491"
+              }
+            }
+          ]
+        },
+        "source": "verifier/evaluate_approved_candidate.py",
+        "sha256": "0xcb1fb8a5c57f04e3d87942b386ba2cf587f0432819ddeeca998fe18736d7580b"
+      }
+    ],
+    "outcome": {
+      "accepted": false,
+      "broadcastAttempted": false,
+      "txHash": null,
+      "receiptStatus": "not-applicable",
+      "walletNativeEnforcement": false
+    },
+    "claims": [
+      {
+        "path": "/artifacts/decision/value/accepted",
+        "evidenceClass": "generated",
+        "source": "deterministic approved candidate evaluator"
+      },
+      {
+        "path": "/artifacts/decision/value/evaluations",
+        "evidenceClass": "generated",
+        "source": "deterministic integer-only invariant evaluation"
+      },
+      {
+        "path": "/artifacts/candidate/value/sourceTraceHashedContentSha256",
+        "evidenceClass": "observed",
+        "source": "committed mainnet-fork G3 trace adapter"
+      }
+    ],
+    "limitations": [
+      "This is an offline pinned-fork evaluation and does not prove wallet-native enforcement or a live broadcast."
+    ],
+    "redactedPaths": []
+  },
+  "payloadSha256": "0x32e2d290852d6234dca87d8f0d92acb25f41bea6dc0c2c96b8079f5c235e690c"
+}

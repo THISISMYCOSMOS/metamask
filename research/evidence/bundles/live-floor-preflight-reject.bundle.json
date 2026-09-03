@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "kind": "research-evidence-bundle",
+  "envelope": {
+    "generatedAtUtc": "2026-09-03T17:37:11Z",
+    "exporterVersion": "1.0.0",
+    "redactionRulesetSha256": "0xae3f079eb5ff42971813a2b876f35498c4ba483082388ed10b93c97868e00970"
+  },
+  "payload": {
+    "schemaVersion": 1,
+    "evidenceId": "rq3-sepolia-live-floor-reject",
+    "case": "live-floor-preflight-reject",
+    "claimScope": "application-level-testnet",
+    "reproducibility": {
+      "repositoryCommit": "6ba66a8cee4bace121f2bb7e10bbcef179b9aec4",
+      "repositoryBranch": "feat",
+      "repositoryDirty": true,
+      "delegationFrameworkCommit": "197463b4aba3409adef1df544dabafc3636ee82d",
+      "delegationFrameworkDirty": true,
+      "fileSha256": {
+        "verifier/uv.lock": "0x14894c0399cf86973ece95c064b960dceda1220b7186180d0e64c23084ad3abd",
+        "chain/package-lock.json": "0x99b39bb711c36421f367df513e084dc4c36da3892493a7026b9822b21058e213",
+        "research/data/compiler_cases.json": "0xf2af7d2f4fb03c65bda4cd1392a664ac475818dcf324ff53d9feb2ea1c56720c",
+        "verifier/evidence_bundle_models.py": "0x813c5d42f1395fcac6da175daa648ccf11860c8a23be6dc0bc67845dfc7cd9ba",
+        "verifier/export_evidence_bundle.py": "0x86263af7c467e0adea26aadf1b22c0daf3fe5d6dc862b45f3f60cced86c9661a"
+      }
+    },
+    "network": {
+      "chainId": 11155111,
+      "networkName": "ethereum-sepolia",
+      "environment": "public-testnet",
+      "rpcClass": "public-testnet",
+      "blockNumber": "11627714",
+      "blockHash": "0x098863c78598e617525ba8ff6d64d2d6f9d128600e2ccc1f7cc4a194880e1457"
+    },
+    "artifacts": [
+      {
+        "name": "request",
+        "evidenceClass": "observed",
+        "value": {
+          "schemaVersion": 1,
+          "kind": "policy-compile-request",
+          "requestId": "ui-request-2ff8f5f3a793d7e7",
+          "proposalId": "ui-proposal-2ff8f5f3a793d7e7",
+          "policyId": "ui-token-floor-2ff8f5f3a793d7e7",
+          "intentText": "USDC를 20개 이상 남겨줘",
+          "chainId": 11155111,
+          "walletAddress": "0x9f85d965258624053734d8caea00dc3f452f3c27",
+          "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+          "tokenSymbol": "USDC",
+          "tokenDecimals": 6
+        },
+        "source": "live Gemini application compile request",
+        "sha256": "0x969a23adb68e1705351a371c1c049030b9df3b897a7a324caef4a967aabbd77d"
+      },
+      {
+        "name": "proposal",
+        "evidenceClass": "observed",
+        "value": {
+          "schemaVersion": 1,
+          "kind": "policy-proposal",
+          "proposalId": "ui-proposal-2ff8f5f3a793d7e7",
+          "requestSha256": "0x969a23adb68e1705351a371c1c049030b9df3b897a7a324caef4a967aabbd77d",
+          "intentText": "USDC를 20개 이상 남겨줘",
+          "compiler": {
+            "provider": "google-gemini",
+            "model": "gemini-3.5-flash-lite"
+          },
+          "policy": {
+            "schemaVersion": 1,
+            "kind": "assetBalanceFloor",
+            "policyId": "ui-token-floor-2ff8f5f3a793d7e7",
+            "chainId": 11155111,
+            "walletAddress": "0x9f85d965258624053734d8caea00dc3f452f3c27",
+            "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+            "assetBalanceFloor": "20000000"
+          },
+          "policySha256": "0x916384ed5fb964ba29ef5bff316e8284a1fd6f8c48d268aea8d4d05bed6b1f47",
+          "rationales": [
+            "The user requested to keep at least 20 USDC, which directly maps to an ERC-20 minimum balance floor."
+          ],
+          "assumptions": [
+            "The 20 USDC requested are converted using the provided 6 token decimals to 20000000 base units."
+          ],
+          "unsupportedItems": []
+        },
+        "source": "live Gemini structured output after local schema validation",
+        "sha256": "0x1a64e9cbe19a4b9a882145a20e4a6b6b6e8d5169164a1b3a8574a1d6f721ba08"
+      },
+      {
+        "name": "approval",
+        "evidenceClass": "generated",
+        "value": {
+          "schemaVersion": 1,
+          "kind": "approved-policy-envelope",
+          "approvalId": "approval-ui-proposal-2ff8f5f3a793d7e7",
+          "approvalScope": "user",
+          "approvedBy": "user",
+          "proposal": {
+            "schemaVersion": 1,
+            "kind": "policy-proposal",
+            "proposalId": "ui-proposal-2ff8f5f3a793d7e7",
+            "requestSha256": "0x969a23adb68e1705351a371c1c049030b9df3b897a7a324caef4a967aabbd77d",
+            "intentText": "USDC를 20개 이상 남겨줘",
+            "compiler": {
+              "provider": "google-gemini",
+              "model": "gemini-3.5-flash-lite"
+            },
+            "policy": {
+              "schemaVersion": 1,
+              "kind": "assetBalanceFloor",
+              "policyId": "ui-token-floor-2ff8f5f3a793d7e7",
+              "chainId": 11155111,
+              "walletAddress": "0x9f85d965258624053734d8caea00dc3f452f3c27",
+              "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+              "assetBalanceFloor": "20000000"
+            },
+            "policySha256": "0x916384ed5fb964ba29ef5bff316e8284a1fd6f8c48d268aea8d4d05bed6b1f47",
+            "rationales": [
+              "The user requested to keep at least 20 USDC, which directly maps to an ERC-20 minimum balance floor."
+            ],
+            "assumptions": [
+              "The 20 USDC requested are converted using the provided 6 token decimals to 20000000 base units."
+            ],
+            "unsupportedItems": []
+          },
+          "proposalSha256": "0x1a64e9cbe19a4b9a882145a20e4a6b6b6e8d5169164a1b3a8574a1d6f721ba08",
+          "policySha256": "0x916384ed5fb964ba29ef5bff316e8284a1fd6f8c48d268aea8d4d05bed6b1f47",
+          "confirmation": "APPROVE 0x1a64e9cbe19a4b9a882145a20e4a6b6b6e8d5169164a1b3a8574a1d6f721ba08"
+        },
+        "source": "exact proposal-hash approval submitted by the authorized research capture",
+        "sha256": "0x5468760a3e801c724b947480df5334dc395a8c902798e8f7fc3afad83de02073"
+      },
+      {
+        "name": "rpc-observation",
+        "evidenceClass": "external-chain",
+        "value": {
+          "blockNumber": "11627714",
+          "blockHash": "0x098863c78598e617525ba8ff6d64d2d6f9d128600e2ccc1f7cc4a194880e1457",
+          "assetBalance": "39000000",
+          "senderNonce": "1",
+          "recipientAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+          "amountBaseUnits": "25000000",
+          "gasEstimate": "45451",
+          "transferCallResult": "0x0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "source": "public Ethereum Sepolia JSON-RPC reads; endpoint URL omitted",
+        "sha256": "0xc6cb6444900a61d326765a3e6129ea47dbca6fbbdec068a1ed9cb1942fdb3ad4"
+      },
+      {
+        "name": "plan-decision",
+        "evidenceClass": "generated",
+        "value": {
+          "policy": {
+            "schemaVersion": 1,
+            "kind": "assetBalanceFloor",
+            "policyId": "ui-token-floor-2ff8f5f3a793d7e7",
+            "chainId": 11155111,
+            "walletAddress": "0x9f85d965258624053734d8caea00dc3f452f3c27",
+            "tokenAddress": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+            "assetBalanceFloor": "20000000"
+          },
+          "decision": {
+            "schemaVersion": 1,
+            "kind": "metamask-preflight-decision",
+            "planSha256": "0x6698200ebb6f2cb06ad8d1be0b17da09ee43b305029478e72fa1e2329d29f891",
+            "approvalSha256": "0x5468760a3e801c724b947480df5334dc395a8c902798e8f7fc3afad83de02073",
+            "policySha256": "0x916384ed5fb964ba29ef5bff316e8284a1fd6f8c48d268aea8d4d05bed6b1f47",
+            "accepted": false,
+            "reasonCodes": [
+              "ASSET_BALANCE_FLOOR_VIOLATION"
+            ]
+          },
+          "transaction": {
+            "mode": "metamask",
+            "status": "rejected",
+            "eligibleForBroadcast": false,
+            "planSha256": "0x6698200ebb6f2cb06ad8d1be0b17da09ee43b305029478e72fa1e2329d29f891",
+            "decisionSha256": "0x05215e41b78012e8dca8ff6e8231e1489d7d69b3512d1115cfa1436056f10fdb",
+            "walletRequest": null,
+            "recipientAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+            "amountBaseUnits": "25000000",
+            "transactionHash": null,
+            "receipt": null,
+            "reason": "결정론적 사전 판정이 거래를 거절해 MetaMask를 호출하지 않습니다."
+          }
+        },
+        "source": "ui/server.py authorize_metamask_policy application gate",
+        "sha256": "0xbe8ad69b3b3af8274a9a4db5c1a0f54494e809486e55454d60686729000656fa"
+      }
+    ],
+    "outcome": {
+      "accepted": false,
+      "broadcastAttempted": false,
+      "txHash": null,
+      "receiptStatus": "not-broadcast",
+      "walletNativeEnforcement": false
+    },
+    "claims": [
+      {
+        "path": "/artifacts/proposal/value/compiler",
+        "evidenceClass": "observed",
+        "source": "live Gemini API response bound into the proposal"
+      },
+      {
+        "path": "/artifacts/rpc-observation/value/assetBalance",
+        "evidenceClass": "external-chain",
+        "source": "Sepolia balanceOf at the captured block"
+      },
+      {
+        "path": "/artifacts/plan-decision/value/decision/reasonCodes",
+        "evidenceClass": "generated",
+        "source": "deterministic application-level floor evaluator"
+      },
+      {
+        "path": "/outcome/broadcastAttempted",
+        "evidenceClass": "observed",
+        "source": "rejection returned no walletRequest and the capture script has no send operation"
+      }
+    ],
+    "limitations": [
+      "This is an application-level preflight gate and is bypassable outside the integrated client path.",
+      "No MetaMask confirmation or eth_sendTransaction call was made for the rejected candidate.",
+      "The exact-hash approval was submitted by an automated user-authorized research capture and is not evidence of user comprehension or cryptographic identity."
+    ],
+    "redactedPaths": []
+  },
+  "payloadSha256": "0x75fb3b631909c5e1da7b4e744ae095a591db7aa2a113bd747175553af575f6df"
+}
