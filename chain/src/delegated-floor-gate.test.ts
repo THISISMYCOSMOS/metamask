@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { encodeAbiParameters, encodeFunctionData } from "viem";
+import { decodeAbiParameters, decodeFunctionData, encodeAbiParameters, encodeFunctionData } from "viem";
 
 import {
   DELEGATION_ARRAY_ABI_TYPE,
@@ -190,6 +190,18 @@ test("committed G3 signed delegation binds all six caveats into the product call
     functionName: "redeemDelegations",
     args: [[permissionContext], [MODE_CODE_SIMPLE_SINGLE], [encodeSingleExecution(tokenAddress, 0n, transferData)]],
   });
+  const decodedExecution = decodeFunctionData({ abi: REDEEM_DELEGATIONS_ABI, data: executionData });
+  assert.equal(decodedExecution.functionName, "redeemDelegations");
+  const [decodedDelegations] = decodeAbiParameters(
+    [DELEGATION_ARRAY_ABI_TYPE],
+    decodedExecution.args[0][0],
+  );
+  const decodedDelegation = decodedDelegations[0];
+  assert.equal(decodedDelegation.signature, delegation.signature);
+  assert.deepEqual(
+    decodedDelegation.caveats.map((caveat) => [caveat.enforcer.toLowerCase(), caveat.terms.toLowerCase()]),
+    baseline.caveats.map((caveat) => [caveat.enforcer.toLowerCase(), caveat.terms.toLowerCase()]),
+  );
   const inputApproval = approval(step.usdcAfter, {
     chainId: fork.chainId,
     walletAddress: baseline.delegator,
