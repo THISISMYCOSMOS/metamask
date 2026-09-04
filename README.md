@@ -136,6 +136,10 @@ METAMASK_TOKEN_DECIMALS=6
 실제 실행 진입점은 승인 envelope와 서명된 delegation을 포함한 `delegated-floor-candidate`를
 다음 wrapper로 묶어 입력받는다. 파서는 중첩 객체의 누락·추가 필드까지 거부한다.
 
+고정 메인넷 포크의 실제 EIP-712 서명·`redeemDelegations` 재현과 공개 Sepolia Agent Wallet
+경계는 [`docs/conditional-signed-delegation-test-results-ko.md`](docs/conditional-signed-delegation-test-results-ko.md)에
+부분 검증된 조건부 증거로 분리해 기록한다. 로컬 포크 성공을 원격 Agent Wallet 서명 위임 성공으로 해석하지 않는다.
+
 ```json
 {
   "schemaVersion": 1,

@@ -9,7 +9,7 @@
 - 기준일: 2026-09-04
 - 저장소: `metamask`
 - 기준 브랜치: `feat`
-- 기준 커밋: `db0a17acc5546c8b0832364c5311c4397802be07`
+- 기준 코드 커밋: `e873f89` (조건부 테스트와 문서 변경 전 `feat` 코드)
 - Delegation Framework 고정 커밋: `197463b4aba3409adef1df544dabafc3636ee82d`
 - 현재 구현 정본: 저장소 루트 `README.md` 및 해당 커밋의 코드
 - 기존 개발 문서의 기준 커밋 `8c8591a`는 과거 스냅샷이므로 현재 상태를 설명하는 정본으로 사용하지 않는다.
@@ -286,6 +286,17 @@ G3 누적 손실 시퀀스와 거부 평가에 더해, 같은 fork·oracle·초�
 
 > 제한된 실험 범위에서 오프라인 결과 상태 평가가 구성된 누적 손실 후보를 거부하고 대응 정상 후보를 허용했다. Sepolia의 애플리케이션 수준 `assetBalanceFloor` 경로는 하한 위반 후보를 거래 생성 전에 거부했으며, 하한을 유지하는 direct ERC-20 후보는 실제 MetaMask Agent Wallet과 MFA를 거쳐 브로드캐스트된 뒤 영수증·Transfer·사후 잔액까지 검증됐다.
 
+### 7.6 조건부 서명 위임 테스트
+
+2026-09-04 고정 메인넷 포크에서 실제 EIP-712 root delegation을 서명하고, 같은 6개 caveat가
+포함된 `redeemDelegations`를 20회 실행한 G3 재현과 strict trace 검증이 성공했다. 이 결과는
+로컬 포크의 서명·redemption 실행 가능성을 증명하지만, Sepolia Agent Wallet의 direct ERC-20
+성공 사례와 결합해 원격 signed delegation end-to-end 성공으로 주장하지 않는다.
+
+테스트 명령, 결과, 코드 책임 지도, 증거 연결, 주장 가능·불가 범위는
+[`conditional-signed-delegation-test-results-ko.md`](conditional-signed-delegation-test-results-ko.md)에
+**부분 검증된 조건부 증거**로 고정한다.
+
 ## 8. 구현 및 검증 상태
 
 기준 커밋에서 확인한 현재 상태는 다음과 같다.
@@ -325,7 +336,7 @@ G3 누적 손실 시퀀스와 거부 평가에 더해, 같은 fork·oracle·초�
 - 현재 생성된 아티팩트를 포함하는 깨끗한 논문용 기준 커밋·태그
 - 60개 전부가 엄격한 provider-output 계약을 통과한 완결 실행 또는 58/60 coverage를 전제로 한 최종 분석 결정
 - 지갑·스마트컨트랙트 수준의 네이티브 집행
-- 실제 MetaMask Delegation Framework 서명 위임 redemption의 end-to-end 성공 증거
+- 실제 MetaMask Delegation Framework 서명 위임 redemption의 **원격 Agent Wallet end-to-end** 성공 증거
 
 ## 9. 다음 개발 단계에서 필요한 기능
 
