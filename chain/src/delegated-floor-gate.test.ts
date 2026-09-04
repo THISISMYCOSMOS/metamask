@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { encodeAbiParameters, encodeFunctionData } from "viem";
 
@@ -23,6 +24,30 @@ const delegate = `0x${"33".repeat(20)}` as const;
 const manager = `0x${"44".repeat(20)}` as const;
 const recipient = `0x${"77".repeat(20)}` as const;
 
+interface G3TraceFixture {
+  hashed: {
+    fork: { chainId: number };
+    baseline: {
+      delegationManager: `0x${string}`;
+      delegator: `0x${string}`;
+      delegate: `0x${string}`;
+      counterparty: `0x${string}`;
+      caveats: { enforcer: `0x${string}`; terms: `0x${string}` }[];
+    };
+    delegation: {
+      authority: `0x${string}`;
+      salt: string;
+      signature: `0x${string}`;
+    };
+    steps: {
+      blockNumber: string;
+      transferAmount: string;
+      usdcBefore: string;
+      usdcAfter: string;
+    }[];
+  };
+}
+
 function delegatedTransferData(amount = 100n, to = recipient): `0x${string}` {
   const permissionContext = encodeAbiParameters(
     [DELEGATION_ARRAY_ABI_TYPE],
@@ -44,14 +69,21 @@ function delegatedTransferData(amount = 100n, to = recipient): `0x${string}` {
   });
 }
 
-function approval(floor = "900"): BalanceFloorApproval {
+function approval(
+  floor = "900",
+  binding: {
+    chainId: number;
+    walletAddress: `0x${string}`;
+    tokenAddress: `0x${string}`;
+  } = { chainId: 1, walletAddress: wallet, tokenAddress: token },
+): BalanceFloorApproval {
   const policy = {
     schemaVersion: 1 as const,
     kind: "assetBalanceFloor" as const,
     policyId: "usdc-floor",
-    chainId: 1,
-    walletAddress: wallet,
-    tokenAddress: token,
+    chainId: binding.chainId,
+    walletAddress: binding.walletAddress,
+    tokenAddress: binding.tokenAddress,
     assetBalanceFloor: floor,
   };
   const proposal = {
@@ -124,6 +156,81 @@ test("inclusive floor accepts and binds the outer delegated execution", () => {
   assert.equal(decision.accepted, true);
   assert.equal(decision.candidateSha256, canonicalSha256(input));
   assert.equal(decision.executionSha256, canonicalSha256(input.execution));
+  assert.equal(verifyDelegatedExecutionBinding(input), true);
+});
+
+test("committed G3 signed delegation binds all six caveats into the product calldata", () => {
+  const tracePath = new URL("../../traces/cumulative-loss.json", import.meta.url);
+  const trace = JSON.parse(readFileSync(tracePath, "utf8")) as G3TraceFixture;
+  const { baseline, delegation, fork, steps } = trace.hashed;
+  const step = steps[0];
+  const tokenAddress = baseline.caveats[0].terms;
+
+  assert.equal(baseline.caveats.length, 6);
+  assert.equal((delegation.signature.length - 2) / 2, 65);
+
+  const permissionContext = encodeAbiParameters(
+    [DELEGATION_ARRAY_ABI_TYPE],
+    [[{
+      delegate: baseline.delegate,
+      delegator: baseline.delegator,
+      authority: delegation.authority,
+      caveats: baseline.caveats.map((caveat) => ({ ...caveat, args: "0x" as const })),
+      salt: BigInt(delegation.salt),
+      signature: delegation.signature,
+    }]],
+  );
+  const transferData = encodeFunctionData({
+    abi: ERC20_TRANSFER_ABI,
+    functionName: "transfer",
+    args: [baseline.counterparty, BigInt(step.transferAmount)],
+  });
+  const executionData = encodeFunctionData({
+    abi: REDEEM_DELEGATIONS_ABI,
+    functionName: "redeemDelegations",
+    args: [[permissionContext], [MODE_CODE_SIMPLE_SINGLE], [encodeSingleExecution(tokenAddress, 0n, transferData)]],
+  });
+  const inputApproval = approval(step.usdcAfter, {
+    chainId: fork.chainId,
+    walletAddress: baseline.delegator,
+    tokenAddress,
+  });
+  const input: DelegatedFloorCandidate = {
+    schemaVersion: 1,
+    kind: "delegated-floor-candidate",
+    candidateId: "g3-step-1-signed-delegation",
+    approvalSha256: canonicalSha256(inputApproval),
+    policySha256: inputApproval.policySha256,
+    context: {
+      chainId: fork.chainId,
+      currentBlockNumber: step.blockNumber,
+      currentBlockHash: `0x${"66".repeat(32)}`,
+      delegateNonce: "0",
+      delegationManagerAddress: baseline.delegationManager,
+      walletAddress: baseline.delegator,
+      tokenAddress,
+      assetBalance: step.usdcBefore,
+    },
+    execution: {
+      chainId: fork.chainId,
+      fromAddress: baseline.delegate,
+      toAddress: baseline.delegationManager,
+      value: "0",
+      data: executionData,
+      gas: "3000000",
+      nonce: "0",
+    },
+    effect: {
+      walletAddress: baseline.delegator,
+      tokenAddress,
+      recipientAddress: baseline.counterparty,
+      transferAmount: step.transferAmount,
+      afterAssetBalance: step.usdcAfter,
+    },
+  };
+
+  const decision = evaluateDelegatedFloor(inputApproval, input);
+  assert.equal(decision.accepted, true);
   assert.equal(verifyDelegatedExecutionBinding(input), true);
 });
 
