@@ -9,12 +9,12 @@
 - 기준일: 2026-09-04
 - 저장소: `metamask`
 - 기준 브랜치: `feat`
-- 기준 코드 커밋: `e873f89` (조건부 테스트와 문서 변경 전 `feat` 코드)
+- 조건부 서명 위임 검증 코드 커밋: `9f72005`
 - Delegation Framework 고정 커밋: `197463b4aba3409adef1df544dabafc3636ee82d`
 - 현재 구현 정본: 저장소 루트 `README.md` 및 해당 커밋의 코드
 - 기존 개발 문서의 기준 커밋 `8c8591a`는 과거 스냅샷이므로 현재 상태를 설명하는 정본으로 사용하지 않는다.
 
-현재 로컬 Delegation Framework 서브모듈의 체크아웃 커밋은 위 고정값과 일치한다. 다만 서브모듈 안에 사용자가 생성한 Foundry broadcast 결과가 남아 있어 로컬 작업 트리는 깨끗한 재현 환경이 아니다. 논문용 최종 재현은 별도의 깨끗한 체크아웃 또는 고정 태그에서 수행해야 한다.
+현재 로컬 Delegation Framework 서브모듈의 체크아웃 커밋은 위 고정값과 일치한다. 기본 worktree의 사용자 소유 Foundry broadcast 결과는 보존했다. 별도의 깨끗한 `d06e942` detached worktree에서 고정 서브모듈·잠금 의존성을 새로 구성해 G3와 관련 평가기·chain·타입 검사를 재실행했다. 논문용 최종 태그와 manifest 고정은 여전히 남아 있다.
 
 증거의 상태는 다음 용어로 구분한다.
 
@@ -261,9 +261,13 @@ G3 누적 손실 시퀀스와 거부 평가에 더해, 같은 fork·oracle·초�
 - 송신자와 USDC 컨트랙트 대상
 - `transfer` calldata의 수신자와 100,000 base units
 - 해당 거래 영수증의 Transfer 이벤트
-- 거래 후 송신자 잔액 900,000 base units
 
 실행 경로는 실제 Gemini 구조화 출력, 정확한 proposal hash 승인, 공개 RPC `eth_call`, nonce·잔고 재검증, Agent Wallet CLI 전송 요청, Guard Mode의 이메일 MFA, 브로드캐스트, 영수증과 정확한 transaction 필드 및 Transfer 이벤트·사후 잔액 검증을 순서대로 통과했다. candidate hash는 `0x2ef30f41600d6ac40dd4be5c44aecfe29315951eac0149c80ab719161f8786e9`다.
+
+거래 후 송신자 잔액 900,000 base units는 실행 당시 검증돼 해시 결합 evidence bundle에
+보존됐다. 현재 사용한 공개 RPC에서는 해당 블록의 historical state를 다시 조회할 수 없었으므로,
+제3자가 공개 체인만으로 재도출한 값으로 분류하지 않는다. 자세한 재확인 범위는 조건부 서명 위임
+테스트 결과 문서 5절에 기록한다.
 
 다음 값은 온체인만으로 독립 검증할 수 없으므로 해시 결합된 오프체인 번들로 보존한다.
 
@@ -293,7 +297,8 @@ G3 누적 손실 시퀀스와 거부 평가에 더해, 같은 fork·oracle·초�
 로컬 포크의 서명·redemption 실행 가능성을 증명하지만, Sepolia Agent Wallet의 direct ERC-20
 성공 사례와 결합해 원격 signed delegation end-to-end 성공으로 주장하지 않는다.
 
-테스트 명령, 결과, 코드 책임 지도, 증거 연결, 주장 가능·불가 범위는
+테스트 명령, 깨끗한 체크아웃 재현 결과, 실제 G3 fixture의 제품 gate 결합, 원격 실행 가능성 점검,
+Codex–Claude 교차검증, 코드 책임 지도, 증거 연결, 주장 가능·불가 범위는
 [`conditional-signed-delegation-test-results-ko.md`](conditional-signed-delegation-test-results-ko.md)에
 **부분 검증된 조건부 증거**로 고정한다.
 
@@ -324,7 +329,7 @@ G3 누적 손실 시퀀스와 거부 평가에 더해, 같은 fork·oracle·초�
 - UI: 34개 통과
 - Verifier: 55개 통과
 - Research: 15개 통과
-- Chain: 36개 통과
+- Chain: 37개 통과
 - Python compileall: 통과
 - TypeScript `tsc --noEmit`: 통과
 
@@ -447,7 +452,8 @@ Transaction Protection의 최대 10,000달러 보호 문구는 자격 요건·�
 - MetaMask Delegation Framework 배포 정보: <https://github.com/MetaMask/delegation-framework/blob/main/documents/Deployments.md>
 - Circle 테스트넷 USDC 컨트랙트 주소: <https://developers.circle.com/stablecoins/usdc-contract-addresses>
 - Google Gemini 3.5 Flash-Lite 모델 문서: <https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite>
-- Sepolia 성공 거래: <https://sepolia.etherscan.io/tx/0xe6d1f1761034d10a4ed7b566f87239b476436235d10f0e014622af51f5de5564>
+- Sepolia 주 성공 거래: <https://sepolia.etherscan.io/tx/0xaf7566c59d0b10c3983f2478088ac31df165b1acaf1b6084acacd96d08d4f500>
+- Sepolia 보조 역사 거래: <https://sepolia.etherscan.io/tx/0xe6d1f1761034d10a4ed7b566f87239b476436235d10f0e014622af51f5de5564>
 
 Delegation Framework의 동작을 논문에서 인용할 때는 `main` 브랜치 URL만 남기지 말고, 실험에 고정한 커밋 `197463b4aba3409adef1df544dabafc3636ee82d`의 permalink 또는 로컬 아카이브를 함께 기록한다.
 

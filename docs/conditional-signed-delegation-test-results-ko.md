@@ -8,14 +8,14 @@
 
 ## 1. 결론
 
-2026-09-04 `feat`의 코드 기준 커밋 `e873f89`에서 다음을 확인했다.
+2026-09-04 `feat`의 검증 코드 커밋 `9f72005`에서 다음을 확인했다.
 
 | 검증 대상 | 환경 | 결과 | 주장 가능 범위 |
 | --- | --- | --- | --- |
 | EIP-712 root delegation 서명 | 고정 블록 `25700000`의 로컬 Anvil 메인넷 포크 | 성공 | 65-byte 서명을 포함한 실제 Delegation 객체를 생성했다. |
 | 6개 caveat가 포함된 `redeemDelegations` | 같은 로컬 포크 | 20/20 성공 | 고정한 6개 caveat 구성으로 서명 위임 실행이 실제 DelegationManager를 통과했다. |
 | G3 trace 독립 검증 | 로컬 Python 검증기 | 성공 | 20회 상태 변화, 이벤트, 기간별 사용량, 오라클 환산 결과가 strict schema와 교차 검증을 통과했다. |
-| 제품용 delegated floor gate | 자동화 테스트 | 성공 | 정확한 승인·후보·calldata·컨텍스트가 맞을 때만 sender를 1회 호출하고, 거부·변조·drift 시 0회 호출한다. |
+| 제품용 delegated floor gate | 자동화 테스트 | 성공 | 커밋된 G3의 65-byte 서명·6개 caveat를 실제 `redeemDelegations` calldata로 재구성해 결합 검증을 통과했다. 거부·변조·drift 시 sender는 0회 호출된다. |
 | Agent Wallet direct `assetBalanceFloor` 허용 | Ethereum Sepolia | 기존 증거 재확인 성공 | direct ERC-20 거래의 성공 영수증과 Transfer 이벤트를 공개 RPC에서 다시 확인했다. |
 | Agent Wallet direct `assetBalanceFloor` 거부 | Ethereum Sepolia preflight 증거 | 검증됨 | 하한 위반 후보는 CLI sender 전에 거부됐고 새 요청 ID와 거래 해시가 생성되지 않았다. |
 | Agent Wallet + 서명 위임 `redeemDelegations` | 공개 원격 체인 | **미검증** | 구현·단위 테스트는 존재하지만 실제 signed delegation, Agent Wallet 전송, 원격 영수증을 한 흐름으로 확인하지 않았다. |
@@ -58,7 +58,7 @@
 | 구성 타당성 | 프레임워크 메커니즘은 높음 | 실제 EIP-712 서명과 `redeemDelegations`를 사용한다. 다만 Agent Wallet direct 경로는 delegation이 아니다. |
 | 외적 타당성 | 제한적 | 로컬 배포 인스턴스와 Sepolia direct 사례 1쌍이므로 운영 Agent Wallet·다른 체인·자산으로 일반화하지 않는다. |
 | 통계적 결론 | 해당 없음 | G3의 20회는 표본 20개가 아니라 하나의 구성된 공격 시퀀스다. 발생률이나 오탐률을 추정하지 않는다. |
-| 재현성 | 양호하나 출판 고정 미완료 | 결정론 digest와 잠금 파일은 있으나 깨끗한 체크아웃 재실행, 최종 태그, manifest 고정이 남았다. |
+| 재현성 | 깨끗한 커밋 재현 완료, 출판 고정 미완료 | 분리된 깨끗한 worktree의 `d06e942`에서 G3·평가기·chain·타입 검사를 재실행했다. 최종 태그와 출판 manifest 고정은 남았다. |
 | 독립성 | 제한적 | 구현과 검증 아티팩트가 같은 저장소에서 생성됐다. 최종 제출 전 독립 재실행 또는 제3자 검토가 바람직하다. |
 
 이 설계의 핵심은 두 성공 결과를 합성하지 않는 것이다. 로컬 포크는 signed delegation의
@@ -105,7 +105,7 @@ flowchart LR
 | --- | --- |
 | 실행일 | 2026-09-04 |
 | 저장소 브랜치 | `feat` |
-| 테스트 대상 코드 | `e873f89` |
+| G3 깨끗한 재현 대상 코드 | `d06e942` |
 | Delegation Framework | `197463b4aba3409adef1df544dabafc3636ee82d` |
 | 체인 | Anvil이 로컬에 만든 Ethereum mainnet fork |
 | 포크 블록 | `25700000` |
@@ -141,7 +141,28 @@ flowchart LR
 
 이번 digest는 커밋된 2회 결정론 보고서의 run 1·run 2 값과 같다. 다만 이번 작업에서 결정론 스크립트를 두 번 새로 실행한 것은 아니므로, 표현은 `기존 2회 고정값과 일치했다`로 제한한다.
 
-### 4.3 서명된 caveat
+### 4.3 깨끗한 체크아웃 재현
+
+사용자 작업물이 남아 있는 기본 worktree와 분리해, `d06e942`를 가리키는 detached worktree를
+만들고 고정 서브모듈과 잠금 의존성을 새로 설치했다. `.env`는 Git 무시 여부를 먼저 확인한 뒤
+이 임시 환경에만 복사했으며 값은 출력하거나 증거에 기록하지 않았다.
+
+| 순서 | 검증 | 결과 |
+| --- | --- | --- |
+| 1 | `chain/scripts/reproduce-g3.sh` | 성공, 20/20 redemption 및 strict trace 검증 통과 |
+| 2 | `verifier/test_candidate_evaluator.py` | 11개 통과 |
+| 3 | `verifier/test_invariant_evaluator.py` | 16개 통과 |
+| 4 | `verifier.test_evidence_bundle` | 5개 통과 |
+| 5 | Chain 전체 테스트 | 37개 통과 |
+| 6 | TypeScript `tsc --noEmit` | 통과 |
+
+평가기 두 종류를 G3 다음에 실행한 이유는 trace schema 통과만으로 정책의 accept/reject 결정을
+독립적으로 재계산했다고 볼 수 없기 때문이다. 최초 Python 실행 두 건은 모듈 검색 기준과 다른
+디렉터리에서 호출해 import 오류가 났고, 코드 변경 없이 각 테스트가 기대하는 실행 위치에서
+다시 호출해 위 결과를 얻었다. 이는 테스트 실패가 아니라 재현 명령의 작업 디렉터리 조건으로
+기록한다.
+
+### 4.4 서명된 caveat
 
 | 순서 | Enforcer | 검사 대상 |
 | --- | --- | --- |
@@ -175,7 +196,8 @@ flowchart LR
 
 ## 6. 자동화 테스트 결과
 
-같은 코드 체크아웃에서 문서 작성 전에 실행했다.
+아래 전체 회귀 수치는 같은 기준일의 기본 worktree에서 기록한 결과다. 이번에 분리된 깨끗한
+`d06e942` worktree에서 다시 실행한 범위와 결과는 4.3절에 별도로 적었다.
 
 | 영역 | 결과 | 포함 범위 |
 | --- | --- | --- |
@@ -183,11 +205,51 @@ flowchart LR
 | UI | 34개 통과 | 정책 수정·승인, MetaMask preflight, 제출·영수증 결합 |
 | Verifier | 55개 통과 | 4종 불변식, 후보 판정, 증거 번들 strict schema |
 | Research | 15개 통과 | 60-case 데이터셋 구조, Gemini 컴파일 계약, 연구 프로그램 |
-| Chain | 36개 통과 | delegated/direct gate, Agent Wallet CLI 어댑터, drift·거부 시 zero-send |
+| Chain | 37개 통과 | 실제 G3 fixture 결합, delegated/direct gate, Agent Wallet CLI 어댑터, drift·거부 시 zero-send |
 | TypeScript | `tsc --noEmit` 통과 | 정적 타입 검사 |
 | G3 포크 재현 | exit code `0` | 실제 EIP-712 서명, 20회 redemption, trace 검증 |
 
 자동화 테스트의 CLI runner와 fake RPC 성공은 원격 Agent Wallet 서명 위임 성공으로 세지 않는다.
+
+### 6.1 실제 G3 fixture와 제품 gate의 결합 범위
+
+`chain/src/delegated-floor-gate.test.ts`는 커밋된 `traces/cumulative-loss.json`에서 실제
+delegator·delegate·manager·65-byte 서명·6개 caveat·첫 redemption 상태를 읽는다. 이를
+Delegation Framework ABI의 `permissionContext`와 outer `redeemDelegations` calldata로 다시
+인코딩한 뒤 제품 gate의 승인·후보·실행 결합 검사를 통과시킨다.
+
+이 테스트가 증명하는 것은 **G3의 실제 서명 위임 구조를 제품 gate가 손실 없이 결합한다는 것**이다.
+테스트 프로세스 안에서 그 서명을 다시 암호학적으로 검증하거나 원격 체인에 전송한 것은 아니다.
+서명·caveat의 실제 온체인 검증 근거는 앞선 G3 포크의 20/20 `redeemDelegations` 성공이다.
+
+### 6.2 공개 Sepolia 원격 경로의 실행 가능성 점검
+
+새 거래를 전송하지 않고 공개 RPC, 고정 소스, 설치된 CLI의 도움말과 활성 지갑의 비민감 필드만
+읽기 전용으로 확인했다.
+
+| 점검 항목 | 관측 | 판정 |
+| --- | --- | --- |
+| Sepolia DelegationManager | 고정 배포 문서의 v1.3.0 주소 `0xdb9B…7dB3`에 11,503-byte 코드 존재 | 공개 체인 대상 컨트랙트는 존재 |
+| EIP-712 CLI 서명 | 설치된 MetaMask CLI `6.1.4`가 `wallet sign-typed-data --chain-id --payload` 제공 | CLI 서명 기능은 존재 |
+| 활성 Agent Wallet 모드 | 비밀값을 제외한 필드가 `mode=server`, `chainNamespace=evm`, `tradingMode=guard` | 서버 EVM 지갑임은 확인, DeleGator 호환 계정이라는 증거는 없음 |
+| 저장소 typed-data domain | `chain/src/delegation.ts`가 `chainId: 1`로 고정 | 현재 helper 그대로는 Sepolia 서명에 부적합 |
+| 실행 컨텍스트 | 후보의 block number/hash를 전송 직전 `latest`와 완전 일치 비교 | 후보 생성 뒤 블록이 바뀌면 fail-closed; 원격 흐름 운용 절차가 필요 |
+| 영수증 결합 | from/to/input/value/gas/nonce를 승인 실행과 정확히 비교 | 성공 후 결합 검증은 구현됨 |
+
+따라서 원격 signed-delegation 경로는 **기술적으로 불가능하다고 판정하지 않는다.** 다만 현재
+저장소와 활성 계정만으로 즉시 실행 가능하다고도 판정할 수 없다. 최소한 체인 ID 파라미터화,
+활성 계정의 DeleGator 실행 토폴로지 확인, 최신 블록 컨텍스트를 보존하는 생성·전송 절차가 먼저
+필요하다. 이 점검은 준비 상태 판정이며 원격 E2E 성공 증거가 아니다.
+
+### 6.3 Codex–Claude 교차검증 요약
+
+| 구분 | 내용 |
+| --- | --- |
+| Codex 검증 | 깨끗한 `d06e942`에서 G3를 재실행하고 후보·불변식 평가기, evidence bundle, chain 전체 테스트, 타입 검사를 순서대로 확인했다. Claude 지적을 반영한 `9f72005`에서 Chain 37개와 타입 검사를 다시 통과했다. 공개 Sepolia와 CLI는 읽기 전용으로 점검했다. |
+| Claude 검토 | G3 뒤 후보 평가기와 불변식 평가기를 별도로 실행하고, 실제 6-caveat·65-byte 서명 fixture를 제품 gate에 결합하며, 전체 trace 파일 해시 대신 semantic digest를 기록하라고 제안했다. 최종 diff 재검토 결과는 `No material issue`였다. |
+| 일치점 | 로컬 signed redemption과 Sepolia direct 실행을 합쳐 원격 signed-delegation 성공으로 쓰지 않는다. 평가 결정은 trace schema와 별도로 재검증한다. |
+| 이견·정정 | Claude는 초기 검토에서 CLI typed-data 서명 기능이 없다고 보았으나, 설치된 CLI `6.1.4` 도움말에서 해당 명령을 확인해 그 판단을 폐기했다. |
+| 최종 판단 | 최소 검증 범위는 충족했다. 로컬 메커니즘·제품 결합은 성공, 원격 signed-delegation E2E는 조건부 미검증으로 유지한다. |
 
 ## 7. 코드 책임 지도
 
