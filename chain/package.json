@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "npm run test:pre-execution",
+    "research:baseline-intent": "tsx src/baseline-intent-comparison.ts",
+    "research:gate-position": "tsx src/gate-position-comparison.ts",
     "agent-wallet:execute": "tsx src/run-agent-wallet.ts",
     "agent-wallet:direct": "tsx src/run-agent-wallet-direct.ts",
     "deploy": "tsx src/deploy.ts",

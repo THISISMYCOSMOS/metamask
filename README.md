@@ -1,10 +1,99 @@
-# Intent as Specification
+# MetaMask Agent Wallet — Intent as Specification
 
-LLM 기반 불변식 합성과 실행 직전 검증을 통한 에이전트 거래 보안.
+사용자의 자연어 요청을 승인된 결과 정책으로 바꾸고, 거래 후보의 예상 사후 상태를 실행 직전에 검증하는 연구 프로젝트다. 기존 MetaMask 권한·위임 보호에 결과 게이트를 추가했을 때의 효과와 검증 위치에 따른 한계를 재현한다.
 
 권한(authorization)의 세분화로는 의도(intent)를 표현할 수 없다. 한도와 허용목록을
-아무리 촘촘히 해도 그 교집합 안에 사용자에게 손해인 경로가 남는다. 방어는 허용할
-호출을 좁히는 방향이 아니라 **허용할 결과 상태를 명세하는 방향**으로 이동해야 한다.
+아무리 촘촘히 해도 그 교집합 안에 사용자에게 손해인 경로가 남을 수 있다. 이 프로젝트는
+기존 권한 검사를 유지하면서 **사용자가 승인한 결과 상태를 명세하고 추가로 검사**한다.
+
+## 리서치와 증거 읽기
+
+| 문서 | 내용 |
+| --- | --- |
+| [리서치 원문 Markdown](research/metamask-agent-wallet-research-ko.md) | 노션 전체 본문: 배경, 문제 정의, 설계, 아키텍처, 실험 A/B/C, 한계, 결론 |
+| [노션 리서치](https://app.notion.com/p/MetaMask-Agent-Wallet-3da80bfc8dc180b09019e7372573e302) | 원본 문서; 저장소 사본은 2026-09-16에 보존 |
+| [RQ3 최종 실험 보고서](docs/rq3-final-test-report-ko.md) | 비교 조건, 실행 과정, 원본 해시, 허용·거절 결과, 재현 명령과 해석 범위 |
+| [검증 위치 비교](docs/gate-position-comparison-results-ko.md) | 로컬 pre-submit / pre-sign 비교와 검증 이후 상태 변경의 영향 |
+| [조건부 서명 위임 검증](docs/conditional-signed-delegation-test-results-ko.md) | 로컬 서명 위임과 Sepolia 직접 전송의 증거 경계 |
+| [논문 작성용 RQ3 컨텍스트](docs/rq3-ai-writing-context-ko.md) | 코드·증거 파일 지도와 허용 가능한 주장 |
+| [Research 실행 안내](research/README.md) | 정책 컴파일 벤치마크와 연구 프로그램 사용법 |
+| [증거 bundle 안내](research/evidence/README.md) | 보존된 입력, 승인, 실행 기록과 무결성 검증 |
+
+## 핵심 흐름
+
+```mermaid
+flowchart TD
+    Intent[사용자 자연어 요청] --> Compiler[LLM의 제한된 정책 제안]
+    Compiler --> Review[사용자 검토와 수정]
+    Review --> Approval[정확한 정책 제안 해시 승인]
+    Candidate[거래 후보와 현재 체인 상태] --> Simulation[오프체인 실행 시뮬레이션]
+    Simulation --> PostState[예상 사후 상태]
+    Approval --> Evaluation[결정론적 정책 평가]
+    PostState --> Evaluation
+    Evaluation --> Binding[거래 동일성과 상태 유효성 재확인]
+    Binding --> Gate{결과 게이트}
+    Gate -->|정책 충족 및 컨텍스트 유효| Wallet[기존 지갑 실행 절차]
+    Gate -->|위반 또는 변경 탐지| Reject[실행 요청 중단]
+    Wallet --> Receipt[영수증과 실제 사후 상태 확인]
+```
+
+LLM은 **컴파일러이지 심판이 아니다.** 거래 허용·거절 단계에서는 LLM을 호출하지 않는다.
+보호 대상은 사용자가 승인한 정책이며, 해시 승인은 정책 내용의 일치를 확인하는 로컬 기록이다.
+승인자의 암호학적 신원을 증명하는 수단은 아니다.
+
+## 보존된 실험 결과
+
+아래는 기존 보고서와 원본 JSON에 기록된 결과다. 재현 명령을 실행하기 전에는 새 실행 결과로 해석하지 않는다.
+
+| 실험 | 환경·비교 | 관측 결과 | 원본 |
+| --- | --- | --- | --- |
+| A. 기존 보호 대비 추가 효과 | 외부 포크 없는 로컬 Anvil; 실제 Delegation Framework의 동일 여섯 Caveat와 서명 위임 | 시작 10,000, 하한 9,700. 정상 100 전송은 두 경로 모두 실행되어 9,900 유지. 500 전송은 Caveat-only에서 9,500으로 실행되지만 추가 게이트에서는 후보 서명·전송 0회로 거절되어 10,000 유지 | [baseline-intent-comparison.json](traces/baseline-intent-comparison.json) |
+| B. 실제 Agent Wallet 연결 | 기존 Sepolia 직접 USDC 전송·거절 기록 | 하한 0.5 USDC에서 1.0 → 0.9 USDC 전송 성공. 이후 0.9에서 0.5 전송 후보는 예상 0.4로 지갑 실행 요청 전에 거절 | [허용 결과](research/evidence/agent-wallet/direct-floor-runtime-result.json), [거절 결과](research/evidence/agent-wallet/direct-floor-reject-result.json) |
+| C. 검증 위치 비교 | 로컬 Anvil; 검증 없음 / pre-submit / pre-sign; Caveat·Agent Wallet Guard 미적용 | 0.4 GPTT 전송 검증 후 외부에서 0.2 GPTT 차감 시 pre-submit은 최종 0.4로 실행. pre-sign은 `STALE_CAPTURED_CONTEXT`로 후보를 중단하여 외부 차감만 반영된 0.8 유지 | [gate-position-comparison.json](traces/gate-position-comparison.json) |
+
+현재 실제 지갑 전송 경계에서 다룬 결과 정책은 단일 자산의 `assetBalanceFloor`다.
+포트폴리오 가치와 누적 손실 불변식은 별도의 오프라인 평가 증거로 구분한다.
+로컬 서명 위임 성공과 Sepolia 직접 전송을 합쳐 원격 서명 위임의 통합 성공으로 주장하지 않는다.
+pre-sign은 로컬 통제 경로이며, 서명 이후 블록 포함까지의 상태 변경을 원자적으로 막지는 못한다.
+
+## 준비와 설치
+
+Python 3.11 이상과 `uv`, Node.js와 npm을 사용한다. 로컬 체인 실험에는 Foundry의
+`anvil`과 `forge`가 필요하며, 포크 재현용 `.sh` 스크립트에는 Bash와 아카이브 RPC가 필요하다.
+실험 당시의 정확한 버전은 [최종 보고서](docs/rq3-final-test-report-ko.md)에 기록되어 있다.
+
+```powershell
+git clone --recurse-submodules https://github.com/THISISMYCOSMOS/metamask.git
+cd metamask
+git submodule update --init --recursive
+uv sync --project verifier
+npm --prefix chain ci
+Copy-Item .env.example .env
+```
+
+`.env.example`의 빈 지갑·토큰 값은 실행 가능한 설정이 아니다. 선택한 경로의 실제 바인딩을
+아래 안내에 따라 채운다. 로컬 제어 실행을 사용하지 않는 경우 `CONTROLLED_*`와
+`ANVIL_RPC_URL` 항목은 제거하여 불완전한 로컬 설정이 적용되지 않도록 한다.
+실제 정책 생성에는 `GEMINI_API_KEY`가 필요하고, 키가 없거나 provider가 실패하면 제안을 생성하지 않는다.
+아래 회귀 테스트는 외부 LLM·Agent Wallet 호출 없이 실행할 수 있다.
+
+## 로컬 연구 실험 재현
+
+```powershell
+cd chain
+npm run research:baseline-intent
+npm run research:gate-position
+```
+
+두 명령은 로컬 Anvil에서 테스트용 컨트랙트를 배포하고 비교 결과를 각각
+`traces/baseline-intent-comparison.json`, `traces/gate-position-comparison.json`에 기록한다.
+기존 결과를 보존하려면 먼저 별도 checkout에서 실행한다. 재현은 외부 체인 전송이나 새로운 LLM 호출을 하지 않는다.
+실험 A는 Delegation Framework의 핀 커밋
+`197463b4aba3409adef1df544dabafc3636ee82d`를 검사한다.
+
+G3의 고정 메인넷 포크 재현은 별도 경로다. `.env`에 아카이브 `RPC_URL`을 준비한 뒤
+저장소 루트에서 `bash chain/scripts/reproduce-g3.sh`를 실행한다.
+세부 전제와 결과는 [chain 안내](chain/README.md)와 [RQ3 보고서](docs/rq3-final-test-report-ko.md)를 참고한다.
 
 ## 구조
 
@@ -15,7 +104,9 @@ LLM 기반 불변식 합성과 실행 직전 검증을 통한 에이전트 거�
 | `chain/` | TS (viem + anvil) | 포크 환경, 위임 실행 경로, 상태 스냅샷 → trace JSON |
 | `verifier/` | Python | 불변식 스키마 + 결정론적 평가기 |
 | `synth/` | Python | 기존 오프라인 fixture 기반 자연어 계약 테스트 |
-| `specs/` | Solidity interface | 결과 기반 enforcer 인터페이스 명세 |
+| `ui/` | Python + HTML/CSS/JS | 자연어 정책 검토·승인과 로컬/MetaMask 실행 화면 |
+| `research/` | Python + Markdown/JSON | 리서치 원문, 컴파일 벤치마크, 실행·거절 증거 bundle |
+| `specs/` | JSON + text | 불변식 정책, 자연어 요청, 제안·승인 fixture |
 | `traces/` | JSON | 실행 트레이스 (커밋 대상 산출물) |
 | `docs/` | Markdown | baseline 구성, 페이즈별 합격 기준 |
 
@@ -56,7 +147,17 @@ uv run --cache-dir ..\tmp\uv-cache --project ..\verifier python -m unittest test
 
 cd ..\chain
 npm test
+npx --no-install tsc --noEmit
 ```
+
+Verifier와 Research 회귀 검증은 저장소 루트에서 실행한다.
+
+```powershell
+uv run --cache-dir tmp\uv-cache --project verifier python -m unittest discover -s verifier -p 'test_*.py' -v
+uv run --cache-dir tmp\uv-cache --project verifier python -m unittest discover -s research -p 'test_*.py' -v
+```
+
+로컬 테스트 통과는 새 Gemini 호출, 새 Sepolia 전송, 원격 서명 위임 또는 지갑 네이티브 집행의 증거가 아니다.
 
 실제 Gemini 컴파일에는 Google AI Studio의 `GEMINI_API_KEY`가 필요하다.
 `GEMINI_MODEL`의 기본값은 `gemini-3.5-flash-lite`다. 무료 티어 입력은 Google 제품 개선에

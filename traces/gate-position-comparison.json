@@ -1,0 +1,1117 @@
+{
+  "schemaVersion": 1,
+  "kind": "local-gate-position-comparison",
+  "generatedAt": "2026-09-07T14:11:50.192Z",
+  "sourceRevision": "353e7e3154c556d9854a886772fe6541e84f5fba",
+  "sourceDirtyProvenance": [
+    "m chain/lib/delegation-framework",
+    " M chain/package.json",
+    "?? chain/src/GatePositionToken.sol",
+    "?? chain/src/gate-position-comparison.ts",
+    "?? docs/gate-position-comparison-results-ko.md",
+    "?? docs/rq3-ai-writing-context-ko.md",
+    "?? traces/gate-position-comparison.json"
+  ],
+  "sourceSha256": {
+    "harness": "f6e66e9bfa86c18ae1aeed7f5b5214af1ab7fdbf206cd46e3e8374485a9b7dc6",
+    "token": "57c321e14dd8f0cb9663141f00cf338dd23add15a3d0da0931d5cf405673484a",
+    "evaluator": "ada89b34621c1cf18042d9090d3c4d285ec69bf6ee0fcd4cd8023f8000c3dd33"
+  },
+  "scope": {
+    "network": "one isolated local Anvil node, reverted to the same post-deployment snapshot before every cell",
+    "token": "locally deployed GatePositionToken (GPTT), 6 decimals; not Sepolia USDC",
+    "control": "no-application-gate is an unguarded local signing control, not Agent Wallet Guard or Delegation Framework caveats",
+    "signer": "real viem LocalAccount.signTransaction using Anvil public test key #1 held outside the proposal"
+  },
+  "parameters": {
+    "chainId": 31337,
+    "initialBalance": "1000000",
+    "floor": "500000",
+    "scenarios": [
+      {
+        "name": "benign-stable",
+        "candidateAmount": "100000",
+        "externalDebit": "0"
+      },
+      {
+        "name": "floor-violating-stable",
+        "candidateAmount": "600000",
+        "externalDebit": "0"
+      },
+      {
+        "name": "late-external-debit",
+        "candidateAmount": "400000",
+        "externalDebit": "200000"
+      }
+    ]
+  },
+  "cells": [
+    {
+      "scenario": "benign-stable",
+      "route": "no-application-gate",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0x749abd823fedfe24cf1678a8c61b04eebd690760bdffa9b7f1c087eab326bbd6",
+      "executionSha256": "0x76869720c344f21cc9499893fbfd3ebc01d5098fe2f8dc0046e6afc4f716f62e",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "no-application-gate",
+        "invocations": 0,
+        "simulations": 0,
+        "contextReads": 0,
+        "floorEvaluationCalls": 0,
+        "accepted": null,
+        "reasonCodes": []
+      },
+      "externalDebit": {
+        "scheduledAmount": "0",
+        "transactionHash": null,
+        "receiptStatus": null,
+        "transferEvent": null
+      },
+      "candidateSignerCalls": 1,
+      "signedRawTransaction": "0x02f8b2827a6980843b9aca00847735940083011170945fbdb2315678afecb367f032d93f642f64180aa380b844a9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0c001a06925f0bbd5b7735bf4bc22e8e617b8815cd02edc930d17b95d778e1dad71e1bba0629dd4c71885386e3372ca97239472ce88c45d137f6e3538833fb33c6264cdb1",
+      "rawTransactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+      "candidateReceipt": {
+        "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+        "status": "success",
+        "blockNumber": "2",
+        "blockHash": "0x5c5590a33aa9d99209f4881b19b92dc939c7b418d77f108390d7fb1f41e11a51",
+        "gasUsed": "52258",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+          "blockNumber": "2",
+          "blockHash": "0x5c5590a33aa9d99209f4881b19b92dc939c7b418d77f108390d7fb1f41e11a51",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+          "value": "100000"
+        }
+      },
+      "confirmedTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "input": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "postState": {
+        "ownerBalance": "900000",
+        "recipientBalance": "100000",
+        "externalRecipientBalance": "0",
+        "floorViolated": false
+      },
+      "outcome": "executed",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "gate-position-control",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No application floor evaluation or context revalidation."
+        },
+        {
+          "sequence": 3,
+          "event": "external-debit-skipped",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "scheduled amount=0"
+        },
+        {
+          "sequence": 4,
+          "event": "candidate-signed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "rawTransactionHash=0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674"
+        },
+        {
+          "sequence": 5,
+          "event": "candidate-receipt-confirmed",
+          "ownerBalance": "900000",
+          "ownerNonce": "1",
+          "detail": "status=success",
+          "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+          "receiptStatus": "success"
+        }
+      ]
+    },
+    {
+      "scenario": "benign-stable",
+      "route": "pre-submit",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0x749abd823fedfe24cf1678a8c61b04eebd690760bdffa9b7f1c087eab326bbd6",
+      "executionSha256": "0x76869720c344f21cc9499893fbfd3ebc01d5098fe2f8dc0046e6afc4f716f62e",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "pre-submit",
+        "invocations": 1,
+        "simulations": 1,
+        "contextReads": 1,
+        "floorEvaluationCalls": 1,
+        "accepted": true,
+        "reasonCodes": []
+      },
+      "externalDebit": {
+        "scheduledAmount": "0",
+        "transactionHash": null,
+        "receiptStatus": null,
+        "transferEvent": null
+      },
+      "candidateSignerCalls": 1,
+      "signedRawTransaction": "0x02f8b2827a6980843b9aca00847735940083011170945fbdb2315678afecb367f032d93f642f64180aa380b844a9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0c001a06925f0bbd5b7735bf4bc22e8e617b8815cd02edc930d17b95d778e1dad71e1bba0629dd4c71885386e3372ca97239472ce88c45d137f6e3538833fb33c6264cdb1",
+      "rawTransactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+      "candidateReceipt": {
+        "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+        "status": "success",
+        "blockNumber": "2",
+        "blockHash": "0x506f7915bb018dc7b0c04ed878356b7ebe3b211e5334ad9144b03b6f809c4497",
+        "gasUsed": "52258",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+          "blockNumber": "2",
+          "blockHash": "0x506f7915bb018dc7b0c04ed878356b7ebe3b211e5334ad9144b03b6f809c4497",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+          "value": "100000"
+        }
+      },
+      "confirmedTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "input": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "postState": {
+        "ownerBalance": "900000",
+        "recipientBalance": "100000",
+        "externalRecipientBalance": "0",
+        "floorViolated": false
+      },
+      "outcome": "executed",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "gate-simulation-completed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "Exact candidate call simulated successfully."
+        },
+        {
+          "sequence": 3,
+          "event": "gate-evaluated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "accepted=true; reasons=none"
+        },
+        {
+          "sequence": 4,
+          "event": "external-debit-skipped",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "scheduled amount=0"
+        },
+        {
+          "sequence": 5,
+          "event": "candidate-signed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "rawTransactionHash=0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674"
+        },
+        {
+          "sequence": 6,
+          "event": "candidate-receipt-confirmed",
+          "ownerBalance": "900000",
+          "ownerNonce": "1",
+          "detail": "status=success",
+          "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+          "receiptStatus": "success"
+        }
+      ]
+    },
+    {
+      "scenario": "benign-stable",
+      "route": "pre-sign",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0x749abd823fedfe24cf1678a8c61b04eebd690760bdffa9b7f1c087eab326bbd6",
+      "executionSha256": "0x76869720c344f21cc9499893fbfd3ebc01d5098fe2f8dc0046e6afc4f716f62e",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "pre-sign",
+        "invocations": 1,
+        "simulations": 1,
+        "contextReads": 1,
+        "floorEvaluationCalls": 1,
+        "accepted": true,
+        "reasonCodes": []
+      },
+      "externalDebit": {
+        "scheduledAmount": "0",
+        "transactionHash": null,
+        "receiptStatus": null,
+        "transferEvent": null
+      },
+      "candidateSignerCalls": 1,
+      "signedRawTransaction": "0x02f8b2827a6980843b9aca00847735940083011170945fbdb2315678afecb367f032d93f642f64180aa380b844a9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0c001a06925f0bbd5b7735bf4bc22e8e617b8815cd02edc930d17b95d778e1dad71e1bba0629dd4c71885386e3372ca97239472ce88c45d137f6e3538833fb33c6264cdb1",
+      "rawTransactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+      "candidateReceipt": {
+        "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+        "status": "success",
+        "blockNumber": "2",
+        "blockHash": "0x9e0230b686b6928e549394b838e9397ad9d48a855468081f730317246a0f7523",
+        "gasUsed": "52258",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+          "blockNumber": "2",
+          "blockHash": "0x9e0230b686b6928e549394b838e9397ad9d48a855468081f730317246a0f7523",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+          "value": "100000"
+        }
+      },
+      "confirmedTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "input": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000186a0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "postState": {
+        "ownerBalance": "900000",
+        "recipientBalance": "100000",
+        "externalRecipientBalance": "0",
+        "floorViolated": false
+      },
+      "outcome": "executed",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "pre-submit-position",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No evaluation at this position."
+        },
+        {
+          "sequence": 3,
+          "event": "external-debit-skipped",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "scheduled amount=0"
+        },
+        {
+          "sequence": 4,
+          "event": "gate-simulation-completed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "Exact candidate call simulated successfully."
+        },
+        {
+          "sequence": 5,
+          "event": "gate-evaluated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "accepted=true; reasons=none"
+        },
+        {
+          "sequence": 6,
+          "event": "candidate-signed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "rawTransactionHash=0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674"
+        },
+        {
+          "sequence": 7,
+          "event": "candidate-receipt-confirmed",
+          "ownerBalance": "900000",
+          "ownerNonce": "1",
+          "detail": "status=success",
+          "transactionHash": "0xddc2c23249ff533d6137bd8312557bf9928ac27bb9bac4364565f013d66e5674",
+          "receiptStatus": "success"
+        }
+      ]
+    },
+    {
+      "scenario": "floor-violating-stable",
+      "route": "no-application-gate",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0x8f5d69215e5453927a25b93094694510f96ad0b7649503f274cf6584b3c7e7a2",
+      "executionSha256": "0x600e454825c2b33b345450d712fd9f26b0c4dbdcb0fe906af1ddcd097ba84a57",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000927c0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "no-application-gate",
+        "invocations": 0,
+        "simulations": 0,
+        "contextReads": 0,
+        "floorEvaluationCalls": 0,
+        "accepted": null,
+        "reasonCodes": []
+      },
+      "externalDebit": {
+        "scheduledAmount": "0",
+        "transactionHash": null,
+        "receiptStatus": null,
+        "transferEvent": null
+      },
+      "candidateSignerCalls": 1,
+      "signedRawTransaction": "0x02f8b2827a6980843b9aca00847735940083011170945fbdb2315678afecb367f032d93f642f64180aa380b844a9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000927c0c001a0970ee26f07716b38107c638691e786bc675fd80c5fa30a811d5f776a467331a0a039ff42d42a99686df79076ad0cd8fdaddc1a398e2fa62fd47fcfabed42332917",
+      "rawTransactionHash": "0xd6dec4457087fae143e035fab993887ec2cc22e9d05fb65597f7613915b15047",
+      "candidateReceipt": {
+        "transactionHash": "0xd6dec4457087fae143e035fab993887ec2cc22e9d05fb65597f7613915b15047",
+        "status": "success",
+        "blockNumber": "2",
+        "blockHash": "0x8faee7ecb23548a1c972c10c35caa03d8006b7fe68790620fd8b60a9eb46f9bc",
+        "gasUsed": "52258",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0xd6dec4457087fae143e035fab993887ec2cc22e9d05fb65597f7613915b15047",
+          "blockNumber": "2",
+          "blockHash": "0x8faee7ecb23548a1c972c10c35caa03d8006b7fe68790620fd8b60a9eb46f9bc",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+          "value": "600000"
+        }
+      },
+      "confirmedTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "input": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000927c0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "postState": {
+        "ownerBalance": "400000",
+        "recipientBalance": "600000",
+        "externalRecipientBalance": "0",
+        "floorViolated": true
+      },
+      "outcome": "executed",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "gate-position-control",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No application floor evaluation or context revalidation."
+        },
+        {
+          "sequence": 3,
+          "event": "external-debit-skipped",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "scheduled amount=0"
+        },
+        {
+          "sequence": 4,
+          "event": "candidate-signed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "rawTransactionHash=0xd6dec4457087fae143e035fab993887ec2cc22e9d05fb65597f7613915b15047"
+        },
+        {
+          "sequence": 5,
+          "event": "candidate-receipt-confirmed",
+          "ownerBalance": "400000",
+          "ownerNonce": "1",
+          "detail": "status=success",
+          "transactionHash": "0xd6dec4457087fae143e035fab993887ec2cc22e9d05fb65597f7613915b15047",
+          "receiptStatus": "success"
+        }
+      ]
+    },
+    {
+      "scenario": "floor-violating-stable",
+      "route": "pre-submit",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0x8f5d69215e5453927a25b93094694510f96ad0b7649503f274cf6584b3c7e7a2",
+      "executionSha256": "0x600e454825c2b33b345450d712fd9f26b0c4dbdcb0fe906af1ddcd097ba84a57",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000927c0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "pre-submit",
+        "invocations": 1,
+        "simulations": 1,
+        "contextReads": 1,
+        "floorEvaluationCalls": 1,
+        "accepted": false,
+        "reasonCodes": [
+          "ASSET_BALANCE_FLOOR_VIOLATION"
+        ]
+      },
+      "externalDebit": {
+        "scheduledAmount": "0",
+        "transactionHash": null,
+        "receiptStatus": null,
+        "transferEvent": null
+      },
+      "candidateSignerCalls": 0,
+      "signedRawTransaction": null,
+      "rawTransactionHash": null,
+      "candidateReceipt": null,
+      "confirmedTransaction": null,
+      "postState": {
+        "ownerBalance": "1000000",
+        "recipientBalance": "0",
+        "externalRecipientBalance": "0",
+        "floorViolated": false
+      },
+      "outcome": "rejected",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "gate-simulation-completed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "Exact candidate call simulated successfully."
+        },
+        {
+          "sequence": 3,
+          "event": "gate-evaluated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "accepted=false; reasons=ASSET_BALANCE_FLOOR_VIOLATION"
+        },
+        {
+          "sequence": 4,
+          "event": "candidate-signing-skipped",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "reasons=ASSET_BALANCE_FLOOR_VIOLATION"
+        }
+      ]
+    },
+    {
+      "scenario": "floor-violating-stable",
+      "route": "pre-sign",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0x8f5d69215e5453927a25b93094694510f96ad0b7649503f274cf6584b3c7e7a2",
+      "executionSha256": "0x600e454825c2b33b345450d712fd9f26b0c4dbdcb0fe906af1ddcd097ba84a57",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000000927c0",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "pre-sign",
+        "invocations": 1,
+        "simulations": 1,
+        "contextReads": 1,
+        "floorEvaluationCalls": 1,
+        "accepted": false,
+        "reasonCodes": [
+          "ASSET_BALANCE_FLOOR_VIOLATION"
+        ]
+      },
+      "externalDebit": {
+        "scheduledAmount": "0",
+        "transactionHash": null,
+        "receiptStatus": null,
+        "transferEvent": null
+      },
+      "candidateSignerCalls": 0,
+      "signedRawTransaction": null,
+      "rawTransactionHash": null,
+      "candidateReceipt": null,
+      "confirmedTransaction": null,
+      "postState": {
+        "ownerBalance": "1000000",
+        "recipientBalance": "0",
+        "externalRecipientBalance": "0",
+        "floorViolated": false
+      },
+      "outcome": "rejected",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "pre-submit-position",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No evaluation at this position."
+        },
+        {
+          "sequence": 3,
+          "event": "external-debit-skipped",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "scheduled amount=0"
+        },
+        {
+          "sequence": 4,
+          "event": "gate-simulation-completed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "Exact candidate call simulated successfully."
+        },
+        {
+          "sequence": 5,
+          "event": "gate-evaluated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "accepted=false; reasons=ASSET_BALANCE_FLOOR_VIOLATION"
+        },
+        {
+          "sequence": 6,
+          "event": "candidate-signing-skipped",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "reasons=ASSET_BALANCE_FLOOR_VIOLATION"
+        }
+      ]
+    },
+    {
+      "scenario": "late-external-debit",
+      "route": "no-application-gate",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0xf61e4d260e411cdd266eafcb3d89d3512215c2ed381386d0ca50e87146775e61",
+      "executionSha256": "0xf0aa0c23769017a582abc24f43db8f7a7aa8e41abf760f5587e937af29ed7e4b",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000061a80",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "no-application-gate",
+        "invocations": 0,
+        "simulations": 0,
+        "contextReads": 0,
+        "floorEvaluationCalls": 0,
+        "accepted": null,
+        "reasonCodes": []
+      },
+      "externalDebit": {
+        "scheduledAmount": "200000",
+        "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+        "receiptStatus": "success",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+          "blockNumber": "2",
+          "blockHash": "0x3ae75e07b50cdc5091767a4ecd95efa2d9c6e7d6c274a12cc7e88ff7c64821a3",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+          "value": "200000"
+        }
+      },
+      "candidateSignerCalls": 1,
+      "signedRawTransaction": "0x02f8b2827a6980843b9aca00847735940083011170945fbdb2315678afecb367f032d93f642f64180aa380b844a9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000061a80c080a07c55ba9db0ffd56959ef2b2603b5d57fbda2de500f10c6cf7c44026ad2529eb7a014b1b137f64fb6962572e710a0cc86a760bc6da01fd48f9959ad45665e34dd73",
+      "rawTransactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+      "candidateReceipt": {
+        "transactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+        "status": "success",
+        "blockNumber": "3",
+        "blockHash": "0x44c56c9e62dca50224018e78313e70e1b2439468b8c55fff582ace7579bd8ea3",
+        "gasUsed": "52258",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+          "blockNumber": "3",
+          "blockHash": "0x44c56c9e62dca50224018e78313e70e1b2439468b8c55fff582ace7579bd8ea3",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+          "value": "400000"
+        }
+      },
+      "confirmedTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "input": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000061a80",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "postState": {
+        "ownerBalance": "400000",
+        "recipientBalance": "400000",
+        "externalRecipientBalance": "200000",
+        "floorViolated": true
+      },
+      "outcome": "executed",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "gate-position-control",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No application floor evaluation or context revalidation."
+        },
+        {
+          "sequence": 3,
+          "event": "external-debit-confirmed",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "amount=200000",
+          "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+          "receiptStatus": "success"
+        },
+        {
+          "sequence": 4,
+          "event": "candidate-signed",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "rawTransactionHash=0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85"
+        },
+        {
+          "sequence": 5,
+          "event": "candidate-receipt-confirmed",
+          "ownerBalance": "400000",
+          "ownerNonce": "1",
+          "detail": "status=success",
+          "transactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+          "receiptStatus": "success"
+        }
+      ]
+    },
+    {
+      "scenario": "late-external-debit",
+      "route": "pre-submit",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0xf61e4d260e411cdd266eafcb3d89d3512215c2ed381386d0ca50e87146775e61",
+      "executionSha256": "0xf0aa0c23769017a582abc24f43db8f7a7aa8e41abf760f5587e937af29ed7e4b",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000061a80",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "pre-submit",
+        "invocations": 1,
+        "simulations": 1,
+        "contextReads": 1,
+        "floorEvaluationCalls": 1,
+        "accepted": true,
+        "reasonCodes": []
+      },
+      "externalDebit": {
+        "scheduledAmount": "200000",
+        "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+        "receiptStatus": "success",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+          "blockNumber": "2",
+          "blockHash": "0x3c5d912fd3f1fe995f7d8605140eb9d97587fa402118134ee3349db1535a756b",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+          "value": "200000"
+        }
+      },
+      "candidateSignerCalls": 1,
+      "signedRawTransaction": "0x02f8b2827a6980843b9aca00847735940083011170945fbdb2315678afecb367f032d93f642f64180aa380b844a9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000061a80c080a07c55ba9db0ffd56959ef2b2603b5d57fbda2de500f10c6cf7c44026ad2529eb7a014b1b137f64fb6962572e710a0cc86a760bc6da01fd48f9959ad45665e34dd73",
+      "rawTransactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+      "candidateReceipt": {
+        "transactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+        "status": "success",
+        "blockNumber": "3",
+        "blockHash": "0x3a42de9a1aad55eae92f9263b904728cb5f39f128935f662a37e418a1b910a8e",
+        "gasUsed": "52258",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+          "blockNumber": "3",
+          "blockHash": "0x3a42de9a1aad55eae92f9263b904728cb5f39f128935f662a37e418a1b910a8e",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+          "value": "400000"
+        }
+      },
+      "confirmedTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "input": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000061a80",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "postState": {
+        "ownerBalance": "400000",
+        "recipientBalance": "400000",
+        "externalRecipientBalance": "200000",
+        "floorViolated": true
+      },
+      "outcome": "executed",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "gate-simulation-completed",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "Exact candidate call simulated successfully."
+        },
+        {
+          "sequence": 3,
+          "event": "gate-evaluated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "accepted=true; reasons=none"
+        },
+        {
+          "sequence": 4,
+          "event": "external-debit-confirmed",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "amount=200000",
+          "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+          "receiptStatus": "success"
+        },
+        {
+          "sequence": 5,
+          "event": "candidate-signed",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "rawTransactionHash=0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85"
+        },
+        {
+          "sequence": 6,
+          "event": "candidate-receipt-confirmed",
+          "ownerBalance": "400000",
+          "ownerNonce": "1",
+          "detail": "status=success",
+          "transactionHash": "0xedd4497112479d2f441e640e9a205f56115f4ef83eccd00e5bb82b50195c0e85",
+          "receiptStatus": "success"
+        }
+      ]
+    },
+    {
+      "scenario": "late-external-debit",
+      "route": "pre-sign",
+      "rpcUrl": "http://127.0.0.1:18560",
+      "policySha256": "0x8c06b72dfae2466e175080aeaed9beed320494f769b47832961160e8acdc18d3",
+      "candidateSha256": "0xf61e4d260e411cdd266eafcb3d89d3512215c2ed381386d0ca50e87146775e61",
+      "executionSha256": "0xf0aa0c23769017a582abc24f43db8f7a7aa8e41abf760f5587e937af29ed7e4b",
+      "candidateTransaction": {
+        "chainId": 31337,
+        "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "value": "0",
+        "data": "0xa9059cbb00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000061a80",
+        "gas": "70000",
+        "nonce": 0,
+        "maxFeePerGas": "2000000000",
+        "maxPriorityFeePerGas": "1000000000",
+        "type": "eip1559"
+      },
+      "initial": {
+        "ownerBalance": "1000000",
+        "ownerNonce": "0",
+        "allowance": "1000000",
+        "blockNumber": "1",
+        "blockHash": "0x5b4dec2fcaf14403113a0edb823aaed08ac5a9cd6d8503a52d28fe6ff3030346"
+      },
+      "gate": {
+        "position": "pre-sign",
+        "invocations": 1,
+        "simulations": 1,
+        "contextReads": 1,
+        "floorEvaluationCalls": 0,
+        "accepted": false,
+        "reasonCodes": [
+          "STALE_CAPTURED_CONTEXT"
+        ]
+      },
+      "externalDebit": {
+        "scheduledAmount": "200000",
+        "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+        "receiptStatus": "success",
+        "transferEvent": {
+          "contractAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+          "blockNumber": "2",
+          "blockHash": "0xa87cf75c56e8e474c30f0976045eefe63e1e90e1c4640a638ba3e2100970e0b7",
+          "logIndex": 0,
+          "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "to": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+          "value": "200000"
+        }
+      },
+      "candidateSignerCalls": 0,
+      "signedRawTransaction": null,
+      "rawTransactionHash": null,
+      "candidateReceipt": null,
+      "confirmedTransaction": null,
+      "postState": {
+        "ownerBalance": "800000",
+        "recipientBalance": "0",
+        "externalRecipientBalance": "200000",
+        "floorViolated": false
+      },
+      "outcome": "rejected",
+      "events": [
+        {
+          "sequence": 1,
+          "event": "bundle-shape-validated",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No floor decision was made by the shape-only parser."
+        },
+        {
+          "sequence": 2,
+          "event": "pre-submit-position",
+          "ownerBalance": "1000000",
+          "ownerNonce": "0",
+          "detail": "No evaluation at this position."
+        },
+        {
+          "sequence": 3,
+          "event": "external-debit-confirmed",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "amount=200000",
+          "transactionHash": "0x15e5c4678518c39484bc9ff2486e2cc685b18f040de476354df86b63c1c05863",
+          "receiptStatus": "success"
+        },
+        {
+          "sequence": 4,
+          "event": "gate-simulation-completed",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "Exact candidate call simulated successfully."
+        },
+        {
+          "sequence": 5,
+          "event": "gate-context-rejected",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "capturedBalance=1000000; currentBalance=800000; capturedNonce=0; currentNonce=0"
+        },
+        {
+          "sequence": 6,
+          "event": "candidate-signing-skipped",
+          "ownerBalance": "800000",
+          "ownerNonce": "0",
+          "detail": "reasons=STALE_CAPTURED_CONTEXT"
+        }
+      ]
+    }
+  ]
+}
