@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "kind": "determinism-report",
+  "passed": true,
+  "fields": {
+    "run1": {
+      "FINAL_BLOCK": "25700048",
+      "DELEGATION_HASH": "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb",
+      "PERIOD_CONSUMED": "400000000",
+      "STATE_DIGEST": "0xe29efd531e1a734a1fd94a6bfd53338d0a296f0185d0e072cb9c9c1f3a26ef48"
+    },
+    "run2": {
+      "FINAL_BLOCK": "25700048",
+      "DELEGATION_HASH": "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb",
+      "PERIOD_CONSUMED": "400000000",
+      "STATE_DIGEST": "0xe29efd531e1a734a1fd94a6bfd53338d0a296f0185d0e072cb9c9c1f3a26ef48"
+    }
+  },
+  "fieldMismatches": [],
+  "snapshotsIdentical": true,
+  "snapshotSha256": {
+    "run1": "0x644666847ab511ff6e4fdcc76a956b94d389d1d75214251df22e681f5f4477a8",
+    "run2": "0x644666847ab511ff6e4fdcc76a956b94d389d1d75214251df22e681f5f4477a8"
+  },
+  "snapshotFileNames": {
+    "run1": "run1.snapshot.json",
+    "run2": "run2.snapshot.json"
+  },
+  "rawDigestOutput": {
+    "run1": [
+      "FINAL_BLOCK=25700048",
+      "DELEGATION_HASH=0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb",
+      "PERIOD_CONSUMED=400000000",
+      "STATE_DIGEST=0xe29efd531e1a734a1fd94a6bfd53338d0a296f0185d0e072cb9c9c1f3a26ef48"
+    ],
+    "run2": [
+      "FINAL_BLOCK=25700048",
+      "DELEGATION_HASH=0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb",
+      "PERIOD_CONSUMED=400000000",
+      "STATE_DIGEST=0xe29efd531e1a734a1fd94a6bfd53338d0a296f0185d0e072cb9c9c1f3a26ef48"
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "kind": "portfolio-candidate",
+  "traceId": "g3-counterfactual-benign-control",
+  "fork": {
+    "chainId": 1,
+    "blockNumber": "25700000",
+    "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+  },
+  "valuation": {
+    "unit": "usd-1e18",
+    "mode": "pinned-fork-snapshot",
+    "priceBlockNumber": "25700000",
+    "priceBlockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+  },
+  "sourceTraceHashedContentSha256": "0xe567b3845ce3620b7337ac19001e9559d526fe248e2fa030706b2d608b63d27d",
+  "coverageStartTimestamp": "1786090091",
+  "initialValue1e18": "28978786716100000000000",
+  "transitions": [
+    {
+      "transitionIndex": 0,
+      "timestamp": "1786090091",
+      "beforeValue1e18": "28978786716100000000000",
+      "afterValue1e18": "28678856460100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 1,
+      "timestamp": "1786111691",
+      "beforeValue1e18": "28678856460100000000000",
+      "afterValue1e18": "28378926204100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 2,
+      "timestamp": "1786133291",
+      "beforeValue1e18": "28378926204100000000000",
+      "afterValue1e18": "28078995948100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 3,
+      "timestamp": "1786154891",
+      "beforeValue1e18": "28078995948100000000000",
+      "afterValue1e18": "27779065692100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 4,
+      "timestamp": "1786176491",
+      "beforeValue1e18": "27779065692100000000000",
+      "afterValue1e18": "27479135436100000000000",
+      "role": "candidate"
+    }
+  ]
+}

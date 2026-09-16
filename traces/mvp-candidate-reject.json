@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "kind": "portfolio-candidate",
+  "traceId": "g3-final-step-candidate",
+  "fork": {
+    "chainId": 1,
+    "blockNumber": "25700000",
+    "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+  },
+  "valuation": {
+    "unit": "usd-1e18",
+    "mode": "pinned-fork-snapshot",
+    "priceBlockNumber": "25700000",
+    "priceBlockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+  },
+  "sourceTraceHashedContentSha256": "0x6ac590003efab76fcb5a18b50b331ba47e70fd111008273371305391c57ce403",
+  "coverageStartTimestamp": "1786414091",
+  "initialValue1e18": "21480530316100000000000",
+  "transitions": [
+    {
+      "transitionIndex": 0,
+      "timestamp": "1786414091",
+      "beforeValue1e18": "21480530316100000000000",
+      "afterValue1e18": "20980646556100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 1,
+      "timestamp": "1786435691",
+      "beforeValue1e18": "20980646556100000000000",
+      "afterValue1e18": "20480762796100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 2,
+      "timestamp": "1786457291",
+      "beforeValue1e18": "20480762796100000000000",
+      "afterValue1e18": "19980879036100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 3,
+      "timestamp": "1786478891",
+      "beforeValue1e18": "19980879036100000000000",
+      "afterValue1e18": "19480995276100000000000",
+      "role": "history"
+    },
+    {
+      "transitionIndex": 4,
+      "timestamp": "1786500491",
+      "beforeValue1e18": "19480995276100000000000",
+      "afterValue1e18": "18981111516100000000000",
+      "role": "candidate"
+    }
+  ]
+}

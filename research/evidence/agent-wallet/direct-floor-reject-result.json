@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "kind": "agent-wallet-direct-preflight-result",
+  "broadcast": false,
+  "eligibleForBroadcast": false,
+  "candidateSha256": "0x44903059ccaa595b29f992888a18716f68f98198e7de6e6e14d339507ee10065",
+  "decisionSha256": "0x15b196802f9a28f924688c3262cc01ab58a70f037ca1d87b5722d6ca7e38d440",
+  "reasonCodes": [
+    "ASSET_BALANCE_FLOOR_VIOLATION"
+  ],
+  "revalidatedAtBlockNumber": "11628075",
+  "revalidatedAtBlockHash": "0xb911a045dacf7f90ec2723d1e01be54be59ad0d0552355687410e6d81e90e4e5"
+}

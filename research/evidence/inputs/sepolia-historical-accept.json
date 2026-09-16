@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "kind": "historical-live-floor-record",
+  "network": {
+    "chainId": 11155111,
+    "networkName": "ethereum-sepolia",
+    "environment": "public-testnet",
+    "rpcClass": "committed-record",
+    "blockNumber": "11572078",
+    "blockHash": "0x1c93d3e2957e8febfdcf35a6224349d407753b8cb8ef647ff2e445e500c68e86"
+  },
+  "reportedPolicy": {
+    "kind": "assetBalanceFloor",
+    "assetBalanceFloor": "20000000",
+    "assetBalanceBefore": "40000000",
+    "assetBalanceBeforeEvidenceClass": "inferred",
+    "assetBalanceAfter": "39000000",
+    "assetBalanceAfterEvidenceClass": "external-chain",
+    "note": "The floor and pre-state were recorded by the historical application run. The pre-state was later reconstructed from the post-state and single related outgoing Transfer event; original off-chain proposal, approval and plan hashes were not persisted."
+  },
+  "transaction": {
+    "transactionHash": "0xe6d1f1761034d10a4ed7b566f87239b476436235d10f0e014622af51f5de5564",
+    "status": "success",
+    "from": "0x9f85d965258624053734d8caea00dc3f452f3c27",
+    "to": "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+    "recipientAddress": "0xb11539d7b6423c4523e1fba35953154b6b393df9",
+    "amountBaseUnits": "1000000",
+    "assetBalanceAfter": "39000000",
+    "transactionIndex": "13",
+    "gasUsed": "62159",
+    "calldata": "0xa9059cbb000000000000000000000000b11539d7b6423c4523e1fba35953154b6b393df900000000000000000000000000000000000000000000000000000000000f4240",
+    "matchingTransferEventCount": 1
+  }
+}

@@ -1,0 +1,1302 @@
+{
+  "schemaVersion": 1,
+  "kind": "intent-invariant-benchmark",
+  "cases": [
+    {
+      "caseId": "pvf-001",
+      "intentText": "포트폴리오 가치를 100달러 이상 유지해줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "100000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-002",
+      "intentText": "총 자산 평가액이 250 USD 밑으로 내려가지 않게 해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "250000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-003",
+      "intentText": "내 포트폴리오는 최소 500달러를 지켜줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "500000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-004",
+      "intentText": "거래 후에도 전체 자산 가치 750달러 이상",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "750000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-005",
+      "intentText": "포트폴리오 하한을 1000 USD로 설정해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "1000000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-006",
+      "intentText": "총 평가액이 1500달러보다 작아지면 안 돼",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "1500000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-007",
+      "intentText": "자산 가치 최소선은 2000달러야",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "2000000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-008",
+      "intentText": "항상 포트폴리오 가치 3000 USD 이상 유지",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "3000000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-009",
+      "intentText": "거래 결과 총자산이 5000달러 아래면 막아줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "5000000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-010",
+      "intentText": "최소 포트폴리오 가치를 10000 USD로 둬",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "10000000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-011",
+      "intentText": "전체 자산 평가액 25000달러를 보존해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "25000000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pvf-012",
+      "intentText": "포트폴리오가 50000 USD 미만이 되는 거래는 금지",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioValueFloor",
+          "floorValue1e18": "50000000000000000000000",
+          "maxDrawdownBps": null,
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 USD 포트폴리오 하한을 1e18 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-001",
+      "intentText": "현재 가치에서 1% 넘게 줄면 안 돼",
+      "context": {
+        "currentPortfolioValue1e18": "10000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "100",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-002",
+      "intentText": "포트폴리오 가치가 2% 이상 감소하지 않게 해",
+      "context": {
+        "currentPortfolioValue1e18": "11000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "200",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-003",
+      "intentText": "현재 총자산 대비 최대 낙폭은 3%야",
+      "context": {
+        "currentPortfolioValue1e18": "12000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "300",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-004",
+      "intentText": "거래 후 포트폴리오 손실률이 5%를 넘지 않게",
+      "context": {
+        "currentPortfolioValue1e18": "13000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "500",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-005",
+      "intentText": "현재 평가액에서 7.5% 이상 하락하면 막아줘",
+      "context": {
+        "currentPortfolioValue1e18": "14000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "750",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-006",
+      "intentText": "포트폴리오 낙폭 한도를 10%로 설정",
+      "context": {
+        "currentPortfolioValue1e18": "15000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "1000",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-007",
+      "intentText": "현재 가치 대비 최대 12.5%까지만 감소 허용",
+      "context": {
+        "currentPortfolioValue1e18": "16000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "1250",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-008",
+      "intentText": "총자산이 지금보다 15% 넘게 떨어지면 안 돼",
+      "context": {
+        "currentPortfolioValue1e18": "17000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "1500",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-009",
+      "intentText": "현재 포트폴리오 대비 하락폭 20% 이내",
+      "context": {
+        "currentPortfolioValue1e18": "18000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "2000",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-010",
+      "intentText": "자산 평가액 감소율을 최대 25%로 제한",
+      "context": {
+        "currentPortfolioValue1e18": "19000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "2500",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-011",
+      "intentText": "현재 가치에서 30% 이상 손실되는 거래는 거절",
+      "context": {
+        "currentPortfolioValue1e18": "20000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "3000",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "pdd-012",
+      "intentText": "포트폴리오 최대 낙폭 40%를 지켜줘",
+      "context": {
+        "currentPortfolioValue1e18": "21000000000000000000000"
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "portfolioDrawdownCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": "4000",
+          "windowSeconds": null,
+          "maxLossValue1e18": null,
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 최대 낙폭 비율을 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-001",
+      "intentText": "최근 1시간 누적 손실을 50달러 이하로 제한해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "3600",
+          "maxLossValue1e18": "50000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-002",
+      "intentText": "6시간 동안 누적 손실은 최대 100 USD",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "21600",
+          "maxLossValue1e18": "100000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-003",
+      "intentText": "지난 12시간 누적 손실이 200달러를 넘지 않게",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "43200",
+          "maxLossValue1e18": "200000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-004",
+      "intentText": "24시간 누적 손실 한도는 500달러",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "86400",
+          "maxLossValue1e18": "500000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-005",
+      "intentText": "하루 동안 총 손실을 750 USD 이내로 막아줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "86400",
+          "maxLossValue1e18": "750000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-006",
+      "intentText": "최근 2일 누적 손실 최대 1000달러",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "172800",
+          "maxLossValue1e18": "1000000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-007",
+      "intentText": "3일 동안 손실 합계가 1500 USD를 넘으면 거절",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "259200",
+          "maxLossValue1e18": "1500000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-008",
+      "intentText": "일주일 누적 손실 한도를 2000달러로 설정",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "604800",
+          "maxLossValue1e18": "2000000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-009",
+      "intentText": "최근 14일 누적 손실은 최대 3000 USD",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "1209600",
+          "maxLossValue1e18": "3000000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-010",
+      "intentText": "30일간 누적 손실 5000달러 이하",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "2592000",
+          "maxLossValue1e18": "5000000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-011",
+      "intentText": "최근 90일 누적 손실을 10000 USD로 제한",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "7776000",
+          "maxLossValue1e18": "10000000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "cla-012",
+      "intentText": "1년 누적 손실 한도는 25000달러",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCap",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "31536000",
+          "maxLossValue1e18": "25000000000000000000000",
+          "maxLossBps": null
+        },
+        "rationales": [
+          "명시된 기간과 USD 누적 손실 한도를 결정론적 단위로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-001",
+      "intentText": "최근 1시간 누적 손실률을 1% 이하로",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "3600",
+          "maxLossValue1e18": null,
+          "maxLossBps": "100"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-002",
+      "intentText": "6시간 동안 누적 손실률 최대 2%",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "21600",
+          "maxLossValue1e18": null,
+          "maxLossBps": "200"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-003",
+      "intentText": "12시간 누적 손실이 기준 가치의 3%를 넘지 않게",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "43200",
+          "maxLossValue1e18": null,
+          "maxLossBps": "300"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-004",
+      "intentText": "24시간 누적 손실률 한도 5%",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "86400",
+          "maxLossValue1e18": null,
+          "maxLossBps": "500"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-005",
+      "intentText": "하루 동안 누적 손실은 7.5% 이내",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "86400",
+          "maxLossValue1e18": null,
+          "maxLossBps": "750"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-006",
+      "intentText": "최근 2일 누적 손실률 최대 10%",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "172800",
+          "maxLossValue1e18": null,
+          "maxLossBps": "1000"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-007",
+      "intentText": "3일간 누적 손실이 12.5%를 넘으면 막아줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "259200",
+          "maxLossValue1e18": null,
+          "maxLossBps": "1250"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-008",
+      "intentText": "일주일 누적 손실률 15% 이하",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "604800",
+          "maxLossValue1e18": null,
+          "maxLossBps": "1500"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-009",
+      "intentText": "최근 14일 누적 손실 한도는 20%",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "1209600",
+          "maxLossValue1e18": null,
+          "maxLossBps": "2000"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-010",
+      "intentText": "30일 누적 손실률 최대 25%",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "2592000",
+          "maxLossValue1e18": null,
+          "maxLossBps": "2500"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-011",
+      "intentText": "90일 동안 누적 손실이 30%를 넘지 않게",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "7776000",
+          "maxLossValue1e18": null,
+          "maxLossBps": "3000"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "clb-012",
+      "intentText": "1년 누적 손실률 한도 40%",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": true,
+        "invariant": {
+          "kind": "cumulativeLossCapBps",
+          "floorValue1e18": null,
+          "maxDrawdownBps": null,
+          "windowSeconds": "31536000",
+          "maxLossValue1e18": null,
+          "maxLossBps": "4000"
+        },
+        "rationales": [
+          "명시된 기간과 누적 손실률을 seconds와 basis points로 변환했다."
+        ],
+        "assumptions": [],
+        "unsupportedItems": []
+      }
+    },
+    {
+      "caseId": "uns-001",
+      "intentText": "ETH만 사고 USDC는 팔지 마",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-002",
+      "intentText": "수익이 가장 높은 거래만 실행해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-003",
+      "intentText": "손실을 적당히 줄여줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-004",
+      "intentText": "포트폴리오를 안전하게 관리해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-005",
+      "intentText": "총자산 1000달러 이상 유지하고 하루 손실도 5% 이하로 해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-006",
+      "intentText": "슬리피지가 크면 알아서 막아줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-007",
+      "intentText": "이번 거래가 사기인지 판단해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-008",
+      "intentText": "가격이 오를 것 같은 토큰을 골라줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-009",
+      "intentText": "24시간 손실 한도를 설정해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-010",
+      "intentText": "손실률 5% 이하로 해",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-011",
+      "intentText": "거래를 승인하고 바로 보내줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    },
+    {
+      "caseId": "uns-012",
+      "intentText": "USDC 잔고를 20개 이상 남겨줘",
+      "context": {
+        "currentPortfolioValue1e18": null
+      },
+      "expected": {
+        "supported": false,
+        "invariant": null,
+        "rationales": [],
+        "assumptions": [],
+        "unsupportedItems": [
+          "요청 전체를 정확히 하나의 지원 불변식으로 표현할 수 없다."
+        ]
+      }
+    }
+  ]
+}

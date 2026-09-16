@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "policyId": "mvp-demo-loss-guard",
+  "traceKind": "portfolio-candidate",
+  "fork": {
+    "chainId": 1,
+    "blockNumber": "25700000",
+    "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf"
+  },
+  "invariants": [
+    {
+      "id": "portfolio-floor-mvp",
+      "kind": "portfolioValueFloor",
+      "floorValue1e18": "26979251676100000000000"
+    },
+    {
+      "id": "rolling-day-loss-cap-mvp",
+      "kind": "cumulativeLossCap",
+      "windowSeconds": "86400",
+      "maxLossValue1e18": "1999535040000000000000"
+    }
+  ]
+}

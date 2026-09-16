@@ -1,0 +1,2355 @@
+{
+  "schemaVersion": 1,
+  "kind": "cumulative-loss",
+  "note": "G3 — 단일 서명 root delegation으로 20회 연속 500 USDC 전송, 전 회차 성공(revert 0건), caveat 6종 전부 통과, 오라클 환산 포트폴리오 가치 감소를 정수 연산으로 증명한다.",
+  "hashed": {
+    "fork": {
+      "chainId": 1,
+      "blockNumber": "25700000",
+      "blockHash": "0x528d3ac8a0fbb982d354cbef4f842140ed0ae75cbcdf41dbd08324e298a72abf",
+      "blockTimestamp": "1786068491",
+      "delegationFrameworkCommit": "197463b4aba3409adef1df544dabafc3636ee82d"
+    },
+    "baseline": {
+      "delegationManager": "0xeA6F34E56c9bEa6d9114A30b52e040af2b594373",
+      "delegator": "0x09e68b4a2335a2aaa1944bc3938d285b883f11e1",
+      "delegate": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "counterparty": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "caveats": [
+        {
+          "index": 0,
+          "name": "AllowedTargetsEnforcer",
+          "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+          "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "termsBytes": 20
+        },
+        {
+          "index": 1,
+          "name": "AllowedMethodsEnforcer",
+          "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+          "terms": "0xa9059cbb",
+          "termsBytes": 4
+        },
+        {
+          "index": 2,
+          "name": "ValueLteEnforcer",
+          "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+          "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "termsBytes": 32
+        },
+        {
+          "index": 3,
+          "name": "TimestampEnforcer",
+          "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+          "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+          "termsBytes": 32
+        },
+        {
+          "index": 4,
+          "name": "ERC20PeriodTransferEnforcer",
+          "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+          "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+          "termsBytes": 116
+        },
+        {
+          "index": 5,
+          "name": "ERC20BalanceChangeEnforcer",
+          "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+          "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+          "termsBytes": 73
+        }
+      ],
+      "parameters": {
+        "dailyLimitUsdc": "2000000000",
+        "periodDurationSeconds": "86400",
+        "perRedemptionMaxDecreaseUsdc": "500000000",
+        "valueLteMax": "0",
+        "stepCount": 20,
+        "stepAmountUsdc": "500000000"
+      }
+    },
+    "delegation": {
+      "delegate": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "delegator": "0x09e68b4a2335a2aaa1944bc3938d285b883f11e1",
+      "authority": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "salt": "0",
+      "signature": "0xeb955e585cd4f5d50e65a8f6281a2c4346eec61a1aa610a2941af1d1257baac6454543f10c2a71244c847a976f9883e6b39ed71d81402eea6fdc8df0a33dc0411b",
+      "delegationHash": "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+    },
+    "steps": [
+      {
+        "stepIndex": 0,
+        "n": 1,
+        "timestamp": "1786090091",
+        "txHash": "0xb132f7f746cae8a015901df357cd1c4c006b1b971f956387ab49fac26464e960",
+        "blockNumber": "25700042",
+        "receiptStatus": "success",
+        "gasUsed": "398506",
+        "transferAmount": "500000000",
+        "usdcBefore": "10000000000",
+        "usdcAfter": "9500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000001dcd6500000000000000000000000000000000000000000000000000000000006a75926b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "1",
+          "transferredInCurrentPeriod": "500000000"
+        },
+        "periodIndex": 0,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 1,
+        "n": 2,
+        "timestamp": "1786111691",
+        "txHash": "0x2d625a9df78ca5b4004d74233f9d7875dae438941bc82d38523e5ed9e3976a4c",
+        "blockNumber": "25700043",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "9500000000",
+        "usdcAfter": "9000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000003b9aca00000000000000000000000000000000000000000000000000000000006a75e6cb"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "1",
+          "transferredInCurrentPeriod": "1000000000"
+        },
+        "periodIndex": 0,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 2,
+        "n": 3,
+        "timestamp": "1786133291",
+        "txHash": "0xb984b241573c3563d92e00370228b358bca39df81bc5be11185afb7cb4ccd4df",
+        "blockNumber": "25700044",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "9000000000",
+        "usdcAfter": "8500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000059682f00000000000000000000000000000000000000000000000000000000006a763b2b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "1",
+          "transferredInCurrentPeriod": "1500000000"
+        },
+        "periodIndex": 0,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 3,
+        "n": 4,
+        "timestamp": "1786154891",
+        "txHash": "0x90cd46f11d880f35a8746e344923c119727ea24520da4034b9b616e4e528aea5",
+        "blockNumber": "25700045",
+        "receiptStatus": "success",
+        "gasUsed": "269776",
+        "transferAmount": "500000000",
+        "usdcBefore": "8500000000",
+        "usdcAfter": "8000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000001dcd6500000000000000000000000000000000000000000000000000000000006a768f8b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "2",
+          "transferredInCurrentPeriod": "500000000"
+        },
+        "periodIndex": 1,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 4,
+        "n": 5,
+        "timestamp": "1786176491",
+        "txHash": "0xdeee2c2dec57d9b9787daffea5052d5e81e7b50daad1360b0178f9bea04f4fee",
+        "blockNumber": "25700046",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "8000000000",
+        "usdcAfter": "7500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000003b9aca00000000000000000000000000000000000000000000000000000000006a76e3eb"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "2",
+          "transferredInCurrentPeriod": "1000000000"
+        },
+        "periodIndex": 1,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 5,
+        "n": 6,
+        "timestamp": "1786198091",
+        "txHash": "0x111f1ee17385573037fcb950b1ee355b32e2abfe6109a203dfc9f935c7566840",
+        "blockNumber": "25700047",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "7500000000",
+        "usdcAfter": "7000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000059682f00000000000000000000000000000000000000000000000000000000006a77384b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "2",
+          "transferredInCurrentPeriod": "1500000000"
+        },
+        "periodIndex": 1,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 6,
+        "n": 7,
+        "timestamp": "1786219691",
+        "txHash": "0xe495c0704dc806f90f3e8f8223425d0c8348ddb796a8ac978ac25d2434baac57",
+        "blockNumber": "25700048",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "7000000000",
+        "usdcAfter": "6500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000077359400000000000000000000000000000000000000000000000000000000006a778cab"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "2",
+          "transferredInCurrentPeriod": "2000000000"
+        },
+        "periodIndex": 1,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 7,
+        "n": 8,
+        "timestamp": "1786241291",
+        "txHash": "0xbfa47eb82e7a9320aa37dec19bb404ae326c36ac9e0c12d2014f2535860af919",
+        "blockNumber": "25700049",
+        "receiptStatus": "success",
+        "gasUsed": "269776",
+        "transferAmount": "500000000",
+        "usdcBefore": "6500000000",
+        "usdcAfter": "6000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000001dcd6500000000000000000000000000000000000000000000000000000000006a77e10b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "3",
+          "transferredInCurrentPeriod": "500000000"
+        },
+        "periodIndex": 2,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 8,
+        "n": 9,
+        "timestamp": "1786262891",
+        "txHash": "0xed0579f765f5944cd988af6ebc46e553d5bb492314e809df774106d0a5fd024d",
+        "blockNumber": "25700050",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "6000000000",
+        "usdcAfter": "5500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000003b9aca00000000000000000000000000000000000000000000000000000000006a78356b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "3",
+          "transferredInCurrentPeriod": "1000000000"
+        },
+        "periodIndex": 2,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 9,
+        "n": 10,
+        "timestamp": "1786284491",
+        "txHash": "0x0b8e5ebd436f65edc4ec13047bd633dc4bb2ca438eba0deaf2e7a562f15d38bb",
+        "blockNumber": "25700051",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "5500000000",
+        "usdcAfter": "5000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000059682f00000000000000000000000000000000000000000000000000000000006a7889cb"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "3",
+          "transferredInCurrentPeriod": "1500000000"
+        },
+        "periodIndex": 2,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 10,
+        "n": 11,
+        "timestamp": "1786306091",
+        "txHash": "0x62b9673404f13c6c8df53a5e007a08c6212b0a3b6fff793a9fa3d2ae26adf983",
+        "blockNumber": "25700052",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "5000000000",
+        "usdcAfter": "4500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000077359400000000000000000000000000000000000000000000000000000000006a78de2b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "3",
+          "transferredInCurrentPeriod": "2000000000"
+        },
+        "periodIndex": 2,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 11,
+        "n": 12,
+        "timestamp": "1786327691",
+        "txHash": "0xa409214dd713173005afdf39a090754d7b8861320e5bc707e7340d2d03fe3721",
+        "blockNumber": "25700053",
+        "receiptStatus": "success",
+        "gasUsed": "269776",
+        "transferAmount": "500000000",
+        "usdcBefore": "4500000000",
+        "usdcAfter": "4000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000001dcd6500000000000000000000000000000000000000000000000000000000006a79328b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "4",
+          "transferredInCurrentPeriod": "500000000"
+        },
+        "periodIndex": 3,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 12,
+        "n": 13,
+        "timestamp": "1786349291",
+        "txHash": "0xb9e8e1c82fe62055c0a909d582bf7580c18cdc4880a2307420779c6c9217ed93",
+        "blockNumber": "25700054",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "4000000000",
+        "usdcAfter": "3500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000003b9aca00000000000000000000000000000000000000000000000000000000006a7986eb"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "4",
+          "transferredInCurrentPeriod": "1000000000"
+        },
+        "periodIndex": 3,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 13,
+        "n": 14,
+        "timestamp": "1786370891",
+        "txHash": "0xe8c026ad7bcf528982f8a0140dae27b840f80305ba44ebf6a98ff354e3468c1b",
+        "blockNumber": "25700055",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "3500000000",
+        "usdcAfter": "3000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000059682f00000000000000000000000000000000000000000000000000000000006a79db4b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "4",
+          "transferredInCurrentPeriod": "1500000000"
+        },
+        "periodIndex": 3,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 14,
+        "n": 15,
+        "timestamp": "1786392491",
+        "txHash": "0xc096883b6a9ce719555888a4ac7b78f6031b66d691181a193fe893c56a62c03e",
+        "blockNumber": "25700056",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "3000000000",
+        "usdcAfter": "2500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000077359400000000000000000000000000000000000000000000000000000000006a7a2fab"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "4",
+          "transferredInCurrentPeriod": "2000000000"
+        },
+        "periodIndex": 3,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 15,
+        "n": 16,
+        "timestamp": "1786414091",
+        "txHash": "0x029dfb2a9a702339b64c197027f687dd9e52ba74d185be31a7f375f8f65bd69c",
+        "blockNumber": "25700057",
+        "receiptStatus": "success",
+        "gasUsed": "269776",
+        "transferAmount": "500000000",
+        "usdcBefore": "2500000000",
+        "usdcAfter": "2000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000001dcd6500000000000000000000000000000000000000000000000000000000006a7a840b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "5",
+          "transferredInCurrentPeriod": "500000000"
+        },
+        "periodIndex": 4,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 16,
+        "n": 17,
+        "timestamp": "1786435691",
+        "txHash": "0xf47fccbd441902a696ac74b6f63f99504afe047776ffbb5e6dc4f4434c9876af",
+        "blockNumber": "25700058",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "2000000000",
+        "usdcAfter": "1500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000003b9aca00000000000000000000000000000000000000000000000000000000006a7ad86b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "5",
+          "transferredInCurrentPeriod": "1000000000"
+        },
+        "periodIndex": 4,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 17,
+        "n": 18,
+        "timestamp": "1786457291",
+        "txHash": "0xe4634b4c338dff6dcc24c461e86c553739004cf7b1e33d3a4a1b9fe49992fb9a",
+        "blockNumber": "25700059",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "1500000000",
+        "usdcAfter": "1000000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000059682f00000000000000000000000000000000000000000000000000000000006a7b2ccb"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "5",
+          "transferredInCurrentPeriod": "1500000000"
+        },
+        "periodIndex": 4,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 18,
+        "n": 19,
+        "timestamp": "1786478891",
+        "txHash": "0x13abd2ce69f9520a5231e76e2c24ff8f8428ca7dc93b53a1eafe7bcc20a46ae6",
+        "blockNumber": "25700060",
+        "receiptStatus": "success",
+        "gasUsed": "266768",
+        "transferAmount": "500000000",
+        "usdcBefore": "1000000000",
+        "usdcAfter": "500000000",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b0000000000000000000000000000000000000000000000000000000077359400000000000000000000000000000000000000000000000000000000006a7b812b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "5",
+          "transferredInCurrentPeriod": "2000000000"
+        },
+        "periodIndex": 4,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      },
+      {
+        "stepIndex": 19,
+        "n": 20,
+        "timestamp": "1786500491",
+        "txHash": "0x20a3c78b81123369c050f0a97b33a6dcf6b391615616baff4ab5967882186e02",
+        "blockNumber": "25700061",
+        "receiptStatus": "success",
+        "gasUsed": "264976",
+        "transferAmount": "500000000",
+        "usdcBefore": "500000000",
+        "usdcAfter": "0",
+        "ethBefore": "10000000000000000000",
+        "ethAfter": "10000000000000000000",
+        "transferEvent": {
+          "logIndex": 1,
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x00000000000000000000000009e68b4a2335a2aaa1944bc3938d285b883f11e1",
+            "0x00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b906"
+          ],
+          "data": "0x000000000000000000000000000000000000000000000000000000001dcd6500"
+        },
+        "periodEnforcerEvent": {
+          "logIndex": 0,
+          "address": "0x5c0fd678387dd9a4f6d7ae4a4a2798439a0aebb0",
+          "topics": [
+            "0xb2a345c7f80b4be490c405f4a994faf85384dd05da7d70be0801dc31a8c253af",
+            "0x000000000000000000000000ea6f34e56c9bea6d9114a30b52e040af2b594373",
+            "0x0000000000000000000000003c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+            "0x9c79a1b3758c54c83757c4d724957df8333966500183b78986b7abcf7bbe7ebb"
+          ],
+          "data": "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b000000000000000000000000000000000000000000000000000000001dcd6500000000000000000000000000000000000000000000000000000000006a7bd58b"
+        },
+        "periodicAllowanceAfter": {
+          "periodAmount": "2000000000",
+          "periodDuration": "86400",
+          "startDate": "1786068491",
+          "lastTransferPeriod": "6",
+          "transferredInCurrentPeriod": "500000000"
+        },
+        "periodIndex": 5,
+        "caveatsPassed": [
+          {
+            "index": 0,
+            "name": "AllowedTargetsEnforcer",
+            "enforcer": "0xef2f79e2A6Cda4f31bd213b0d1877a9B93F70038",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "termsBytes": 20,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 1,
+            "name": "AllowedMethodsEnforcer",
+            "enforcer": "0x27aF251F5cd8AE094925aEF1722655Ea822Edbe1",
+            "terms": "0xa9059cbb",
+            "termsBytes": 4,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 2,
+            "name": "ValueLteEnforcer",
+            "enforcer": "0x0B5C5BEA5Df2fA9879Fac0AA3690aE2caD9eC498",
+            "terms": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 3,
+            "name": "TimestampEnforcer",
+            "enforcer": "0x8AF1d7a43158697106953f7F2EfADa603984269A",
+            "terms": "0x0000000000000000000000006a753e0b0000000000000000000000006a9ccb0b",
+            "termsBytes": 32,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 4,
+            "name": "ERC20PeriodTransferEnforcer",
+            "enforcer": "0x5c0FD678387dD9a4f6D7ae4a4a2798439a0AEBb0",
+            "terms": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4800000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000015180000000000000000000000000000000000000000000000000000000006a753e0b",
+            "termsBytes": 116,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          },
+          {
+            "index": 5,
+            "name": "ERC20BalanceChangeEnforcer",
+            "enforcer": "0x2Ab40067D719bc5938AA1875CB409A9DBF50022c",
+            "terms": "0x01A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB4809e68b4a2335a2aaa1944bc3938d285b883f11e1000000000000000000000000000000000000000000000000000000001dcd6500",
+            "termsBytes": 73,
+            "evidence": "attached-signed-delegation + successful-receipt"
+          }
+        ]
+      }
+    ],
+    "states": [
+      {
+        "stepIndex": 0,
+        "before": {
+          "usdc": "10000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "9500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 1,
+        "before": {
+          "usdc": "9500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "9000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 2,
+        "before": {
+          "usdc": "9000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "8500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 3,
+        "before": {
+          "usdc": "8500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "8000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 4,
+        "before": {
+          "usdc": "8000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "7500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 5,
+        "before": {
+          "usdc": "7500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "7000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 6,
+        "before": {
+          "usdc": "7000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "6500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 7,
+        "before": {
+          "usdc": "6500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "6000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 8,
+        "before": {
+          "usdc": "6000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "5500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 9,
+        "before": {
+          "usdc": "5500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "5000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 10,
+        "before": {
+          "usdc": "5000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "4500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 11,
+        "before": {
+          "usdc": "4500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "4000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 12,
+        "before": {
+          "usdc": "4000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "3500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 13,
+        "before": {
+          "usdc": "3500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "3000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 14,
+        "before": {
+          "usdc": "3000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "2500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 15,
+        "before": {
+          "usdc": "2500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "2000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 16,
+        "before": {
+          "usdc": "2000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "1500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 17,
+        "before": {
+          "usdc": "1500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "1000000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 18,
+        "before": {
+          "usdc": "1000000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "500000000",
+          "ethWei": "10000000000000000000"
+        }
+      },
+      {
+        "stepIndex": 19,
+        "before": {
+          "usdc": "500000000",
+          "ethWei": "10000000000000000000"
+        },
+        "after": {
+          "usdc": "0",
+          "ethWei": "10000000000000000000"
+        }
+      }
+    ],
+    "oracle": {
+      "ethUsd": {
+        "feed": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+        "roundId": "129127208515966893583",
+        "answer": "189811115161",
+        "startedAt": "1786066832",
+        "updatedAt": "1786066847",
+        "answeredInRound": "129127208515966893583",
+        "decimals": 8,
+        "ageSeconds": "1644",
+        "checks": [
+          {
+            "name": "decimalsIs8",
+            "passed": true
+          },
+          {
+            "name": "answerPositive",
+            "passed": true
+          },
+          {
+            "name": "updatedAtNotAfterForkBlock",
+            "passed": true
+          },
+          {
+            "name": "answeredInRoundGteRoundId",
+            "passed": true
+          },
+          {
+            "name": "freshnessWithinCeiling",
+            "passed": true
+          },
+          {
+            "name": "pinnedAnswerMatches",
+            "passed": true
+          },
+          {
+            "name": "pinnedUpdatedAtMatches",
+            "passed": true
+          }
+        ]
+      },
+      "usdcUsd": {
+        "feed": "0xc9E1a09622afdB659913fefE800fEaE5DBbFe9d7",
+        "roundId": "1114",
+        "answer": "99976752",
+        "startedAt": "1786003209",
+        "updatedAt": "1786003223",
+        "answeredInRound": "1114",
+        "decimals": 8,
+        "ageSeconds": "65268",
+        "checks": [
+          {
+            "name": "decimalsIs8",
+            "passed": true
+          },
+          {
+            "name": "answerPositive",
+            "passed": true
+          },
+          {
+            "name": "updatedAtNotAfterForkBlock",
+            "passed": true
+          },
+          {
+            "name": "answeredInRoundGteRoundId",
+            "passed": true
+          },
+          {
+            "name": "freshnessWithinCeiling",
+            "passed": true
+          },
+          {
+            "name": "pinnedAnswerMatches",
+            "passed": true
+          },
+          {
+            "name": "pinnedUpdatedAtMatches",
+            "passed": true
+          }
+        ]
+      },
+      "freshnessCeilingSeconds": "86400"
+    },
+    "result": {
+      "startingPortfolio": {
+        "usdc": "10000000000",
+        "ethWei": "10000000000000000000",
+        "usdcValue1e18": "9997675200000000000000",
+        "ethValue1e18": "18981111516100000000000",
+        "totalValue1e18": "28978786716100000000000"
+      },
+      "endingPortfolio": {
+        "usdc": "0",
+        "ethWei": "10000000000000000000",
+        "usdcValue1e18": "0",
+        "ethValue1e18": "18981111516100000000000",
+        "totalValue1e18": "18981111516100000000000"
+      },
+      "loss": "9997675200000000000000",
+      "lossBps": "3449",
+      "periods": [
+        {
+          "periodIndex": 0,
+          "count": 3,
+          "totalTransferredUsdc": "1500000000",
+          "dailyLimitUsdc": "2000000000",
+          "withinLimit": true
+        },
+        {
+          "periodIndex": 1,
+          "count": 4,
+          "totalTransferredUsdc": "2000000000",
+          "dailyLimitUsdc": "2000000000",
+          "withinLimit": true
+        },
+        {
+          "periodIndex": 2,
+          "count": 4,
+          "totalTransferredUsdc": "2000000000",
+          "dailyLimitUsdc": "2000000000",
+          "withinLimit": true
+        },
+        {
+          "periodIndex": 3,
+          "count": 4,
+          "totalTransferredUsdc": "2000000000",
+          "dailyLimitUsdc": "2000000000",
+          "withinLimit": true
+        },
+        {
+          "periodIndex": 4,
+          "count": 4,
+          "totalTransferredUsdc": "2000000000",
+          "dailyLimitUsdc": "2000000000",
+          "withinLimit": true
+        },
+        {
+          "periodIndex": 5,
+          "count": 1,
+          "totalTransferredUsdc": "500000000",
+          "dailyLimitUsdc": "2000000000",
+          "withinLimit": true
+        }
+      ],
+      "checks": [
+        {
+          "name": "stepCountIs20",
+          "passed": true
+        },
+        {
+          "name": "allStepsSuccess",
+          "passed": true
+        },
+        {
+          "name": "allStepsExactly500",
+          "passed": true
+        },
+        {
+          "name": "periodDistributionMatches",
+          "passed": true
+        },
+        {
+          "name": "periodTotalsWithinDailyLimit",
+          "passed": true
+        },
+        {
+          "name": "totalTransferredIs10000Usdc",
+          "passed": true
+        },
+        {
+          "name": "totalTransferredEqualsStartingUsdc",
+          "passed": true
+        },
+        {
+          "name": "endUsdcIsZero",
+          "passed": true
+        },
+        {
+          "name": "endEthUnchanged",
+          "passed": true
+        },
+        {
+          "name": "lossPositive",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "meta": {
+    "generatedAtWallClock": "2026-08-09T12:51:00.401Z",
+    "note": "meta는 재현성 해시 대상에서 제외한다."
+  }
+}
